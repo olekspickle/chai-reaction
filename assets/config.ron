@@ -27,10 +27,9 @@
         ("Button hover/press sounds, step sounds", "smnbl records\ngifted to rust community under CC0" ),
         ],
         devs: [
-        ( "olekspickle", ""),
-        ( "RynKitty", ""),
-        ( "Rabbival", ""),
-        ( "caudiciform", "")
+        ( "olekspickle", "juls"),
+        ( "RynKitty", "Rabbival"),
+        ( "caudiciform", ""),
         ]
     )
 )

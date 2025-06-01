@@ -35,9 +35,6 @@ impl LoadResource for App {
         self
     }
 
-    // If we are running in dev mode on desktop where hot-reloading of assets is possible
-    // then watch the asset and update the resource if it changes.
-    #[cfg(feature = "dev_native")]
     fn load_resource_from_path<T: Resource + Asset + Clone>(
         &mut self,
         path: impl AsRef<Path>,
@@ -53,6 +50,9 @@ impl LoadResource for App {
             src_handle
         };
 
+        // If we are running in dev mode on desktop where hot-reloading of assets is possible
+        // then watch the asset and update the resource if it changes.
+        #[cfg(feature = "dev_native")]
         self.add_systems(
             Update,
             move |mut commands: Commands,
@@ -70,13 +70,6 @@ impl LoadResource for App {
             },
         );
 
-        self
-    }
-    #[cfg(not(feature = "dev_native"))]
-    fn load_resource_from_path<T: Resource + Asset + Clone>(
-        &mut self,
-        _: impl AsRef<Path>,
-    ) -> &mut Self {
         self
     }
 }
