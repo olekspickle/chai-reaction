@@ -28,14 +28,14 @@ pub struct Fonts {
 #[reflect(Resource)]
 pub struct Textures {
     #[dependency]
-    pub github: Handle<Image>,
+    pub bevy: Handle<Image>,
 }
 
 impl FromWorld for Textures {
     fn from_world(world: &mut World) -> Self {
         let assets = world.resource::<AssetServer>();
         Self {
-            github: assets.load("textures/github.png"),
+            bevy: assets.load("textures/bevy.png"),
         }
     }
 }

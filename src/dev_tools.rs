@@ -5,6 +5,8 @@ use crate::{game::input_dispatch::*, prelude::*, screens::gameplay::PauseLabel};
 use bevy::{dev_tools::states::log_transitions, prelude::*, ui::UiDebugOptions};
 
 pub(super) fn plugin(app: &mut App) {
+    app.add_observer(toggle_pause);
+
     #[cfg(feature = "dev_native")]
     {
         app.add_systems(Update, log_transitions::<Screen>);

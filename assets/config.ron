@@ -1,40 +1,36 @@
 (
-    geom: (
-        main_plane: 200,
-        quantity: 20,
-    ),
-    player:(
-        fov: 60,
-        zoom: (1.5, 30.0),
-        movement: (
-            speed: 11,
-            actions_in_air: 3,
-            dash_distance: 10,
-        ),
-        hitbox:(
-            radius: 0.5,
-            height: 1
-        ),
+    physics: (
+        gravity: 1000.0,
+        steering_force: 10000.0,
+        max_speed_controlled: 300.0,
+        max_speed_dropping: 700.0,
+        friction: 1.0,
+        restitution: 0.0,
+        density: 1.0,
+        initial_density: 0.01,
+        boat_force: 2000000.0,
+        boat_speed: 2.0,
+        boat_float_force: 100000.0,
+        boat_damping: 100.0,
+        boat_level_set: -360.0,
+        boat_friction: 10000.0,
+        boat_stabalization_force: 10000000.0,
     ),
     sound: (
         general: 1.0,
         music: 0.5,
         sfx: 0.5,
     ),
-    physics: (
-        fog: true,
-        fog_directional_light_exponent: 5.0,
-        fog_visibility: 500.0,
-        shadow_distance: 100,
-    ),
     credits: (
         assets: [
         ("Bevy Logo", "All rights reserved by the Bevy Foundation, permission granted for splash screen use when unmodified" ),
-        ("Background Music", "smnbl-time-for-fun\ngifted to rust community under CC0" ),
         ("Button hover/press sounds, step sounds", "smnbl records\ngifted to rust community under CC0" ),
         ],
         devs: [
-        ( "olekspickle", "compiled different bevy crates to have a consistent template covering stuff average third person game need")
+        ( "olekspickle", ""),
+        ( "RynKitty", ""),
+        ( "Rabbival", ""),
+        ( "caudiciform", "")
         ]
     )
 )
