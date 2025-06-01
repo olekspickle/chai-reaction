@@ -13,6 +13,7 @@ mod loading;
 mod pre_load;
 mod screens;
 mod ui;
+mod util;
 
 pub(crate) mod prelude {
     use super::*;
@@ -29,6 +30,12 @@ pub(crate) mod prelude {
     pub use pre_load::Config;
     pub use screens::Screen;
     pub use ui::*;
+    pub use util::{
+        trait_unions::*,
+      ecs::{component_utilities::*, custom_run_conditions::*, entity_error::*, entity_namer::*},
+      macros::{enum_macros::*, event_reader_macros::*, query_macros::*, return_and_notify::*, trait_macros::*},
+      common_logic::{action_performed::*, random_range::*, argument_validation::*, overridable_value::*, unsigned_operations::*, vector_utilities::*}
+    };
 }
 
 fn main() {
