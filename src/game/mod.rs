@@ -1,10 +1,15 @@
 use bevy::prelude::*;
+use crate::game::currency::CurrencyPlugin;
+use crate::prelude::MachinePartsPlugin;
 
 pub mod camera;
 pub mod input_dispatch;
 pub mod scene;
 pub mod settings;
 pub mod sound;
+pub mod machine_parts;
+pub mod currency;
+pub mod game_level;
 
 pub fn plugin(app: &mut App) {
     app.insert_resource(Score(0));
@@ -14,7 +19,8 @@ pub fn plugin(app: &mut App) {
         scene::plugin,
         sound::plugin,
         input_dispatch::plugin,
-    ));
+    ))
+        .add_plugins((MachinePartsPlugin, CurrencyPlugin));
 }
 
 #[derive(Default, Resource)]

@@ -15,30 +15,31 @@ mod pre_load;
 mod screens;
 mod ui;
 mod util;
-mod machine_parts;
 
 pub(crate) mod prelude {
     use super::*;
 
     pub use bevy::prelude::*;
 
-    pub use audio::{General, Music, Sfx, Sound, music, sfx};
+    pub use audio::{music, sfx, General, Music, Sfx, Sound};
     pub(crate) use game::{
-        Score,
         input_dispatch::*,
         settings::{Action, Modal, Settings},
+        Score,
+        machine_parts::{machine_part_config::*, machine_part_config_by_type::*, machine_part_type::*, MachinePartsPlugin},
+        currency::{CurrencyPlugin, available_zen_points::*, initial_zen_points_by_level::*},
+        game_level::*
     };
     pub use loading::{AudioSources, ResourceHandles};
     pub use pre_load::Config;
     pub use screens::Screen;
     pub use ui::*;
     pub use util::{
-        trait_unions::*,
-      ecs::{component_utilities::*, custom_run_conditions::*, entity_error::*, entity_namer::*},
-      macros::{enum_macros::*, event_reader_macros::*, query_macros::*, return_and_notify::*, trait_macros::*},
-      common_logic::{action_performed::*, random_range::*, argument_validation::*, overridable_value::*, unsigned_operations::*, vector_utilities::*}
+        common_logic::{action_performed::*, argument_validation::*, random_range::*, vector_utilities::*},
+        ecs::{entity_error::*, entity_namer::*}
+        ,
+        trait_unions::*
     };
-    pub use machine_parts::{MachinePartsPlugin, machine_part_config::*, machine_part_config_by_type::*, machine_part_type::*};
 }
 
 fn main() {
@@ -88,7 +89,6 @@ fn main() {
         screens::plugin,
         dev_tools::plugin,
     ))
-        .add_plugins(MachinePartsPlugin)
     .add_systems(Startup, set_window_icon);
 
     app.run();

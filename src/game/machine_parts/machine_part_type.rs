@@ -4,5 +4,5 @@ use bevy::prelude::*;
 pub enum MachinePartType{
     Scale,
     Block,
-    AddOthers
+    // AddOthers
 }
