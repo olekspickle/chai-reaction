@@ -5,6 +5,7 @@ use bevy::{
 };
 use std::io::Cursor;
 use winit::window::Icon;
+use crate::prelude::*;
 
 mod audio;
 mod dev_tools;
@@ -14,6 +15,7 @@ mod pre_load;
 mod screens;
 mod ui;
 mod util;
+mod machine_parts;
 
 pub(crate) mod prelude {
     use super::*;
@@ -36,6 +38,7 @@ pub(crate) mod prelude {
       macros::{enum_macros::*, event_reader_macros::*, query_macros::*, return_and_notify::*, trait_macros::*},
       common_logic::{action_performed::*, random_range::*, argument_validation::*, overridable_value::*, unsigned_operations::*, vector_utilities::*}
     };
+    pub use machine_parts::{MachinePartsPlugin, machine_part_config::*, machine_part_config_by_type::*, machine_part_type::*};
 }
 
 fn main() {
@@ -85,6 +88,7 @@ fn main() {
         screens::plugin,
         dev_tools::plugin,
     ))
+        .add_plugins(MachinePartsPlugin)
     .add_systems(Startup, set_window_icon);
 
     app.run();
