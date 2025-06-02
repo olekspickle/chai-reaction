@@ -1,6 +1,6 @@
+use crate::prelude::*;
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
-use crate::prelude::*;
 
 #[derive(Resource, Debug)]
 pub struct InitialZenPointByLevel(pub HashMap<GameLevel, u32>);
@@ -15,11 +15,10 @@ impl Plugin for InitialZenPointByLevelPlugin {
 
 impl Default for InitialZenPointByLevel {
     fn default() -> Self {
-        Self(HashMap::from(
-            [
-                (GameLevel::TheSink, 420),
-                (GameLevel::TheGreatGap, 600)
-            ]
-        ))
+        Self(HashMap::from([
+            (GameLevel::Sink, 420),
+            (GameLevel::GreatGap, 600),
+        ]))
     }
 }
+

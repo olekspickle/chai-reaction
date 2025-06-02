@@ -27,4 +27,5 @@ pub struct Credits {
 pub struct Water {
     pub friction: f32,
     pub restitution: f32,
+    pub max_particles: f32,
 }

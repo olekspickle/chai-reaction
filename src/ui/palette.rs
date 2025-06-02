@@ -3,6 +3,7 @@ use bevy::prelude::*;
 pub const GRAY: Color = Color::srgb(0.157, 0.157, 0.157);
 pub const WHITEISH: Color = Color::srgb(0.925, 0.925, 0.925);
 pub const WATER: Color = Color::srgb(0.2, 0.7, 0.9);
+pub const FIRE: Color = Color::srgb(0.9, 0.7, 0.2);
 
 pub const BLUE: Color = Color::srgb(0.286, 0.478, 0.773);
 pub const DIM_BLUE: Color = Color::srgb(0.186, 0.328, 0.573);

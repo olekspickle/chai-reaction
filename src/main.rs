@@ -26,13 +26,14 @@ pub(crate) mod prelude {
         Score,
         camera::*,
         currency::{available_zen_points::*, initial_zen_points_by_level::*, *},
-        game_level::*,
         input_dispatch::*,
+        levels::*,
         machine_parts::{
             MachinePartsPlugin, consts::*, events::*, machine_part_config::*,
             machine_part_config_by_type::*, machine_part_spawner::*, machine_part_type::*,
             picked_machine_part_type::*,
         },
+        particles::*,
         settings::{Action, Modal, Settings},
     };
     pub use loading::{

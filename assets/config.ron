@@ -2,6 +2,7 @@
     droplet_radius: 2.0,
     physics: (
         water: (
+            max_particles: 200,
             friction: 0.0,
             restitution: 0.01,
         ),

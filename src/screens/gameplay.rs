@@ -1,12 +1,8 @@
 //! The screen state for the main gameplay.
 
 use super::*;
-use crate::{
-    game::{input_dispatch::*, scene},
-    screens::settings,
-};
+use crate::{game::input_dispatch::*, screens::settings};
 use bevy::ui::Val::*;
-use leafwing_input_manager::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(crate::game::plugin)
