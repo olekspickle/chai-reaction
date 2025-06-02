@@ -20,10 +20,12 @@ impl Default for MachinePartConfigByType {
                 (MachinePartType::Scale, MachinePartConfig{
                     cost: 42,
                     sprite: Default::default(),
+                    sprite_asset_path: String::from("textures/bevy.png"),
                 }),
                 (MachinePartType::Block, MachinePartConfig{
                     cost: 8,
                     sprite: Default::default(),
+                    sprite_asset_path: String::from("textures/bevy.png"),
                 })
             ]
         ))

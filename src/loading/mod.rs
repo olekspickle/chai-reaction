@@ -4,9 +4,11 @@ use bevy_seedling::sample::Sample;
 
 mod ron;
 mod tracking;
+pub mod textures;
 
 pub use ron::*;
 pub use tracking::*;
+use crate::prelude::*;
 
 pub fn plugin(app: &mut App) {
     // start asset loading
@@ -14,7 +16,8 @@ pub fn plugin(app: &mut App) {
         .add_plugins(RonAssetPlugin::<Config>::new(&["config.ron"]))
         .load_resource_from_path::<Config>("config.ron")
         .load_resource::<AudioSources>()
-        .load_resource::<Textures>();
+        .load_resource::<Textures>()
+        .add_plugins(TexturesLoaderPlugin);
 }
 
 #[derive(Asset, Clone, Reflect, Resource)]

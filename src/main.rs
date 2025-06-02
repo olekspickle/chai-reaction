@@ -30,7 +30,7 @@ pub(crate) mod prelude {
         currency::{CurrencyPlugin, available_zen_points::*, initial_zen_points_by_level::*},
         game_level::*
     };
-    pub use loading::{AudioSources, ResourceHandles};
+    pub use loading::{AudioSources, ResourceHandles, textures::{TexturesLoaderPlugin, machine_parts_texture_loader::*}};
     pub use pre_load::Config;
     pub use screens::Screen;
     pub use ui::*;

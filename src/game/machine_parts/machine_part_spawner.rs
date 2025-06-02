@@ -24,7 +24,11 @@ fn listen_to_spawn_requests(
 
                 commands.spawn((
                     Transform::from_translation(spawn_request.location),
-                    spawn_request.part_type
+                    spawn_request.part_type,
+                    Sprite{
+                        image: part_config.sprite.clone(),
+                        ..default()
+                    }
                 ));
             }
         }
