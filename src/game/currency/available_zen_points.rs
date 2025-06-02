@@ -3,7 +3,7 @@ use crate::prelude::*;
 
 #[derive(Resource, Debug, Default)]
 /// player currency for buying tea-moving components
-pub struct AvailableZenPoints(pub u32);
+pub struct AvailableZenPoints(u32);
 
 pub struct AvailableZenPointsPlugin;
 
@@ -22,5 +22,15 @@ fn set_on_level_start(
     let game_level = game_level.get();
     if let Some(initial_points) = initial_zen_points.0.get(game_level) {
         available_zen_points.0 = *initial_points;
+    }
+}
+
+impl AvailableZenPoints{
+    pub fn buy_if_affordable(&mut self, cost: u32) -> ActionPerformed{
+        let affordable = self.0 >= cost;
+        if affordable{
+            self.0 -= cost;
+        }
+        ActionPerformed(affordable)
     }
 }

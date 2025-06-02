@@ -26,7 +26,7 @@ pub(crate) mod prelude {
         input_dispatch::*,
         settings::{Action, Modal, Settings},
         Score,
-        machine_parts::{machine_part_config::*, machine_part_config_by_type::*, machine_part_type::*, MachinePartsPlugin},
+        machine_parts::{machine_part_spawner::*, events::*, machine_part_config::*, machine_part_config_by_type::*, machine_part_type::*, MachinePartsPlugin},
         currency::{CurrencyPlugin, available_zen_points::*, initial_zen_points_by_level::*},
         game_level::*
     };
