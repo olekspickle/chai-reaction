@@ -27,15 +27,14 @@ pub(crate) mod prelude {
         settings::{Action, Modal, Settings},
         Score,
         machine_parts::{consts::*, machine_part_spawner::*, events::*, machine_part_config::*, machine_part_config_by_type::*, machine_part_type::*, MachinePartsPlugin},
-        currency::{CurrencyPlugin, available_zen_points::*, initial_zen_points_by_level::*},
+        currency::{*, available_zen_points::*, initial_zen_points_by_level::*},
         game_level::*,
-        game_input::{GameInputPlugin, in_game_mouse_input::* },
         camera::*
     };
     pub use loading::{AudioSources, ResourceHandles, textures::{TexturesLoaderPlugin, machine_parts_texture_loader::*}};
     pub use pre_load::Config;
     pub use screens::Screen;
-    pub use ui::*;
+    pub use ui::{in_game_ui::*, *};
     pub use util::{
         common_logic::{action_performed::*, argument_validation::*, random_range::*, vector_utilities::*},
         ecs::{entity_error::*, entity_namer::*}
@@ -91,6 +90,7 @@ fn main() {
         screens::plugin,
         dev_tools::plugin,
     ))
+        .add_plugins(MeshPickingPlugin)
     .add_systems(Startup, set_window_icon);
 
     app.run();

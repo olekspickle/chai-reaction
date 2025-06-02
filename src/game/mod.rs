@@ -9,7 +9,6 @@ pub mod sound;
 pub mod machine_parts;
 pub mod currency;
 pub mod game_level;
-pub mod game_input;
 
 pub fn plugin(app: &mut App) {
     app.insert_resource(Score(0));
@@ -20,7 +19,7 @@ pub fn plugin(app: &mut App) {
         sound::plugin,
         input_dispatch::plugin,
     ))
-        .add_plugins((GameLevelPlugin, MachinePartsPlugin, CurrencyPlugin, GameInputPlugin));
+        .add_plugins((GameLevelPlugin, MachinePartsPlugin, CurrencyPlugin));
 }
 
 #[derive(Default, Resource)]
