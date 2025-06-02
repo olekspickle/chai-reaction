@@ -1,6 +1,6 @@
 use bevy::prelude::*;
 
-#[derive(Debug)]
+#[derive(Debug, Default)]
 pub struct MachinePartConfig{
     pub cost: u32,
     pub sprite: Handle<Image>,

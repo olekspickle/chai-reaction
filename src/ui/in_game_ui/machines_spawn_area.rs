@@ -7,7 +7,6 @@ pub struct MachinesSpawnAreaPlugin;
 impl Plugin for MachinesSpawnAreaPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(OnEnter(Screen::Gameplay), spawn_machines_area)
-            .add_systems(OnExit(Screen::Gameplay), despawn_machines_area)
             .add_observer(on_machine_spawn_area_click);
     }
 }
@@ -23,21 +22,11 @@ fn spawn_machines_area(
         let square = meshes.add(Rectangle::new(window.resolution.width(), window.resolution.height()));
         let no_color = materials.add(Color::NONE);
         commands.spawn((
+            StateScoped(Screen::Gameplay),
             MachinesSpawnArea,
             Mesh2d(square),
             MeshMaterial2d(no_color),
         ));
-    }
-}
-
-fn despawn_machines_area(
-    machine_spawn_areas: Query<Entity, With<MachinesSpawnArea>>,
-    mut commands: Commands,
-){
-    for area in &machine_spawn_areas{
-        if let Ok(mut entity_commands) = commands.get_entity(area){
-            entity_commands.despawn();
-        }
     }
 }
 

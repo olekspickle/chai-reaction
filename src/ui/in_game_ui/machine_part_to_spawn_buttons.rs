@@ -30,6 +30,7 @@ fn spawn_part_picking_buttons(mut commands: Commands) {
 
 fn btn_with_machine_part_type(part_type: MachinePartType, text: String)-> impl Bundle{
     (
+        StateScoped(Screen::Gameplay),
         part_type,
         btn(text, set_picked_machine_part)
     )
