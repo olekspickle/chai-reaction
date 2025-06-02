@@ -5,8 +5,8 @@ pub fn plugin(app: &mut App) {
 }
 
 #[derive(Component)]
-pub struct SceneCamera;
+pub struct MainCamera;
 
 pub fn spawn_camera(mut commands: Commands) {
-    commands.spawn((Camera2d, IsDefaultUiCamera));
+    commands.spawn((Camera2d, MainCamera, IsDefaultUiCamera));
 }

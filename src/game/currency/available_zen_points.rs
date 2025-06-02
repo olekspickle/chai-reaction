@@ -11,6 +11,9 @@ impl Plugin for AvailableZenPointsPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<AvailableZenPoints>()
             .add_systems(Update, set_on_level_start.run_if(state_changed::<GameLevel>));
+
+        //DEBUG
+        app.add_systems(Update, log_change_in_available_zen_points.run_if(resource_changed::<AvailableZenPoints>));
     }
 }
 
@@ -33,4 +36,10 @@ impl AvailableZenPoints{
         }
         ActionPerformed(affordable)
     }
+}
+
+fn log_change_in_available_zen_points(
+    available_zen_points: Res<AvailableZenPoints>,
+){
+    info!("There are {} available zen points.", available_zen_points.0);
 }

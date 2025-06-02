@@ -1,0 +1,1 @@
+pub const MACHINE_PARTS_BASIC_Z_LAYER: f32 = 10.0;

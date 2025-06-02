@@ -6,6 +6,7 @@ pub mod machine_part_config;
 pub mod machine_part_config_by_type;
 pub mod events;
 pub mod machine_part_spawner;
+pub mod consts;
 
 pub struct MachinePartsPlugin;
 
