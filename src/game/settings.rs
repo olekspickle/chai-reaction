@@ -7,7 +7,7 @@ pub fn plugin(app: &mut App) {
     app.add_plugins(InputManagerPlugin::<Action>::default())
         .add_systems(Startup, spawn_player_input_map)
         .add_systems(
-            OnEnter(Screen::Gameplay),
+            OnEnter(Screen::Title),
             inject_settings_from_cfg.run_if(resource_exists::<Config>),
         );
 }
@@ -20,7 +20,6 @@ pub struct Settings {
     /// Modal stack. kudo for the idea to @skyemakesgames
     /// Only relevant in [`Screen::Gameplay`]
     pub modals: Vec<Modal>,
-    pub muted: bool,
     pub paused: bool,
     pub last_screen: Screen,
 }
@@ -32,7 +31,6 @@ impl Default for Settings {
             sound: Sound::default(),
             modals: vec![],
             paused: false,
-            muted: false,
         }
     }
 }

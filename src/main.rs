@@ -1,11 +1,11 @@
-// disable console on windows for release builds
+// Disable console on Windows for non-dev builds.
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
 use bevy::{
     app::App, asset::AssetMetaCheck, log, prelude::*, window::PrimaryWindow, winit::WinitWindows,
 };
 use std::io::Cursor;
 use winit::window::Icon;
-use crate::prelude::*;
 
 mod audio;
 mod dev_tools;
@@ -21,25 +21,33 @@ pub(crate) mod prelude {
 
     pub use bevy::prelude::*;
 
-    pub use audio::{music, sfx, General, Music, Sfx, Sound};
+    pub use audio::{General, Music, Sfx, Sound, music, sfx};
     pub(crate) use game::{
-        input_dispatch::*,
-        settings::{Action, Modal, Settings},
         Score,
-        machine_parts::{picked_machine_part_type::*, consts::*, machine_part_spawner::*, events::*, machine_part_config::*, machine_part_config_by_type::*, machine_part_type::*, MachinePartsPlugin},
-        currency::{*, available_zen_points::*, initial_zen_points_by_level::*},
+        camera::*,
+        currency::{available_zen_points::*, initial_zen_points_by_level::*, *},
         game_level::*,
-        camera::*
+        input_dispatch::*,
+        machine_parts::{
+            MachinePartsPlugin, consts::*, events::*, machine_part_config::*,
+            machine_part_config_by_type::*, machine_part_spawner::*, machine_part_type::*,
+            picked_machine_part_type::*,
+        },
+        settings::{Action, Modal, Settings},
     };
-    pub use loading::{AudioSources, ResourceHandles, textures::{TexturesLoaderPlugin, machine_parts_texture_loader::*}};
+    pub use loading::{
+        AudioSources, ResourceHandles,
+        textures::{TexturesLoaderPlugin, machine_parts_texture_loader::*},
+    };
     pub use pre_load::Config;
     pub use screens::Screen;
     pub use ui::{in_game_ui::*, *};
     pub use util::{
-        common_logic::{action_performed::*, argument_validation::*, random_range::*, vector_utilities::*},
-        ecs::{entity_error::*, entity_namer::*}
-        ,
-        trait_unions::*
+        common_logic::{
+            action_performed::*, argument_validation::*, random_range::*, vector_utilities::*,
+        },
+        ecs::{entity_error::*, entity_namer::*},
+        trait_unions::*,
     };
 }
 
@@ -90,7 +98,7 @@ fn main() {
         screens::plugin,
         dev_tools::plugin,
     ))
-        .add_plugins(MeshPickingPlugin)
+    .add_plugins(MeshPickingPlugin)
     .add_systems(Startup, set_window_icon);
 
     app.run();

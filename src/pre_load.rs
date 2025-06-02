@@ -8,19 +8,23 @@ pub struct Config {
     pub sound: Sound,
     pub physics: Physics,
     pub credits: Credits,
+    pub droplet_radius: f32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Reflect)]
 pub struct Physics {
+    pub water: Water,
     pub gravity: f32,
-    pub friction: f32,
-    pub restitution: f32,
-    pub density: f32,
-    pub initial_density: f32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Reflect)]
 pub struct Credits {
     pub assets: Vec<(String, String)>,
     pub devs: Vec<(String, String)>,
+}
+
+#[derive(Clone, Debug, Serialize, Deserialize, Reflect)]
+pub struct Water {
+    pub friction: f32,
+    pub restitution: f32,
 }

@@ -1,20 +1,11 @@
 (
+    droplet_radius: 2.0,
     physics: (
-        gravity: 1000.0,
-        steering_force: 10000.0,
-        max_speed_controlled: 300.0,
-        max_speed_dropping: 700.0,
-        friction: 1.0,
-        restitution: 0.0,
-        density: 1.0,
-        initial_density: 0.01,
-        boat_force: 2000000.0,
-        boat_speed: 2.0,
-        boat_float_force: 100000.0,
-        boat_damping: 100.0,
-        boat_level_set: -360.0,
-        boat_friction: 10000.0,
-        boat_stabalization_force: 10000000.0,
+        water: (
+            friction: 0.0,
+            restitution: 0.01,
+        ),
+        gravity: 100.0,
     ),
     sound: (
         general: 1.0,

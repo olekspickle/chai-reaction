@@ -8,13 +8,10 @@ pub fn plugin(app: &mut App) {
     //     .add_systems(OnEnter(Screen::Gameplay), start_or_resume_soundtrack);
 }
 
-// TODO: implement different music states
-// good structure in this example: <https://github.com/bevyengine/bevy/blob/main/examples/audio/soundtrack.rs#L29>
 fn start_or_resume_soundtrack(
     mut cmds: Commands,
     settings: Res<Settings>,
     sources: ResMut<AudioSources>,
-    // boombox: Query<Entity, With<Boombox>>,
     mut music_query: Query<(&Sampler, &mut PlaybackSettings), With<Music>>,
 ) -> Result {
     if let Ok((player, mut instance)) = music_query.single_mut() {

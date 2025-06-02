@@ -13,9 +13,9 @@ pub(super) fn plugin(app: &mut App) {
 
 fn spawn_credits_screen(mut commands: Commands, cfg: Res<Config>) {
     commands.spawn((
+        StateScoped(Screen::Credits),
         ui_root("Credits Screen"),
         BackgroundColor(TRANSLUCENT),
-        StateScoped(Screen::Credits),
         children![
             header("Created by"),
             flatten(&cfg.credits.devs),

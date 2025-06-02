@@ -24,19 +24,33 @@ pub struct InteractionPalette {
 
 fn apply_interaction_palette(
     mut palette_query: Query<
-        (&Interaction, &InteractionPalette, &mut BackgroundColor),
+        (
+            &Interaction,
+            &InteractionPalette,
+            &mut BorderColor,
+            &mut BackgroundColor,
+        ),
         Changed<Interaction>,
     >,
 ) {
-    for (interaction, palette, mut background) in &mut palette_query {
-        *background = match interaction {
-            Interaction::None => palette.none,
-            Interaction::Hovered => palette.hovered,
-            Interaction::Pressed => palette.pressed,
+    for (interaction, palette, mut border, mut background) in &mut palette_query {
+        match interaction {
+            Interaction::None => {
+                *background = palette.none.into();
+                *border = palette.none.into();
+            }
+            Interaction::Hovered => {
+                *background = palette.hovered.into();
+                *border = palette.hovered.into();
+            }
+            Interaction::Pressed => {
+                *background = palette.pressed.into();
+                *border = palette.pressed.into();
+            }
         }
-        .into();
     }
 }
+
 /// Event triggered on a UI entity when the [`Interaction`] component on the same entity changes to
 /// [`Interaction::Pressed`]. Observe this event to detect e.g. button presses.
 #[derive(Event)]

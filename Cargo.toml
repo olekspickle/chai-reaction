@@ -105,9 +105,6 @@ opt-level = 1
 [profile.dev.package."*"]   # More optimization in the dev profile for dependencies.
 opt-level = 3
 
-[profile.dev.package.wgpu-types] # Remove expensive debug assertions due to <https://github.com/bevyengine/bevy/issues/14291>
-debug-assertions = false
-
 [profile.release]
 # Do a second optimization pass over the entire program, including dependencies.
 # Slows compile times, marginal improvements.
