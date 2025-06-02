@@ -1,0 +1,49 @@
+use bevy::prelude::*;
+use strum::IntoEnumIterator;
+use crate::prelude::*;
+use crate::prelude::Val::Percent;
+
+pub struct MachinePartToSpawnButtonsPlugin;
+
+impl Plugin for MachinePartToSpawnButtonsPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(OnEnter(Screen::Gameplay), spawn_part_picking_buttons);
+    }
+}
+
+fn spawn_part_picking_buttons(mut commands: Commands) {
+    let mut buttons = Vec::new();
+    for part in MachinePartType::iter(){
+        let button_bundle = btn_with_machine_part_type(part, format!("{:?}", part));
+        buttons.push(commands.spawn(button_bundle).id());
+    }
+    let mut node_commands = commands.spawn((
+        Node {
+            flex_direction: FlexDirection::Row,
+            justify_content: JustifyContent::SpaceEvenly,
+            width: Percent(50.0),
+            ..default()
+        }
+    ));
+    node_commands.add_children(&buttons);
+}
+
+fn btn_with_machine_part_type(part_type: MachinePartType, text: String)-> impl Bundle{
+    (
+        part_type,
+        btn(text, set_picked_machine_part)
+    )
+}
+
+fn set_picked_machine_part(
+    trigger: Trigger<Pointer<Pressed>>,
+   mut picked_machine_type: ResMut<PickedMachinePartType>,
+   part_types: Query<&MachinePartType>,
+    child_ofs: Query<&ChildOf>
+){
+    if let Ok(child_of) = child_ofs.get(trigger.target()){
+        if let Ok(part) = part_types.get(child_of.0){
+            picked_machine_type.0 = *part;
+        }
+    }
+}

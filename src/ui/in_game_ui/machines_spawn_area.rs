@@ -45,13 +45,14 @@ fn on_machine_spawn_area_click(
     trigger: Trigger<Pointer<Click>>,
     mut machine_part_request_writer: EventWriter<MachinePartRequest>,
     machine_spawn_areas: Query<(), With<MachinesSpawnArea>>,
+    picked_machine_part_type: Res<PickedMachinePartType>
 ){
     if machine_spawn_areas.contains(trigger.target()){
         if let Some(hit_position) = trigger.hit.position{
             machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
                 MachinePartSpawnRequest{
                     location: hit_position.with_z(MACHINE_PARTS_BASIC_Z_LAYER),
-                    part_type: MachinePartType::Scale
+                    part_type: picked_machine_part_type.0
                 }
             ));
         }
