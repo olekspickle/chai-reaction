@@ -38,13 +38,13 @@ fn btn_with_machine_part_type(part_type: MachinePartType, text: String)-> impl B
 
 fn set_picked_machine_part(
     trigger: Trigger<Pointer<Pressed>>,
-   mut picked_machine_type: ResMut<PickedMachinePartType>,
+   mut picking_state: ResMut<PickingState>,
    part_types: Query<&MachinePartType>,
     child_ofs: Query<&ChildOf>
 ){
     if let Ok(child_of) = child_ofs.get(trigger.target()){
         if let Ok(part) = part_types.get(child_of.0){
-            picked_machine_type.0 = *part;
+            *picking_state = PickingState::Placing(*part);
         }
     }
 }
