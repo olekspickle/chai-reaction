@@ -7,6 +7,9 @@ pub fn plugin(app: &mut App) {
         .add_event::<OnGoTo>()
         .add_event::<OnNewModal>()
         .add_event::<OnPopModal>()
+        .add_event::<OnGlassHit>()
+        .add_event::<OnGlassSpawn>()
+        .add_event::<OnStoveSpawn>()
         .add_event::<OnPauseToggle>()
         .add_event::<OnClearModals>()
         .add_event::<OnDebugUiToggle>()
@@ -27,6 +30,29 @@ pub struct OnClearModals;
 pub struct OnPauseToggle;
 #[derive(Event)]
 pub struct OnDebugUiToggle;
+#[derive(Event)]
+pub struct OnGlassHit;
+#[derive(Event)]
+pub struct OnStoveSpawn {
+    pub pos: Vec2,
+    pub level: GameLevel,
+}
+impl OnStoveSpawn {
+    pub fn new(pos: Vec2, level: GameLevel) -> Self {
+        Self { pos, level }
+    }
+}
+
+#[derive(Event)]
+pub struct OnGlassSpawn {
+    pub pos: Vec2,
+    pub level: GameLevel,
+}
+impl OnGlassSpawn {
+    pub fn new(pos: Vec2, level: GameLevel) -> Self {
+        Self { pos, level }
+    }
+}
 
 fn trigger_input_dispatch(
     mut commands: Commands,

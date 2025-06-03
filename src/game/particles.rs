@@ -4,12 +4,15 @@ use bevy::prelude::*;
 use rand::prelude::*;
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins(PhysicsPlugins::default()).add_systems(
-        Update,
-        (spawn_particles, despawn_particles).run_if(in_state(Screen::Gameplay)),
-    );
+    app.add_plugins(PhysicsPlugins::default())
+        .add_systems(
+            Update,
+            (spawn_particles, despawn_particles).run_if(in_state(Screen::Gameplay)),
+        )
+        .add_observer(start_emitting);
 }
 
+#[derive(Component, PartialEq, Eq)]
 pub enum ParticleKind {
     Water,
     Fire,
@@ -63,12 +66,16 @@ fn spawn_particles(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut emitter: Query<(&mut ParticleEmitter, &GlobalTransform)>,
-    droplet_count_query: Query<Entity, With<WaterDrop>>,
+    droplet_count_query: Query<&ParticleKind>,
 ) {
     let mut rng = rand::thread_rng();
 
-    let max_particles = cfg.physics.water.max_particles as usize; // Define your maximum particle limit
-    let current_droplet_count = droplet_count_query.iter().len();
+    let max_particles = cfg.physics.water.max_particles as usize;
+    let current_droplet_count: usize = droplet_count_query
+        .iter()
+        .filter(|p| **p == ParticleKind::Water)
+        .collect::<Vec<&ParticleKind>>()
+        .len();
 
     for (mut emitter, global_transform) in emitter.iter_mut() {
         emitter.spawn_timer.tick(time.delta());
@@ -106,12 +113,13 @@ fn spawn_particles(
                 let initial_velocity = Vec2::new(angle_rad.cos() * speed, angle_rad.sin() * speed);
 
                 let mesh = meshes.add(Circle::new(cfg.droplet_radius));
-                let color = match emitter.kind {
-                    ParticleKind::Water => WATER,
-                    ParticleKind::Fire => FIRE,
+                let (color, marker) = match emitter.kind {
+                    ParticleKind::Water => (WATER, ParticleKind::Water),
+                    ParticleKind::Fire => (FIRE, ParticleKind::Fire),
                 };
                 let material = materials.add(color);
                 commands.spawn((
+                    marker,
                     Mesh2d(mesh),
                     MeshMaterial2d(material),
                     Transform::from_translation(spawn_position.extend(0.0)),
@@ -137,11 +145,37 @@ fn spawn_particles(
 
 fn despawn_particles(
     mut commands: Commands,
-    query: Query<(Entity, &Particle)>, // Added Name for logging
+    query: Query<(Entity, &Transform, &Particle)>, // Added Name for logging
 ) {
-    for (entity, particle) in query.iter() {
-        if particle.lifetime.finished() {
+    for (entity, t, particle) in query.iter() {
+        if particle.lifetime.finished()
+            || t.translation.y < -1000.0
+            || t.translation.x < -1000.0
+            || t.translation.x > 1000.0
+        {
             commands.entity(entity).despawn();
         }
+    }
+}
+
+fn start_emitting(
+    _: Trigger<OnGlassHit>,
+    mut commands: Commands,
+    glass: Query<Entity, With<Glass>>,
+) {
+    for e in glass.iter() {
+        commands.entity(e).insert((
+            StateScoped(GameLevel::Sink),
+            ParticleEmitter::new(
+                ParticleKind::Water,
+                10.0,  // Spawn 10 particles per second
+                20.0,  // Min initial speed
+                50.0,  // Max initial speed
+                45.0,  // Min angle (degrees, e.g., 60 = upwards right)
+                160.0, // Max angle (degrees, e.g., 120 = upwards left)
+                10.0,  // live for 10s
+                1.0,   // Normal gravity effect
+            ),
+        ));
     }
 }

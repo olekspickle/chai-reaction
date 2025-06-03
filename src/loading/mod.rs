@@ -3,12 +3,12 @@ use bevy::{asset::Asset, prelude::*};
 use bevy_seedling::sample::Sample;
 
 mod ron;
-mod tracking;
 pub mod textures;
+mod tracking;
 
+use crate::prelude::*;
 pub use ron::*;
 pub use tracking::*;
-use crate::prelude::*;
 
 pub fn plugin(app: &mut App) {
     // start asset loading
@@ -32,6 +32,8 @@ pub struct Fonts {
 pub struct Textures {
     #[dependency]
     pub bevy: Handle<Image>,
+    #[dependency]
+    pub glass: Handle<Image>,
 }
 
 impl FromWorld for Textures {
@@ -39,6 +41,7 @@ impl FromWorld for Textures {
         let assets = world.resource::<AssetServer>();
         Self {
             bevy: assets.load("textures/bevy.png"),
+            glass: assets.load("textures/glass.png"),
         }
     }
 }
