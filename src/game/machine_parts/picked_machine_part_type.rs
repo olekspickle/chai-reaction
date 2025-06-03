@@ -1,6 +1,6 @@
 use crate::prelude::*;
 
-#[derive(Resource, Debug, Default)]
+#[derive(Resource, Debug, Default, PartialEq, Eq)]
 pub enum PickingState {
     #[default]
     None,

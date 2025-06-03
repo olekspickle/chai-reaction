@@ -23,16 +23,22 @@ fn spawn_part_picking_buttons(mut commands: Commands) {
             justify_content: JustifyContent::SpaceEvenly,
             width: Percent(50.0),
             ..default()
-        }
+        },
     ));
     node_commands.add_children(&buttons);
+    node_commands.with_children(|parent| {
+        parent.spawn((
+            StateScoped(Screen::Gameplay),
+            btn("Remove", set_delete_mode)
+        ));
+    });
 }
 
-fn btn_with_machine_part_type(part_type: MachinePartType, text: String)-> impl Bundle{
+fn btn_with_machine_part_type(part_type: MachinePartType, text: String)-> impl Bundle {
     (
         StateScoped(Screen::Gameplay),
         part_type,
-        btn(text, set_picked_machine_part)
+        btn(text, set_picked_machine_part),
     )
 }
 
@@ -46,5 +52,15 @@ fn set_picked_machine_part(
         if let Ok(part) = part_types.get(child_of.0){
             *picking_state = PickingState::Placing(*part);
         }
+    }
+}
+
+fn set_delete_mode(
+    trigger: Trigger<Pointer<Pressed>>,
+   mut picking_state: ResMut<PickingState>,
+    child_ofs: Query<&ChildOf>
+){
+    if child_ofs.contains(trigger.target()) {
+        *picking_state = PickingState::Erasing;
     }
 }

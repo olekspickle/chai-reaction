@@ -36,6 +36,10 @@ impl AvailableZenPoints{
         }
         ActionPerformed(affordable)
     }
+
+    pub fn refund(&mut self, cost: u32) {
+        self.0 += cost;
+    }
 }
 
 fn log_change_in_available_zen_points(

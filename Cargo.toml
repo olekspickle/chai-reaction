@@ -42,6 +42,8 @@ bevy = { version = "^0.16", default-features = false, features = [
     "bevy_mesh_picking_backend",
     "bevy_text",
     "bevy_ui",
+    "bevy_sprite",
+    "bevy_sprite_picking_backend",
     "bevy_ui_picking_backend",
     "bevy_input_focus",
     "custom_cursor",

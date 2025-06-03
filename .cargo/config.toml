@@ -123,3 +123,40 @@
 # help trunk
 [target.wasm32-unknown-unknown]
 runner = "wasm-server-runner"
+[unstable]
+codegen-backend = true
+
+
+[profile.dev]
+codegen-backend = "cranelift"
+
+[profile.web-dev]
+codegen-backend = "llvm"
+
+[profile.dev.package."*"]
+codegen-backend = "llvm"
+[target.x86_64-unknown-linux-gnu]
+linker = "clang"
+rustflags = [
+  # LLD linker
+  #
+  # You may need to install it:
+  #
+  # - Ubuntu: `sudo apt-get install lld clang`
+  # - Fedora: `sudo dnf install lld clang`
+  # - Arch: `sudo pacman -S lld clang`
+  "-Clink-arg=-fuse-ld=lld",
+
+  # Mold linker
+  #
+  # You may need to install it:
+  #
+  # - Ubuntu: `sudo apt-get install mold clang`
+  # - Fedora: `sudo dnf install mold clang`
+  # - Arch: `sudo pacman -S mold clang`
+  # "-Clink-arg=-fuse-ld=/usr/bin/mold",
+
+  # Nightly
+  # "-Zshare-generics=y",
+  # "-Zthreads=0",
+]
