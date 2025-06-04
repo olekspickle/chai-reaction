@@ -107,6 +107,9 @@ opt-level = 1
 [profile.dev.package."*"]   # More optimization in the dev profile for dependencies.
 opt-level = 3
 
+[profile.web-dev]
+inherits = "dev"
+
 [profile.release]
 # Do a second optimization pass over the entire program, including dependencies.
 # Slows compile times, marginal improvements.
