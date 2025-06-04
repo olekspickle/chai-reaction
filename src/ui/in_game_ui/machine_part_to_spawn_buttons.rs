@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use strum::IntoEnumIterator;
 use crate::prelude::*;
 use crate::prelude::Val::Percent;
 
@@ -11,10 +10,10 @@ impl Plugin for MachinePartToSpawnButtonsPlugin {
     }
 }
 
-fn spawn_part_picking_buttons(mut commands: Commands) {
+fn spawn_part_picking_buttons(mut commands: Commands, machine_parts: Res<MachinePartConfigByType>) {
     let mut buttons = Vec::new();
-    for part in MachinePartType::iter(){
-        let button_bundle = btn_with_machine_part_type(part, format!("{:?}", part));
+    for part in machine_parts.0.keys() {
+        let button_bundle = btn_with_machine_part_type(MachinePartType(part.clone()), part);
         buttons.push(commands.spawn(button_bundle).id());
     }
     let mut node_commands = commands.spawn((
@@ -34,11 +33,11 @@ fn spawn_part_picking_buttons(mut commands: Commands) {
     });
 }
 
-fn btn_with_machine_part_type(part_type: MachinePartType, text: String)-> impl Bundle {
+fn btn_with_machine_part_type(part_type: MachinePartType, text: impl Into<String>)-> impl Bundle {
     (
         StateScoped(Screen::Gameplay),
         part_type,
-        btn(text, set_picked_machine_part),
+        btn(text.into(), set_picked_machine_part),
     )
 }
 
@@ -50,7 +49,7 @@ fn set_picked_machine_part(
 ){
     if let Ok(child_of) = child_ofs.get(trigger.target()){
         if let Ok(part) = part_types.get(child_of.0){
-            *picking_state = PickingState::Placing(*part);
+            *picking_state = PickingState::Placing(part.clone());
         }
     }
 }

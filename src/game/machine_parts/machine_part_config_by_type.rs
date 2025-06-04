@@ -17,7 +17,7 @@ use thiserror::Error;
 use crate::loading::LoadResource;
 
 #[derive(Resource, Asset, Clone, Debug, Reflect, Serialize, Deserialize)]
-pub struct MachinePartConfigByType(pub HashMap<MachinePartType, MachinePartConfig>);
+pub struct MachinePartConfigByType(pub HashMap<String, MachinePartConfig>);
 
 pub struct MachinePartConfigByTypePlugin;
 
@@ -25,25 +25,6 @@ impl Plugin for MachinePartConfigByTypePlugin {
     fn build(&self, app: &mut App) {
         app.register_asset_loader(MachinePartConfigByTypeLoader);
         app.load_resource_from_path::<MachinePartConfigByType>("machine_parts.ron");
-    }
-}
-
-impl Default for MachinePartConfigByType {
-    fn default() -> Self {
-        Self(HashMap::from(
-            [
-                (MachinePartType::Scale, MachinePartConfig{
-                    cost: 42,
-                    sprite_asset_path: String::from("textures/bevy.png"),
-                    ..default()
-                }),
-                (MachinePartType::Block, MachinePartConfig{
-                    cost: 8,
-                    sprite_asset_path: String::from("textures/bevy.png"),
-                    ..default()
-                })
-            ]
-        ))
     }
 }
 

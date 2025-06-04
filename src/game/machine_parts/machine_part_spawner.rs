@@ -18,14 +18,14 @@ fn listen_to_spawn_requests(
     mut commands: Commands
 ){
     for spawn_request in read_single_field_variant!(request_listener, MachinePartRequest::SpawnMachinePart){
-        if let Some(part_config) = machine_part_config_by_type.0.get(&spawn_request.part_type){
+        if let Some(part_config) = machine_part_config_by_type.0.get(&spawn_request.part_type.0) {
             if available_zen_points.buy_if_affordable(part_config.cost).done(){
                 //DEBUG
                 info!("Approved spawn request {:?}", spawn_request);
 
                 commands.spawn((
                     Transform::from_translation(spawn_request.location),
-                    spawn_request.part_type,
+                    spawn_request.part_type.clone(),
                     Sprite{
                         image: part_config.sprite.clone(),
                         ..default()
@@ -67,7 +67,7 @@ fn handle_erase_click(
 ) {
     if *picking_state == PickingState::Erasing {
         if let Ok(ty) = part_type.get(trigger.target()) {
-            if let Some(part_config) = machine_part_config_by_type.0.get(ty){
+            if let Some(part_config) = machine_part_config_by_type.0.get(&ty.0){
                 available_zen_points.refund(part_config.cost);
                 commands.entity(trigger.target()).despawn();
             }

@@ -3,10 +3,5 @@ use enum_iterator::{Sequence};
 use strum_macros::EnumIter;
 use serde::{Serialize, Deserialize};
 
-#[derive(Component, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Sequence, EnumIter, Default, Reflect, Serialize, Deserialize)]
-pub enum MachinePartType{
-    #[default]
-    Scale,
-    Block,
-    // AddOthers
-}
+#[derive(Component, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Reflect, Serialize, Deserialize)]
+pub struct MachinePartType(pub String);

@@ -59,13 +59,13 @@ fn on_machine_spawn_area_click(
     machine_spawn_areas: Query<(), With<MachinesSpawnArea>>,
     picking_state: Res<PickingState>,
 ){
-    if let PickingState::Placing(ty) = *picking_state {
+    if let PickingState::Placing(ty) = &*picking_state {
         if machine_spawn_areas.contains(trigger.target()){
             if let Some(hit_position) = trigger.hit.position {
                 machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
                     MachinePartSpawnRequest{
                         location: ((hit_position/MACHINE_PARTS_GRID_SCALE).round() * MACHINE_PARTS_GRID_SCALE).with_z(MACHINE_PARTS_BASIC_Z_LAYER),
-                        part_type: ty,
+                        part_type: ty.clone(),
                     }
                 ));
             }
@@ -91,7 +91,7 @@ fn change_preview_sprite(
     mut preview: Single<&mut Sprite, With<MachinePartPreview>>,
 ) {
     if let PickingState::Placing(ty) = &*picking_state {
-        if let Some(part_config) = machine_part_config_by_type.0.get(ty){
+        if let Some(part_config) = machine_part_config_by_type.0.get(&ty.0){
             preview.image = part_config.sprite.clone();
         }
     }

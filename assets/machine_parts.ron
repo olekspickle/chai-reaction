@@ -1,12 +1,12 @@
 ({
-    Scale: (
+    "Scale": (
         cost: 42,
         is_dynamic: false,
         sprite_asset_path: "textures/pipe_fore.png",
         background_sprite_asset_path: Some("textures/pipe_back.png"),
         mesh_image_path: Some("textures/pipe_collider.png"),
     ),
-    Block: (
+    "Block": (
         cost: 8,
         is_dynamic: false,
         sprite_asset_path: "textures/bevy.png",
