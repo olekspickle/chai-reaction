@@ -1,9 +1,6 @@
 use crate::prelude::*;
 use avian2d::prelude::*;
-use bevy::{
-    prelude::*,
-    render::mesh::{Indices, PrimitiveTopology, VertexAttributeValues},
-};
+use bevy::prelude::*;
 
 mod sink;
 
@@ -11,7 +8,9 @@ pub fn plugin(app: &mut App) {
     app.insert_state(GameLevel::Start)
         .add_systems(OnEnter(Screen::Gameplay), prepare_levels)
         .add_systems(OnEnter(GameLevel::Sink), sink::spawn_scene)
+        .add_systems(OnEnter(Screen::Title), reset_level)
         .add_observer(hit_glass)
+        .add_observer(start_emitting)
         .add_observer(spawn_glass);
 }
 
@@ -30,6 +29,10 @@ pub struct Glass;
 pub struct Stove;
 #[derive(Component)]
 pub struct TeaBox;
+
+fn reset_level(mut game_level: ResMut<NextState<GameLevel>>) {
+    game_level.set(GameLevel::Start);
+}
 
 fn prepare_levels(
     cfg: Res<Config>,
@@ -52,6 +55,7 @@ fn spawn_glass(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     const RES: Vec2 = Vec2::new(40.0, 80.0);
+    const THICK: f32 = 5.0;
     let OnGlassSpawn { pos, level } = trigger.event();
 
     let material = materials.add(Color::srgb(0.7, 0.3, 0.2));
@@ -67,19 +71,20 @@ fn spawn_glass(
             StateScoped(*level),
             Glass,
             // sprite,
-            shape.collider(),
-            RigidBody::Kinematic,
+            // shape.collider(),
+            RigidBody::Dynamic,
+            LockedAxes::ROTATION_LOCKED,
+            Friction::new(1.0),
             MassPropertiesBundle::from_shape(&shape, 1.0),
             Transform::from_xyz(pos.x, pos.y - RES.y / 2.0, 0.0),
         ))
         .id();
 
-    let shape = Rectangle::new(RES.x - 5.0, 2.0);
+    let shape = Rectangle::new(RES.x, THICK);
     let mesh = meshes.add(shape);
     let floor = commands
         .spawn((
             StateScoped(*level),
-            Glass,
             Mesh2d(mesh),
             MeshMaterial2d(material.clone()),
             // Transform::from_xyz(0.0, -RES.y / 2.0, 0.0),
@@ -89,7 +94,7 @@ fn spawn_glass(
         ))
         .id();
     // sink left wall
-    let shape = Rectangle::new(2.0, RES.y);
+    let shape = Rectangle::new(THICK, RES.y);
     let mesh = meshes.add(shape);
     let left = commands
         .spawn((
@@ -103,7 +108,7 @@ fn spawn_glass(
         ))
         .id();
     // glass right wall
-    let shape = Rectangle::new(2.0, RES.y);
+    let shape = Rectangle::new(THICK, RES.y);
     let mesh = meshes.add(shape);
     let right = commands
         .spawn((
@@ -118,19 +123,132 @@ fn spawn_glass(
         .id();
     commands
         .spawn(FixedJoint::new(anchor, floor).with_local_anchor_1(Vec2::new(0.0, -RES.y / 2.5)));
-    commands.spawn(FixedJoint::new(anchor, left).with_local_anchor_1(Vec2::new(-RES.x / 2.5, 0.0)));
-    commands.spawn(FixedJoint::new(anchor, right).with_local_anchor_1(Vec2::new(RES.x / 2.5, 0.0)));
+    commands.spawn(FixedJoint::new(anchor, left).with_local_anchor_1(Vec2::new(-RES.x / 2.0, 0.0)));
+    commands.spawn(FixedJoint::new(anchor, right).with_local_anchor_1(Vec2::new(RES.x / 2.0, 0.0)));
     // shelf
-    let shape = Rectangle::new(RES.x * 3.0, 20.0);
+    let shape = Rectangle::new(RES.x * 6.0, 20.0);
     let mesh = meshes.add(shape);
     commands.spawn((
         StateScoped(*level),
         Mesh2d(mesh),
         MeshMaterial2d(material),
-        Transform::from_xyz(pos.x, pos.y - RES.y * 1.2, 0.0),
+        Transform::from_xyz(pos.x, pos.y - RES.y * 2.5, 0.0),
         RigidBody::Static,
         shape.collider(),
     ));
+
+    // commands.spawn((
+    //     StateScoped(GameLevel::Sink),
+    //     ParticleEmitter::new(
+    //         ParticleKind::Water,
+    //         10.0,  // Spawn 10 particles per second
+    //         0.0,   // Min initial speed
+    //         0.0,   // Max initial speed
+    //         45.0,  // Min angle (degrees, e.g., 60 = upwards right)
+    //         160.0, // Max angle (degrees, e.g., 120 = upwards left)
+    //         100.0, // live for 100s
+    //         1.0,   // Normal gravity effect
+    //     ),
+    //     Transform::from_xyz(pos.x, pos.y + RES.y / 2.0, 0.0),
+    // ));
+
+    // commands
+    //         .spawn((
+    //             StateScoped(*level),
+    //             Glass,
+    //             sprite,
+    //             // shape.collider(),
+    //             RigidBody::Dynamic,
+    //             LockedAxes::ROTATION_LOCKED,
+    //             Friction::new(1.0),
+    //             MassPropertiesBundle::from_shape(&shape, 1.0),
+    //             Transform::from_xyz(pos.x, pos.y - RES.y / 2.0, 0.0),
+    //         ))
+    //         .with_children(|parent| {
+    //             // floor
+    //             let shape = Rectangle::new(RES.x, THICK);
+    //             let mesh = meshes.add(shape);
+    //             parent.spawn((
+    //                 StateScoped(*level),
+    //                 Mesh2d(mesh),
+    //                 MeshMaterial2d(material.clone()),
+    //                 Transform::from_xyz(0.0, -RES.y / 2.0, 0.0),
+    //                 RigidBody::Dynamic,
+    //                 shape.collider(),
+    //                 MassPropertiesBundle::from_shape(&shape, 1.0),
+    //             ));
+    //             // glass left wall
+    //             let shape = Rectangle::new(THICK, RES.y);
+    //             let mesh = meshes.add(shape);
+    //             parent.spawn((
+    //                 StateScoped(*level),
+    //                 Mesh2d(mesh),
+    //                 MeshMaterial2d(material.clone()),
+    //                 Transform::from_xyz(-RES.x / 2.5, RES.y / 2.0, 0.0),
+    //                 RigidBody::Dynamic,
+    //                 shape.collider(),
+    //                 MassPropertiesBundle::from_shape(&shape, 1.0),
+    //             ));
+    //             // glass right wall
+    //             let shape = Rectangle::new(THICK, RES.y);
+    //             let mesh = meshes.add(shape);
+    //             parent.spawn((
+    //                 StateScoped(*level),
+    //                 Mesh2d(mesh),
+    //                 MeshMaterial2d(material.clone()),
+    //                 Transform::from_xyz(RES.x / 2.5, RES.y / 2.0, 0.0),
+    //                 RigidBody::Dynamic,
+    //                 shape.collider(),
+    //             ));
+    //             // shelf
+    //             let shape = Rectangle::new(RES.x * 4.0, 20.0);
+    //             let mesh = meshes.add(shape);
+    //             parent.spawn((
+    //                 StateScoped(*level),
+    //                 Mesh2d(mesh),
+    //                 MeshMaterial2d(material),
+    //                 Transform::from_xyz(0.0, -RES.y * 2.0, 0.0),
+    //                 RigidBody::Static,
+    //                 shape.collider(),
+    //             ));
+    //             parent.spawn((
+    //                 StateScoped(GameLevel::Sink),
+    //                 ParticleEmitter::new(
+    //                     ParticleKind::Water,
+    //                     10.0,  // Spawn 10 particles per second
+    //                     0.0,   // Min initial speed
+    //                     0.0,   // Max initial speed
+    //                     45.0,  // Min angle (degrees, e.g., 60 = upwards right)
+    //                     160.0, // Max angle (degrees, e.g., 120 = upwards left)
+    //                     100.0, // live for 100s
+    //                     1.0,   // Normal gravity effect
+    //                 ),
+    //                 // Transform::from_xyz(pos.x, pos.y + RES.y / 2.0, 0.0),
+    //             ));
+    //         });
+    //
+}
+
+fn start_emitting(
+    _: Trigger<OnGlassHit>,
+    mut commands: Commands,
+    glass: Query<Entity, With<Glass>>,
+) {
+    for e in glass.iter() {
+        commands.entity(e).insert((
+            StateScoped(GameLevel::Sink),
+            ParticleEmitter::new(
+                ParticleKind::Water,
+                10.0,  // Spawn 10 particles per second
+                0.0,   // Min initial speed
+                0.0,   // Max initial speed
+                45.0,  // Min angle (degrees, e.g., 60 = upwards right)
+                160.0, // Max angle (degrees, e.g., 120 = upwards left)
+                100.0, // live for 100s
+                1.0,   // Normal gravity effect
+            ),
+        ));
+    }
 }
 
 fn spawn_stove(

@@ -6,10 +6,13 @@ use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins(PhysicsPlugins::default()).add_systems(
-        Update,
-        (spawn_particles, despawn_particles, recolor_particles).run_if(in_state(Screen::Gameplay)),
-    );
+    app.add_plugins(PhysicsPlugins::default())
+        // app.add_plugins((PhysicsDebugPlugin::default(), PhysicsPlugins::default()))
+        .add_systems(
+            Update,
+            (spawn_particles, despawn_particles, recolor_particles)
+                .run_if(in_state(Screen::Gameplay)),
+        );
 }
 
 #[derive(Component, Debug, Clone, Reflect, PartialEq, Eq, Serialize, Deserialize)]
@@ -135,7 +138,7 @@ fn spawn_particles(
                         .with_combine_rule(CoefficientCombine::Multiply),
                     Restitution::new(cfg.physics.water.restitution)
                         .with_combine_rule(CoefficientCombine::Min), // How bounciness is combined
-                    // Mass(0.1),
+                    Mass(0.1),
                     SleepingDisabled,
                     Particle {
                         lifetime: Timer::from_seconds(emitter.particle_lifetime_s, TimerMode::Once),
