@@ -68,7 +68,7 @@ leafwing-input-manager = "0.17"
 # misc
 ron = "0.10"
 rand = { version = "0.8" }
-serde = "1"
+serde = {version = "1", featurse = ["derive"]}
 image = "0.25.6"
 thiserror = "2.0.12"
 ## This greatly improves WGPU's performance due to its heavy use of trace! calls
@@ -79,6 +79,10 @@ bevy_fix_gltf_coordinate_system = "0.1.0"
 enum-iterator = "2.1.0"
 strum = "0.27.1"
 strum_macros = "0.27.1"
+geo = "0.30.0"
+itertools = "0.14.0"
+parry2d = "0.21.1"
+contour = "0.13.1"
 
 [lints.clippy]
 # Bevy supplies arguments to systems via dependency injection, so it's natural for systems to

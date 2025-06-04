@@ -38,7 +38,7 @@ pub(crate) mod prelude {
     };
     pub use loading::{
         AudioSources, ResourceHandles, Textures,
-        textures::{TexturesLoaderPlugin, machine_parts_texture_loader::*},
+        textures::TexturesLoaderPlugin,
     };
     pub use pre_load::Config;
     pub use screens::Screen;

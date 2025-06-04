@@ -1,12 +1,13 @@
 use crate::prelude::*;
 use bevy::prelude::*;
+use avian2d::{parry::shape::SharedShape, prelude::*};
 use crate::read_single_field_variant;
 
 pub struct MachinePartSpawnerPlugin;
 
 impl Plugin for MachinePartSpawnerPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, listen_to_spawn_requests);
+        app.add_systems(Update, listen_to_spawn_requests.run_if(resource_exists::<MachinePartConfigByType>));
     }
 }
 
@@ -29,8 +30,28 @@ fn listen_to_spawn_requests(
                         image: part_config.sprite.clone(),
                         ..default()
                     },
+                    if part_config.is_dynamic {
+                        RigidBody::Dynamic
+                    } else {
+                        RigidBody::Static
+                    },
                     Pickable::default(),
-                )).observe(handle_erase_click);
+                )).observe(handle_erase_click).with_children(|parent| {
+                    for collider in &part_config.colliders {
+                        parent.spawn(
+                            Collider::from(SharedShape::new(collider.clone())),
+                        );
+                    }
+                    if let Some(sprite) = &part_config.background_sprite {
+                        parent.spawn((
+                            Transform::from_xyz(0.0, 0.0, -100.0),
+                            Sprite{
+                                image: sprite.clone(),
+                                ..default()
+                            },
+                        ));
+                    }
+                });
             }
         }
     }

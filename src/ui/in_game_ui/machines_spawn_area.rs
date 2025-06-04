@@ -10,7 +10,7 @@ impl Plugin for MachinesSpawnAreaPlugin {
             .add_systems(Update, (
                 change_preview_sprite.run_if(resource_exists_and_changed::<PickingState>),
                 change_preview_visibility.run_if(resource_exists_and_changed::<PickingState>),
-            ))
+            ).run_if(resource_exists::<MachinePartConfigByType>))
             .add_observer(on_machine_spawn_area_click)
             .add_observer(preview_machine_spawn);
     }
