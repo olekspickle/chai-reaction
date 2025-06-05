@@ -24,8 +24,7 @@ pub(crate) mod prelude {
     pub use audio::{General, Music, Sfx, Sound, music, sfx};
     pub(crate) use game::{
         Score,
-        camera::*,
-        currency::{available_zen_points::*, initial_zen_points_by_level::*, *},
+        currency::*,
         input_dispatch::*,
         levels::*,
         machine_parts::{
@@ -35,6 +34,7 @@ pub(crate) mod prelude {
         },
         particles::*,
         settings::{Action, Modal, Settings},
+        tea,
     };
     pub use loading::{AudioSources, ResourceHandles, Textures, textures::TexturesLoaderPlugin};
     pub use pre_load::Config;

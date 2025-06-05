@@ -4,6 +4,9 @@ use bevy::prelude::*;
 pub mod available_zen_points;
 pub mod initial_zen_points_by_level;
 
+pub use available_zen_points::*;
+pub use initial_zen_points_by_level::*;
+
 pub struct CurrencyPlugin;
 
 impl Plugin for CurrencyPlugin {

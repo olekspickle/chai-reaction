@@ -6,7 +6,6 @@ mod ron;
 pub mod textures;
 mod tracking;
 
-use crate::prelude::*;
 pub use ron::*;
 pub use tracking::*;
 
@@ -33,7 +32,11 @@ pub struct Textures {
     #[dependency]
     pub bevy: Handle<Image>,
     #[dependency]
-    pub glass: Handle<Image>,
+    pub teabox: Handle<Image>,
+    #[dependency]
+    pub cup: Handle<Image>,
+    #[dependency]
+    pub tealeaf: Handle<Image>,
 }
 
 impl FromWorld for Textures {
@@ -41,7 +44,9 @@ impl FromWorld for Textures {
         let assets = world.resource::<AssetServer>();
         Self {
             bevy: assets.load("textures/bevy.png"),
-            glass: assets.load("textures/glass.png"),
+            teabox: assets.load("textures/glass.png"),
+            cup: assets.load("textures/glass.png"),
+            tealeaf: assets.load("textures/glass.png"),
         }
     }
 }
@@ -54,6 +59,10 @@ pub struct AudioSources {
     pub btn_hover: Handle<Sample>,
     #[dependency]
     pub btn_press: Handle<Sample>,
+    #[dependency]
+    pub cup_drop: Handle<Sample>,
+    #[dependency]
+    pub cup_drop_brewed: Handle<Sample>,
 
     // music
     #[dependency]
@@ -61,6 +70,8 @@ pub struct AudioSources {
 }
 
 impl AudioSources {
+    pub const CUP_DROP: &'static str = "audio/sfx/plop-reverse.ogg";
+    pub const CUP_DROP_BREWED: &'static str = "audio/sfx/plop.ogg";
     pub const BTN_HOVER: &'static str = "audio/sfx/btn-hover.ogg";
     pub const BTN_PRESS: &'static str = "audio/sfx/btn-press.ogg";
 
@@ -74,6 +85,8 @@ impl FromWorld for AudioSources {
             btn_hover: assets.load(Self::BTN_HOVER),
             btn_press: assets.load(Self::BTN_PRESS),
             bg_music: assets.load(Self::BG_MUSIC),
+            cup_drop: assets.load(Self::CUP_DROP),
+            cup_drop_brewed: assets.load(Self::CUP_DROP_BREWED),
         }
     }
 }
