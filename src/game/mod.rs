@@ -3,6 +3,7 @@ use bevy::prelude::*;
 
 pub mod camera;
 pub mod currency;
+pub mod heat;
 pub mod input_dispatch;
 pub mod levels;
 pub mod machine_parts;
@@ -19,6 +20,7 @@ pub fn plugin(app: &mut App) {
         input_dispatch::plugin,
         particles::plugin,
         levels::plugin,
+        heat::plugin,
     ))
     .add_plugins((MachinePartsPlugin, CurrencyPlugin));
 }

@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{game::heat::HeatSource, prelude::*};
 use avian2d::{
     parry::shape::{Compound, SharedShape},
     prelude::*,
@@ -60,6 +60,11 @@ pub enum SubAssembly {
         initial_angle_deg_max: f32,
         particle_lifetime_s: f32,
         particle_gravity_scale: f32,
+    },
+    HeatSource {
+        #[serde(default)]
+        offset: Vec2,
+        radius: f32,
     },
 }
 
@@ -148,6 +153,14 @@ impl MachinePartConfig {
                                     *particle_lifetime_s,
                                     *particle_gravity_scale,
                                 ),
+                            ));
+                        }
+                        SubAssembly::HeatSource { offset, radius } => {
+                            parent.spawn((
+                                Transform::from_xyz(offset.x, offset.y, 0.0),
+                                HeatSource,
+                                Collider::circle(*radius),
+                                Sensor,
                             ));
                         }
                     }

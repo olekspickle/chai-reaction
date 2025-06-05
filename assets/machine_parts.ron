@@ -29,5 +29,14 @@
                 particle_gravity_scale: 1.0,
             )
         ]
-    )
+    ),
+    "HeatSource": (
+        cost: 1,
+        is_dynamic: false,
+        subassemblies: [
+            HeatSource(
+                radius: 32.0,
+            )
+        ],
+    ),
 })

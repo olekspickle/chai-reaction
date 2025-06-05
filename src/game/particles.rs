@@ -10,7 +10,6 @@ pub fn plugin(app: &mut App) {
         Update,
         (spawn_particles, despawn_particles).run_if(in_state(Screen::Gameplay)),
     );
-    //.add_observer(start_emitting);
 }
 
 #[derive(Component, Debug, Clone, Reflect, PartialEq, Eq, Serialize, Deserialize)]
@@ -25,6 +24,7 @@ pub struct Spark;
 #[derive(Component)]
 pub struct Particle {
     pub lifetime: Timer,
+    pub heat: f32,
 }
 #[derive(Component, Debug, Clone, Reflect, Serialize, Deserialize)]
 pub struct ParticleEmitter {
@@ -137,6 +137,7 @@ fn spawn_particles(
                     SleepingDisabled,
                     Particle {
                         lifetime: Timer::from_seconds(emitter.particle_lifetime_s, TimerMode::Once),
+                        heat: 0.0,
                     },
                 ));
             }
@@ -156,27 +157,5 @@ fn despawn_particles(
         {
             commands.entity(entity).despawn();
         }
-    }
-}
-
-fn start_emitting(
-    _: Trigger<OnGlassHit>,
-    mut commands: Commands,
-    glass: Query<Entity, With<Glass>>,
-) {
-    for e in glass.iter() {
-        commands.entity(e).insert((
-            StateScoped(GameLevel::Sink),
-            ParticleEmitter::new(
-                ParticleKind::Water,
-                10.0,  // Spawn 10 particles per second
-                20.0,  // Min initial speed
-                50.0,  // Max initial speed
-                45.0,  // Min angle (degrees, e.g., 60 = upwards right)
-                160.0, // Max angle (degrees, e.g., 120 = upwards left)
-                10.0,  // live for 10s
-                1.0,   // Normal gravity effect
-            ),
-        ));
     }
 }
