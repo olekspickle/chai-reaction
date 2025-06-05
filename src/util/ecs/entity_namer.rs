@@ -1,5 +1,5 @@
-use bevy::platform::collections::HashMap;
 use crate::prelude::*;
+use bevy::platform::collections::HashMap;
 
 #[derive(Resource, Debug)]
 pub struct Namer<T: EasilyHashable>(HashMap<T, Vec<u32>>);

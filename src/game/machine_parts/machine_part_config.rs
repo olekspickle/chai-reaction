@@ -1,7 +1,10 @@
 use crate::prelude::*;
+use avian2d::{
+    parry::shape::{Compound, SharedShape},
+    prelude::*,
+};
 use bevy::prelude::*;
-use serde::{Serialize, Deserialize};
-use avian2d::{parry::shape::{SharedShape, Compound}, prelude::*};
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Reflect)]
 pub struct MachinePartConfig {
@@ -22,7 +25,7 @@ impl MachinePartLayer {
     pub fn to_z(&self) -> f32 {
         match self {
             MachinePartLayer::Foreground => 0.0,
-            MachinePartLayer::Background=> -100.0,
+            MachinePartLayer::Background => -100.0,
         }
     }
 }
@@ -53,7 +56,13 @@ impl MachinePartConfig {
     pub fn spawn_sprites(&self, mut commands: EntityCommands) {
         commands.with_children(|parent| {
             for subassembly in &self.subassemblies {
-                if let SubAssembly::Sprite { offset, layer, sprite, ..} = subassembly {
+                if let SubAssembly::Sprite {
+                    offset,
+                    layer,
+                    sprite,
+                    ..
+                } = subassembly
+                {
                     parent.spawn((
                         Transform::from_xyz(offset.x, offset.y, layer.to_z()),
                         Sprite {
@@ -67,38 +76,48 @@ impl MachinePartConfig {
     }
 
     pub fn spawn(&self, position: Vec3, part_type: MachinePartType, commands: &mut Commands) {
-        commands.spawn((
-            Transform::from_translation(position),
-            part_type,
-            if self.is_dynamic {
-                RigidBody::Dynamic
-            } else {
-                RigidBody::Static
-            },
-            Pickable::default(),
-        )).observe(handle_erase_click).with_children(|parent| {
-            for subassembly in &self.subassemblies {
-                match subassembly {
-                    SubAssembly::Sprite { offset, layer, sprite, ..} => {
-                        parent.spawn((
-                            Transform::from_xyz(offset.x, offset.y, layer.to_z()),
-                            Sprite {
-                                image: sprite.clone(),
-                                ..default()
-                            },
-                        ));
-                    }
-                    SubAssembly::Collider { offset, colliders, .. } => {
-                        for collider in colliders {
+        commands
+            .spawn((
+                Transform::from_translation(position),
+                part_type,
+                if self.is_dynamic {
+                    RigidBody::Dynamic
+                } else {
+                    RigidBody::Static
+                },
+                Pickable::default(),
+            ))
+            .observe(handle_erase_click)
+            .with_children(|parent| {
+                for subassembly in &self.subassemblies {
+                    match subassembly {
+                        SubAssembly::Sprite {
+                            offset,
+                            layer,
+                            sprite,
+                            ..
+                        } => {
                             parent.spawn((
-                                Transform::from_xyz(offset.x, offset.y, 0.0),
-                                Collider::from(SharedShape::new(collider.clone())),
+                                Transform::from_xyz(offset.x, offset.y, layer.to_z()),
+                                Sprite {
+                                    image: sprite.clone(),
+                                    ..default()
+                                },
                             ));
+                        }
+                        SubAssembly::Collider {
+                            offset, colliders, ..
+                        } => {
+                            for collider in colliders {
+                                parent.spawn((
+                                    Transform::from_xyz(offset.x, offset.y, 0.0),
+                                    Collider::from(SharedShape::new(collider.clone())),
+                                ));
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
     }
 }
 
@@ -112,7 +131,7 @@ fn handle_erase_click(
 ) {
     if *picking_state == PickingState::Erasing {
         if let Ok(ty) = part_type.get(trigger.target()) {
-            if let Some(part_config) = machine_part_config_by_type.0.get(&ty.0){
+            if let Some(part_config) = machine_part_config_by_type.0.get(&ty.0) {
                 available_zen_points.refund(part_config.cost);
                 commands.entity(trigger.target()).despawn();
             }

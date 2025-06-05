@@ -1,9 +1,9 @@
 //! Development tools for the game. This plugin is only enabled in dev builds.
 
 use crate::{game::input_dispatch::*, prelude::*, screens::gameplay::PauseLabel};
+use avian2d::prelude::*;
 #[cfg(feature = "dev_native")]
 use bevy::{dev_tools::states::log_transitions, prelude::*, ui::UiDebugOptions};
-use avian2d::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_observer(toggle_pause);
@@ -18,7 +18,11 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[cfg(feature = "dev_native")]
-fn toggle_debug_ui(_: Trigger<OnDebugUiToggle>, mut options: ResMut<UiDebugOptions>, mut gizmo_config_store: ResMut<GizmoConfigStore> ) {
+fn toggle_debug_ui(
+    _: Trigger<OnDebugUiToggle>,
+    mut options: ResMut<UiDebugOptions>,
+    mut gizmo_config_store: ResMut<GizmoConfigStore>,
+) {
     options.toggle();
     let (_, config) = gizmo_config_store.config_mut::<PhysicsGizmos>();
     if options.enabled {

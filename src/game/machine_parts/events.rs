@@ -1,14 +1,14 @@
-use bevy::prelude::*;
 use crate::prelude::*;
+use bevy::prelude::*;
 
 #[derive(Event, Debug)]
-pub enum MachinePartRequest{
+pub enum MachinePartRequest {
     SpawnMachinePart(MachinePartSpawnRequest),
-    WhateverOtherRequests
+    WhateverOtherRequests,
 }
 
 #[derive(Debug)]
-pub struct MachinePartSpawnRequest{
+pub struct MachinePartSpawnRequest {
     pub part_type: MachinePartType,
     pub location: Vec3,
 }

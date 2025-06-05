@@ -1,16 +1,16 @@
-use std::collections::VecDeque;
+use crate::prelude::*;
 use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
-use crate::prelude::*;
+use std::collections::VecDeque;
 
 use avian2d::{parry::shape::Compound, prelude::*};
 use bevy::{
-    asset::{io::Reader, AssetLoader, LoadContext},
+    asset::{AssetLoader, LoadContext, io::Reader},
     prelude::*,
 };
 use geo::{BooleanOps, Coord, CoordsIter, LineString, MultiPolygon, Vector2DOps};
 use itertools::Itertools as _;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use thiserror::Error;
 
@@ -57,11 +57,14 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
         let mut bytes = Vec::new();
         reader.read_to_end(&mut bytes).await?;
         let mut library = ron::de::from_bytes::<MachinePartConfigByType>(&bytes)?;
-        for MachinePartConfig { subassemblies, ..} in library.0.values_mut() {
-
+        for MachinePartConfig { subassemblies, .. } in library.0.values_mut() {
             for subassembly in subassemblies {
                 match subassembly {
-                    SubAssembly::Collider { mesh_image_path, colliders, .. } => {
+                    SubAssembly::Collider {
+                        mesh_image_path,
+                        colliders,
+                        ..
+                    } => {
                         let loaded_image = load_context
                             .loader()
                             .immediate()
@@ -69,8 +72,12 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             .load::<Image>(mesh_image_path.clone())
                             .await?;
                         *colliders = colliders_from_image(loaded_image.get());
-                    },
-                    SubAssembly::Sprite { sprite, sprite_asset_path, .. } => {
+                    }
+                    SubAssembly::Sprite {
+                        sprite,
+                        sprite_asset_path,
+                        ..
+                    } => {
                         *sprite = load_context
                             .loader()
                             .with_static_type()
@@ -87,7 +94,6 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
         &["ron"]
     }
 }
-
 
 fn colliders_from_image(mesh_image: &Image) -> Vec<Compound> {
     let mut pixels = vec![0.0; (mesh_image.width() * mesh_image.height()) as usize];
@@ -115,7 +121,7 @@ fn colliders_from_image(mesh_image: &Image) -> Vec<Compound> {
             geo::Polygon::new(
                 removed_in_line(p.exterior()),
                 p.interiors().iter().map(removed_in_line).collect(),
-            )//.simplify(&50.0)
+            ) //.simplify(&50.0)
         })
         .collect();
 
@@ -127,7 +133,7 @@ fn colliders_from_image(mesh_image: &Image) -> Vec<Compound> {
                 .into_iter()
                 .map(|p| {
                     Vec2::new(
-                        p.x as f32 -  mesh_image.width() as f32 / 2.0,
+                        p.x as f32 - mesh_image.width() as f32 / 2.0,
                         -p.y as f32 + mesh_image.height() as f32 / 2.0,
                     )
                 })
@@ -139,7 +145,7 @@ fn colliders_from_image(mesh_image: &Image) -> Vec<Compound> {
                 &VhacdParameters {
                     //concavity: 0.01,
                     ..Default::default()
-                }
+                },
             );
             let shape = collider.shape().as_compound().unwrap();
             shape.clone()

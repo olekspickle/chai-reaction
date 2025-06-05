@@ -36,10 +36,7 @@ pub(crate) mod prelude {
         particles::*,
         settings::{Action, Modal, Settings},
     };
-    pub use loading::{
-        AudioSources, ResourceHandles, Textures,
-        textures::TexturesLoaderPlugin,
-    };
+    pub use loading::{AudioSources, ResourceHandles, Textures, textures::TexturesLoaderPlugin};
     pub use pre_load::Config;
     pub use screens::Screen;
     pub use ui::{in_game_ui::*, *};

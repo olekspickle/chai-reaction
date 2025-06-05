@@ -1,16 +1,16 @@
+use crate::prelude::InGameUiPlugin;
 use bevy::{prelude::*, ui::Val::*};
 pub use interaction::*;
 pub use opts::*;
 pub use palette::*;
 pub use widget::*;
-use crate::prelude::InGameUiPlugin;
 
+pub mod in_game_ui;
 mod interaction;
 mod opts;
 mod palette;
-mod widget;
-pub mod in_game_ui;
 pub mod tags;
+mod widget;
 
 pub fn plugin(app: &mut App) {
     app.add_plugins((
@@ -21,5 +21,5 @@ pub fn plugin(app: &mut App) {
         bevy::render::diagnostic::RenderDiagnosticsPlugin,
         interaction::plugin,
     ))
-        .add_plugins(InGameUiPlugin);
+    .add_plugins(InGameUiPlugin);
 }

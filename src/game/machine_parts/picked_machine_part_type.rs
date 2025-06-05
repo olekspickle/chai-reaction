@@ -8,8 +8,6 @@ pub enum PickingState {
     Erasing,
 }
 
-
-
 pub struct PickedMachinePartTypePlugin;
 
 impl Plugin for PickedMachinePartTypePlugin {

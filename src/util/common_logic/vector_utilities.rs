@@ -1,6 +1,5 @@
 use crate::prelude::*;
 
-
 pub fn push_if_unique<T: PartialEq + Clone>(item: T, vec: &mut Vec<T>) -> ActionPerformed {
     let mut item_is_new = true;
     for vec_item in vec.clone() {

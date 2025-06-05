@@ -2,9 +2,7 @@
 macro_rules! return_if_at_limit {
     ($iterable:expr, $max_count:expr) => {
         if $iterable.into_iter().count() >= $max_count {
-            warn!(
-                format!("{:?} reached max count {}", $iterable, $max_count),
-                );
+            warn!(format!("{:?} reached max count {}", $iterable, $max_count),);
             return;
         }
     };
@@ -45,9 +43,9 @@ macro_rules! get_entity_else_return {
             Ok(item) => item,
             Err(_) => {
                 error!(EntityError::EntityNotInQuery(format!(
-                        "couldn't fetch entity of type {} from query",
-                        type_name
-                    )));
+                    "couldn't fetch entity of type {} from query",
+                    type_name
+                )));
                 return;
             }
         }
@@ -63,9 +61,9 @@ macro_rules! get_mut_entity_else_return {
             Ok(item) => item,
             Err(_) => {
                 error!(EntityError::EntityNotInQuery(&format!(
-                        "couldn't fetch entity of type {} from query (mut)",
-                        type_name
-                    )));
+                    "couldn't fetch entity of type {} from query (mut)",
+                    type_name
+                )));
                 return;
             }
         }

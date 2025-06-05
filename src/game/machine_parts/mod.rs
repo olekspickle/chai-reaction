@@ -1,12 +1,12 @@
 use crate::prelude::*;
 use bevy::prelude::*;
 
-pub mod machine_part_type;
+pub mod consts;
+pub mod events;
 pub mod machine_part_config;
 pub mod machine_part_config_by_type;
-pub mod events;
 pub mod machine_part_spawner;
-pub mod consts;
+pub mod machine_part_type;
 pub mod picked_machine_part_type;
 
 pub struct MachinePartsPlugin;
@@ -17,7 +17,7 @@ impl Plugin for MachinePartsPlugin {
             MachinePartConfigByTypePlugin,
             MachinePartEventsPlugin,
             MachinePartSpawnerPlugin,
-            PickedMachinePartTypePlugin
+            PickedMachinePartTypePlugin,
         ));
     }
 }

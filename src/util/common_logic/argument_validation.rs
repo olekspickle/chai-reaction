@@ -2,7 +2,12 @@ use std::{any::TypeId, fmt::Debug};
 
 use crate::prelude::*;
 
-pub fn clamped<T: PartialOrd + Debug + 'static>(value: T, min: T, max: T, warn_if_clamped: bool) -> T {
+pub fn clamped<T: PartialOrd + Debug + 'static>(
+    value: T,
+    min: T,
+    max: T,
+    warn_if_clamped: bool,
+) -> T {
     if value < min {
         if warn_if_clamped {
             warn!(
@@ -32,9 +37,13 @@ pub fn clamped<T: PartialOrd + Debug + 'static>(value: T, min: T, max: T, warn_i
     }
 }
 
-pub fn truncated_if_at_limit<T: Debug>(vec: Vec<T>, max_count: usize, warn_if_truncated: bool) -> Vec<T> {
+pub fn truncated_if_at_limit<T: Debug>(
+    vec: Vec<T>,
+    max_count: usize,
+    warn_if_truncated: bool,
+) -> Vec<T> {
     if vec.len() > max_count {
-        if warn_if_truncated{
+        if warn_if_truncated {
             warn!(
                 "{:?} reached max count {}, shortning to max",
                 vec, max_count

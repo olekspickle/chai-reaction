@@ -1,4 +1,4 @@
-use rand::{Rng};
+use rand::Rng;
 
 #[derive(Debug, Clone)]
 pub struct RandomRange<T: PartialOrd + Copy + rand::distributions::uniform::SampleUniform> {
