@@ -39,4 +39,22 @@
             )
         ],
     ),
+    "Tea bag": (
+        cost: 1,
+        is_dynamic: false,
+        subassemblies: [
+            Tea(
+                radius: 32.0,
+            )
+        ],
+    ),
+    "Victory Sensor": (
+        cost: 1,
+        is_dynamic: false,
+        subassemblies: [
+            VictorySensor(
+                radius: 32.0,
+            )
+        ],
+    ),
 })

@@ -1,4 +1,10 @@
-use crate::{game::heat::HeatSource, prelude::*};
+use crate::{
+    game::{
+        heat::HeatSource,
+        tea::{Tea, TeaCounter},
+    },
+    prelude::*,
+};
 use avian2d::{
     parry::shape::{Compound, SharedShape},
     prelude::*,
@@ -62,6 +68,16 @@ pub enum SubAssembly {
         particle_gravity_scale: f32,
     },
     HeatSource {
+        #[serde(default)]
+        offset: Vec2,
+        radius: f32,
+    },
+    Tea {
+        #[serde(default)]
+        offset: Vec2,
+        radius: f32,
+    },
+    VictorySensor {
         #[serde(default)]
         offset: Vec2,
         radius: f32,
@@ -159,6 +175,22 @@ impl MachinePartConfig {
                             parent.spawn((
                                 Transform::from_xyz(offset.x, offset.y, 0.0),
                                 HeatSource,
+                                Collider::circle(*radius),
+                                Sensor,
+                            ));
+                        }
+                        SubAssembly::Tea { offset, radius } => {
+                            parent.spawn((
+                                Transform::from_xyz(offset.x, offset.y, 0.0),
+                                Tea,
+                                Collider::circle(*radius),
+                                Sensor,
+                            ));
+                        }
+                        SubAssembly::VictorySensor { offset, radius } => {
+                            parent.spawn((
+                                Transform::from_xyz(offset.x, offset.y, 0.0),
+                                TeaCounter::default(),
                                 Collider::circle(*radius),
                                 Sensor,
                             ));

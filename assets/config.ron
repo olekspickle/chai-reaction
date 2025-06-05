@@ -1,5 +1,6 @@
 (
     droplet_radius: 2.0,
+    tea_particles_for_victory: 10,
     physics: (
         water: (
             max_particles: 100,
@@ -7,6 +8,7 @@
             restitution: 0.01,
         ),
         gravity: 100.0,
+        brewing_temperature: 1.0,
     ),
     sound: (
         general: 1.0,

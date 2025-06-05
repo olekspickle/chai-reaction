@@ -9,12 +9,14 @@ pub struct Config {
     pub physics: Physics,
     pub credits: Credits,
     pub droplet_radius: f32,
+    pub tea_particles_for_victory: u32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Reflect)]
 pub struct Physics {
     pub water: Water,
     pub gravity: f32,
+    pub brewing_temperature: f32,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Reflect)]

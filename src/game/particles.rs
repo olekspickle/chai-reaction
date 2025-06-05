@@ -8,13 +8,14 @@ use serde::{Deserialize, Serialize};
 pub fn plugin(app: &mut App) {
     app.add_plugins(PhysicsPlugins::default()).add_systems(
         Update,
-        (spawn_particles, despawn_particles).run_if(in_state(Screen::Gameplay)),
+        (spawn_particles, despawn_particles, recolor_particles).run_if(in_state(Screen::Gameplay)),
     );
 }
 
 #[derive(Component, Debug, Clone, Reflect, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ParticleKind {
     Water,
+    BrewedTea,
     Fire,
 }
 #[derive(Component)]
@@ -117,6 +118,7 @@ fn spawn_particles(
                 let (color, marker) = match emitter.kind {
                     ParticleKind::Water => (WATER, ParticleKind::Water),
                     ParticleKind::Fire => (FIRE, ParticleKind::Fire),
+                    ParticleKind::BrewedTea => (BREWED_TEA, ParticleKind::BrewedTea),
                 };
                 let material = materials.add(color);
                 commands.spawn((
@@ -157,5 +159,22 @@ fn despawn_particles(
         {
             commands.entity(entity).despawn();
         }
+    }
+}
+
+fn recolor_particles(
+    mut commands: Commands,
+    particles: Query<(Entity, &ParticleKind), Changed<ParticleKind>>,
+    mut materials: ResMut<Assets<ColorMaterial>>,
+) {
+    for (entity, kind) in &particles {
+        let color = match kind {
+            ParticleKind::Water => WATER,
+            ParticleKind::Fire => FIRE,
+            ParticleKind::BrewedTea => BREWED_TEA,
+        };
+        commands
+            .entity(entity)
+            .insert(MeshMaterial2d(materials.add(color)));
     }
 }

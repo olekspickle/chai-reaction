@@ -10,6 +10,8 @@ pub mod machine_parts;
 pub mod particles;
 pub mod settings;
 pub mod sound;
+pub mod tea;
+pub mod victory;
 
 pub fn plugin(app: &mut App) {
     app.insert_resource(Score(0));
@@ -21,6 +23,8 @@ pub fn plugin(app: &mut App) {
         particles::plugin,
         levels::plugin,
         heat::plugin,
+        tea::plugin,
+        victory::plugin,
     ))
     .add_plugins((MachinePartsPlugin, CurrencyPlugin));
 }
