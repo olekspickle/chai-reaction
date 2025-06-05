@@ -12,7 +12,7 @@ impl Plugin for MachinePartSpawnerPlugin {
             listen_to_spawn_requests.run_if(resource_exists::<MachinePartConfigByType>),
         );
     }
-}
+}    
 
 fn listen_to_spawn_requests(
     mut request_listener: EventReader<MachinePartRequest>,
@@ -25,7 +25,7 @@ fn listen_to_spawn_requests(
     {
         if let Some(part_config) = machine_part_config_by_type
             .0
-            .get(&spawn_request.part_type.0)
+            .get(&spawn_request.part_type.name)
         {
             if available_zen_points
                 .buy_if_affordable(part_config.cost)
@@ -35,7 +35,6 @@ fn listen_to_spawn_requests(
                 info!("Approved spawn request {:?}", spawn_request);
 
                 part_config.spawn(
-                    spawn_request.location,
                     spawn_request.part_type.clone(),
                     &mut commands,
                 );
@@ -66,6 +65,19 @@ fn listen_to_spawn_requests(
                                 image: sprite.clone(),
                                 ..default()
                             },
+                        ));
+                    }
+                    if let Some(flow_field) = &part_config.flow_field_data {
+                        // Spawn the FlowField component
+                        let texture = flow_field.texture.clone();
+                        parent.spawn((
+                                FlowField { texture: texture.clone() },
+                                flow_field.collider.clone(),
+                                Sprite{
+                                    image: texture.clone(),
+                                    color: Color::linear_rgba(1.0,1.0,1.0,0.5),
+                                    ..default()
+                                },
                         ));
                     }
                 });

@@ -13,7 +13,11 @@ impl Plugin for MachinePartToSpawnButtonsPlugin {
 fn spawn_part_picking_buttons(mut commands: Commands, machine_parts: Res<MachinePartConfigByType>) {
     let mut buttons = Vec::new();
     for part in machine_parts.0.keys() {
-        let button_bundle = btn_with_machine_part_type(MachinePartType(part.clone()), part);
+        // You need to provide the correct PlacementContext value for each part.
+        let button_bundle = btn_with_machine_part_type(
+            MachinePartType { name: part.clone(), context: PlacementContext::default() }, // Replace PlacementContext::default() with the correct context if needed
+            part,
+        );
         buttons.push(commands.spawn(button_bundle).id());
     }
     let mut node_commands = commands.spawn((Node {

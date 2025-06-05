@@ -2,6 +2,10 @@
     "Scale": (
         cost: 42,
         is_dynamic: false,
+        texture_info: (
+            frames: 1,
+            rotations: 4,
+        ),
         subassemblies: [
             Sprite(
                 sprite_asset_path: "textures/pipe_fore.png",
@@ -12,6 +16,10 @@
             ),
             Collider(
                 mesh_image_path: "textures/pipe_collider.png",
+            ),
+            FlowField(
+                flow_texture_path: "textures/pipe_flow.png"
+
             )
         ],
     ),
@@ -54,6 +62,47 @@
         subassemblies: [
             VictorySensor(
                 radius: 32.0,
+            )
+        ],
+    ),
+    "Funnel": (
+        cost: 42,
+        is_dynamic: false,
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/funnel_fore.png",
+            ),
+            Sprite(
+                layer: Background,
+                sprite_asset_path: "textures/funnel_back.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/funnel_collider.png",
+            ),
+        ],
+    ),
+    "PipeTurn": (
+        cost: 42,
+        is_dynamic: false,
+        texture_info: (
+            frames: 1,
+            rotations: 8,
+            flippable: true,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/pipe_turn_fore.png",
+            ),
+            Sprite(
+                layer: Background,
+                sprite_asset_path: "textures/pipe_turn_back.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/pipe_turn_collider.png",
+            ),
+            FlowField(
+                flow_texture_path: "textures/pipe_turn_flow.png"
+
             )
         ],
     ),

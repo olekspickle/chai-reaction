@@ -9,13 +9,15 @@ use avian2d::{
     parry::shape::{Compound, SharedShape},
     prelude::*,
 };
-use bevy::prelude::*;
+use bevy::{prelude::*, scene::ron::de};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Reflect)]
 pub struct MachinePartConfig {
     pub cost: u32,
     pub is_dynamic: bool,
+    #[serde(default)]
+    pub texture_info: TextureInfo,
     #[serde(default)]
     pub subassemblies: Vec<SubAssembly>,
 }
@@ -44,7 +46,7 @@ pub enum SubAssembly {
         mesh_image_path: String,
         #[serde(skip)]
         #[reflect(ignore)]
-        colliders: Vec<Compound>,
+        colliders: Vec<Vec<Compound>>,
     },
     Sprite {
         #[serde(default)]
@@ -52,7 +54,7 @@ pub enum SubAssembly {
         #[serde(default)]
         layer: MachinePartLayer,
         #[serde(skip)]
-        sprite: Handle<Image>,
+        sprite: MachineSpriteInfo,
         #[serde(default)]
         sprite_asset_path: String,
     },
@@ -82,10 +84,64 @@ pub enum SubAssembly {
         offset: Vec2,
         radius: f32,
     },
+    FlowField {
+        #[serde(default)]
+        flow_texture_path: String,
+        #[serde(skip)]
+        flow_texture: MachineSpriteInfo,
+        #[serde(skip)]
+        #[reflect(ignore)]
+        collider: Collider,
+    }
+}
+
+
+#[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
+pub struct TextureInfo {
+    #[serde(default)]
+    pub frames: u32,
+    #[serde(default)]
+    pub rotations: u32,
+    #[serde(default)]
+    pub flippable: bool, //if flippable the 2nd half of the rotations will only be accessible while flipped
+}
+
+impl Default for TextureInfo {
+    fn default() -> Self {
+        Self {
+            frames: 1,
+            rotations: 1,
+            flippable: false,
+        }
+    }
+}
+
+#[derive(Debug, Clone, Reflect, Default)]
+pub struct MachineSpriteInfo {
+    pub image: Handle<Image>,
+    pub layout: Option<Handle<TextureAtlasLayout>>,
+}
+
+
+
+
+#[derive(
+    Debug,
+    Clone,
+    PartialEq,
+    Default,
+    Reflect,
+    Serialize,
+    Deserialize,
+)]
+pub struct PlacementContext {
+    pub position: Vec3,
+    pub rotation_index: u32,
+    pub flipped: bool,
 }
 
 impl MachinePartConfig {
-    pub fn spawn_sprites(&self, mut commands: EntityCommands) {
+    pub fn spawn_sprites(&self, rotation_index: u32, mut commands: EntityCommands) {
         commands.with_children(|parent| {
             for subassembly in &self.subassemblies {
                 if let SubAssembly::Sprite {
@@ -95,23 +151,34 @@ impl MachinePartConfig {
                     ..
                 } = subassembly
                 {
-                    parent.spawn((
-                        Transform::from_xyz(offset.x, offset.y, layer.to_z()),
-                        Sprite {
-                            image: sprite.clone(),
+                    let mut child = parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
+
+                    if let Some(layout) = &sprite.layout {
+                        child.insert(Sprite {
+                            image: sprite.image.clone(),
+                            texture_atlas: Some(TextureAtlas {
+                                layout: layout.clone(),
+                                index: rotation_index as usize,
+                            }),
                             ..default()
-                        },
-                    ));
+                        });
+                    } else {
+                        child.insert(Sprite {
+                            image: sprite.image.clone(),
+                            ..default()
+                        });
+                    }
                 }
             }
         });
     }
 
-    pub fn spawn(&self, position: Vec3, part_type: MachinePartType, commands: &mut Commands) {
+    pub fn spawn(&self, part_type: MachinePartType, commands: &mut Commands) {
+        let context = part_type.context.clone();
         commands
             .spawn((
-                Transform::from_translation(position),
-                part_type,
+                Transform::from_translation(context.position.clone()),
+                part_type.clone(),
                 if self.is_dynamic {
                     RigidBody::Dynamic
                 } else {
@@ -129,22 +196,35 @@ impl MachinePartConfig {
                             sprite,
                             ..
                         } => {
-                            parent.spawn((
-                                Transform::from_xyz(offset.x, offset.y, layer.to_z()),
-                                Sprite {
-                                    image: sprite.clone(),
+                            let mut child = parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
+
+                            if let Some(layout) = &sprite.layout {
+                                child.insert(Sprite {
+                                    image: sprite.image.clone(),
+                                    texture_atlas: Some(TextureAtlas {
+                                        layout: layout.clone(),
+                                        index: context.rotation_index as usize,
+                                    }),
                                     ..default()
-                                },
-                            ));
+                                });
+                            } else {
+                                child.insert(Sprite {
+                                    image: sprite.image.clone(),
+                                    ..default()
+                                });
+                            }
                         }
                         SubAssembly::Collider {
                             offset, colliders, ..
                         } => {
-                            for collider in colliders {
-                                parent.spawn((
-                                    Transform::from_xyz(offset.x, offset.y, 0.0),
-                                    Collider::from(SharedShape::new(collider.clone())),
-                                ));
+                            // Select the set of colliders based on the current rotation index
+                            if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
+                                for collider in collider_set {
+                                    parent.spawn((
+                                        Transform::from_xyz(offset.x, offset.y, 0.0),
+                                        Collider::from(SharedShape::new(collider.clone())),
+                                    ));
+                                }
                             }
                         }
                         SubAssembly::WaterEmitter {
@@ -195,6 +275,31 @@ impl MachinePartConfig {
                                 Sensor,
                             ));
                         }
+                        SubAssembly::FlowField { flow_texture, collider, .. } => { 
+                            parent.spawn((
+                                FlowField { 
+                                    sprite_info: flow_texture.clone(), 
+                                    rotation_index: context.rotation_index as u32,
+                                },
+                                collider.clone(),
+                                match &flow_texture.layout {
+                                    Some(layout) => Sprite {
+                                        image: flow_texture.image.clone(),
+                                        color: Color::WHITE.with_alpha(0.3),
+                                        texture_atlas: Some(TextureAtlas {
+                                            layout: layout.clone(),
+                                            index: context.rotation_index as usize,
+                                        }),
+                                        ..default()
+                                    },
+                                    None => Sprite {
+                                        image: flow_texture.image.clone(),
+                                        color: Color::WHITE.with_alpha(0.3),
+                                        ..default()
+                                    }
+                                },
+                            ));
+                        }
                     }
                 }
             });
@@ -211,7 +316,7 @@ fn handle_erase_click(
 ) {
     if *picking_state == PickingState::Erasing {
         if let Ok(ty) = part_type.get(trigger.target()) {
-            if let Some(part_config) = machine_part_config_by_type.0.get(&ty.0) {
+            if let Some(part_config) = machine_part_config_by_type.0.get(&ty.name) {
                 available_zen_points.refund(part_config.cost);
                 commands.entity(trigger.target()).despawn();
             }

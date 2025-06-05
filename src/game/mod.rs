@@ -12,11 +12,13 @@ pub mod settings;
 pub mod sound;
 pub mod tea;
 pub mod victory;
+pub mod physics;
 
 pub fn plugin(app: &mut App) {
     app.insert_resource(Score(0));
     app.add_plugins((
         settings::plugin,
+        physics::plugin,
         camera::plugin,
         sound::plugin,
         input_dispatch::plugin,

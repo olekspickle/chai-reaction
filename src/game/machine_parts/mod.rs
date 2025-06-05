@@ -8,12 +8,14 @@ pub mod machine_part_config_by_type;
 pub mod machine_part_spawner;
 pub mod machine_part_type;
 pub mod picked_machine_part_type;
+pub mod flow_field;
 
 pub struct MachinePartsPlugin;
 
 impl Plugin for MachinePartsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
+            FlowFieldPlugin,
             MachinePartConfigByTypePlugin,
             MachinePartEventsPlugin,
             MachinePartSpawnerPlugin,

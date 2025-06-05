@@ -61,12 +61,14 @@ fn on_machine_spawn_area_click(
     if let PickingState::Placing(ty) = &*picking_state {
         if machine_spawn_areas.contains(trigger.target()) {
             if let Some(hit_position) = trigger.hit.position {
+                let mut part = ty.clone();
+                part.context.position = ((hit_position / MACHINE_PARTS_GRID_SCALE).round()
+                                    * MACHINE_PARTS_GRID_SCALE)
+                                    .with_z(MACHINE_PARTS_BASIC_Z_LAYER);
+
                 machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
                     MachinePartSpawnRequest {
-                        location: ((hit_position / MACHINE_PARTS_GRID_SCALE).round()
-                            * MACHINE_PARTS_GRID_SCALE)
-                            .with_z(MACHINE_PARTS_BASIC_Z_LAYER),
-                        part_type: ty.clone(),
+                        part_type: part
                     },
                 ));
             }
@@ -95,9 +97,9 @@ fn change_preview_sprite(
     preview: Single<Entity, With<MachinePartPreview>>,
 ) {
     if let PickingState::Placing(ty) = &*picking_state {
-        if let Some(part_config) = machine_part_config_by_type.0.get(&ty.0) {
+        if let Some(part_config) = machine_part_config_by_type.0.get(&ty.name) {
             commands.entity(*preview).despawn_related::<Children>();
-            part_config.spawn_sprites(commands.entity(*preview));
+            part_config.spawn_sprites(ty.context.rotation_index, commands.entity(*preview));
         }
     }
 }

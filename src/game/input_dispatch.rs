@@ -35,6 +35,22 @@ pub struct OnLevelPartSpawn {
     pub part: LevelPart,
 }
 
+#[derive(Event)]
+pub struct OnRotate(pub i32);
+#[derive(Event)]
+pub struct OnFlip;
+
+#[derive(Event)]
+pub struct OnGlassSpawn {
+    pub pos: Vec2,
+    pub level: GameLevel,
+}
+impl OnGlassSpawn {
+    pub fn new(pos: Vec2, level: GameLevel) -> Self {
+        Self { pos, level }
+    }
+}
+
 fn trigger_input_dispatch(
     mut commands: Commands,
     screen: Res<State<Screen>>,
@@ -58,6 +74,16 @@ fn trigger_input_dispatch(
             }
         }
     }
+
+    if state.just_pressed(&Action::RotateCcw) {
+        commands.trigger(OnRotate(-1));
+    }
+    if state.just_pressed(&Action::RotateCw) {
+        commands.trigger(OnRotate(1));
+    }
+    if state.just_pressed(&Action::Flip) {
+        commands.trigger(OnFlip);
+    } 
 
     Ok(())
 }
