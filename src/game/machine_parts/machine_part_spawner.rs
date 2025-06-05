@@ -23,6 +23,8 @@ fn listen_to_spawn_requests(
                 //DEBUG
                 info!("Approved spawn request {:?}", spawn_request);
 
+                part_config.spawn(spawn_request.location, spawn_request.part_type.clone(), &mut commands);
+                /*
                 commands.spawn((
                     Transform::from_translation(spawn_request.location),
                     spawn_request.part_type.clone(),
@@ -52,24 +54,7 @@ fn listen_to_spawn_requests(
                         ));
                     }
                 });
-            }
-        }
-    }
-}
-
-fn handle_erase_click(
-    trigger: Trigger<Pointer<Click>>,
-    mut commands: Commands,
-    picking_state: Res<PickingState>,
-    part_type: Query<&MachinePartType>,
-    machine_part_config_by_type: Res<MachinePartConfigByType>,
-    mut available_zen_points: ResMut<AvailableZenPoints>,
-) {
-    if *picking_state == PickingState::Erasing {
-        if let Ok(ty) = part_type.get(trigger.target()) {
-            if let Some(part_config) = machine_part_config_by_type.0.get(&ty.0){
-                available_zen_points.refund(part_config.cost);
-                commands.entity(trigger.target()).despawn();
+                */
             }
         }
     }

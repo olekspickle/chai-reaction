@@ -40,15 +40,10 @@ struct MachinePartPreview;
 
 fn spawn_preview(
     mut commands: Commands,
-    machine_part_config_by_type: Res<MachinePartConfigByType>,
 ) {
     commands.spawn((
         MachinePartPreview,
-        Sprite{
-            image: machine_part_config_by_type.0.values().next().unwrap().sprite.clone(),
-            color: Color::srgba(1.0, 1.0, 1.0, 0.5),
-            ..default()
-        },
+        Transform::default(),
         Visibility::Hidden,
     ));
 }
@@ -86,13 +81,15 @@ fn preview_machine_spawn(
 }
 
 fn change_preview_sprite(
+    mut commands: Commands,
     picking_state: Res<PickingState>,
     machine_part_config_by_type: Res<MachinePartConfigByType>,
-    mut preview: Single<&mut Sprite, With<MachinePartPreview>>,
+    preview: Single<Entity, With<MachinePartPreview>>,
 ) {
     if let PickingState::Placing(ty) = &*picking_state {
         if let Some(part_config) = machine_part_config_by_type.0.get(&ty.0){
-            preview.image = part_config.sprite.clone();
+            commands.entity(*preview).despawn_related::<Children>();
+            part_config.spawn_sprites(commands.entity(*preview));
         }
     }
 }

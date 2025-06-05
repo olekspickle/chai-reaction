@@ -3,12 +3,12 @@ use bevy::platform::collections::HashMap;
 use bevy::prelude::*;
 use crate::prelude::*;
 
-use avian2d::{parry::{math::Isometry, shape::{SharedShape, Compound}}, prelude::*};
+use avian2d::{parry::shape::Compound, prelude::*};
 use bevy::{
     asset::{io::Reader, AssetLoader, LoadContext},
     prelude::*,
 };
-use geo::{BooleanOps, Coord, CoordsIter, LineString, MultiPolygon, Vector2DOps, Simplify};
+use geo::{BooleanOps, Coord, CoordsIter, LineString, MultiPolygon, Vector2DOps};
 use itertools::Itertools as _;
 use serde::{Serialize, Deserialize};
 
@@ -57,37 +57,27 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
         let mut bytes = Vec::new();
         reader.read_to_end(&mut bytes).await?;
         let mut library = ron::de::from_bytes::<MachinePartConfigByType>(&bytes)?;
-        for MachinePartConfig { sprite, sprite_asset_path, background_sprite, background_sprite_asset_path, mesh_image_path, colliders, ..} in library.0.values_mut() {
-            let loaded_image = load_context
-                .loader()
-                .immediate()
-                .with_static_type()
-                .load::<Image>(sprite_asset_path.clone())
-                .await?;
-            let image = loaded_image.get();
-            if let Some(path) = background_sprite_asset_path {
-                *background_sprite =
-                    Some(load_context.loader().with_static_type()
-                        .load::<Image>(path.clone()));
+        for MachinePartConfig { subassemblies, ..} in library.0.values_mut() {
+
+            for subassembly in subassemblies {
+                match subassembly {
+                    SubAssembly::Collider { mesh_image_path, colliders, .. } => {
+                        let loaded_image = load_context
+                            .loader()
+                            .immediate()
+                            .with_static_type()
+                            .load::<Image>(mesh_image_path.clone())
+                            .await?;
+                        *colliders = colliders_from_image(loaded_image.get());
+                    },
+                    SubAssembly::Sprite { sprite, sprite_asset_path, .. } => {
+                        *sprite = load_context
+                            .loader()
+                            .with_static_type()
+                            .load::<Image>(sprite_asset_path.clone());
+                    }
+                }
             }
-
-            let mut maybe_mesh_image = None;
-            let mesh_image = if let Some(path) = mesh_image_path {
-                let loaded_image = load_context
-                    .loader()
-                    .immediate()
-                    .with_static_type()
-                    .load::<Image>(path.clone())
-                    .await?;
-                maybe_mesh_image = Some(loaded_image);
-                maybe_mesh_image.as_ref().unwrap().get()
-            } else {
-                image
-            };
-            *colliders = colliders_from_image(mesh_image);
-
-            *sprite =
-                load_context.add_loaded_labeled_asset(sprite_asset_path.clone(), loaded_image);
         }
 
         Ok(library)
