@@ -83,6 +83,7 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             .with_static_type()
                             .load::<Image>(sprite_asset_path.clone());
                     }
+                    _ => (),
                 }
             }
         }

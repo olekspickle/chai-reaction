@@ -50,6 +50,17 @@ pub enum SubAssembly {
         #[serde(default)]
         sprite_asset_path: String,
     },
+    WaterEmitter {
+        #[serde(default)]
+        offset: Vec2,
+        spawn_rate: f32,
+        initial_speed_min: f32,
+        initial_speed_max: f32,
+        initial_angle_deg_min: f32,
+        initial_angle_deg_max: f32,
+        particle_lifetime_s: f32,
+        particle_gravity_scale: f32,
+    },
 }
 
 impl MachinePartConfig {
@@ -114,6 +125,30 @@ impl MachinePartConfig {
                                     Collider::from(SharedShape::new(collider.clone())),
                                 ));
                             }
+                        }
+                        SubAssembly::WaterEmitter {
+                            offset,
+                            spawn_rate,
+                            initial_speed_min,
+                            initial_speed_max,
+                            initial_angle_deg_min,
+                            initial_angle_deg_max,
+                            particle_lifetime_s,
+                            particle_gravity_scale,
+                        } => {
+                            parent.spawn((
+                                Transform::from_xyz(offset.x, offset.y, 0.0),
+                                ParticleEmitter::new(
+                                    ParticleKind::Water,
+                                    *spawn_rate,
+                                    *initial_speed_min,
+                                    *initial_speed_max,
+                                    *initial_angle_deg_min,
+                                    *initial_angle_deg_max,
+                                    *particle_lifetime_s,
+                                    *particle_gravity_scale,
+                                ),
+                            ));
                         }
                     }
                 }

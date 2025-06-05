@@ -3,16 +3,17 @@ use avian2d::prelude::*;
 use bevy::prelude::*;
 use rand::prelude::*;
 
+use serde::{Deserialize, Serialize};
+
 pub fn plugin(app: &mut App) {
-    app.add_plugins(PhysicsPlugins::default())
-        .add_systems(
-            Update,
-            (spawn_particles, despawn_particles).run_if(in_state(Screen::Gameplay)),
-        )
-        .add_observer(start_emitting);
+    app.add_plugins(PhysicsPlugins::default()).add_systems(
+        Update,
+        (spawn_particles, despawn_particles).run_if(in_state(Screen::Gameplay)),
+    );
+    //.add_observer(start_emitting);
 }
 
-#[derive(Component, PartialEq, Eq)]
+#[derive(Component, Debug, Clone, Reflect, PartialEq, Eq, Serialize, Deserialize)]
 pub enum ParticleKind {
     Water,
     Fire,
@@ -25,7 +26,7 @@ pub struct Spark;
 pub struct Particle {
     pub lifetime: Timer,
 }
-#[derive(Component)]
+#[derive(Component, Debug, Clone, Reflect, Serialize, Deserialize)]
 pub struct ParticleEmitter {
     kind: ParticleKind,
     spawn_rate: f32,                 // Particles per second
