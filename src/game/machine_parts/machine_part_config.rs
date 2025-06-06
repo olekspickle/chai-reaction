@@ -263,7 +263,7 @@ impl MachinePartConfig {
                                 #[cfg(debug_assertions)]
                                 Mesh2d(meshes.add(Circle::new(*radius))),
                                 #[cfg(debug_assertions)]
-                                MeshMaterial2d(materials.add(Color::srgba(0.9, 0.7, 0.2, 0.1))),
+                                MeshMaterial2d(materials.add(Color::srgba(0.9, 0.7, 0.2, 0.01))),
                             ));
                         }
                         SubAssembly::Tea { offset, radius } => {
@@ -280,6 +280,10 @@ impl MachinePartConfig {
                                 TeaCounter::default(),
                                 Collider::circle(*radius),
                                 Sensor,
+                                #[cfg(debug_assertions)]
+                                Mesh2d(meshes.add(Circle::new(*radius))),
+                                #[cfg(debug_assertions)]
+                                MeshMaterial2d(materials.add(Color::srgba(0.3, 0.7, 0.3, 0.01))),
                             ));
                         }
                         SubAssembly::FlowField {
