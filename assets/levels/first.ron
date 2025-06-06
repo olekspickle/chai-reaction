@@ -3,6 +3,7 @@
     zen_points: 4000,
     available_machine_parts: [
         "WaterEmitter",
+        "MilkEmitter",
         "HeatSource",
         "Pipe",
         "PipeTurn",

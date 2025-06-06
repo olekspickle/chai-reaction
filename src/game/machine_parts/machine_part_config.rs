@@ -58,7 +58,7 @@ pub enum SubAssembly {
         #[serde(default)]
         sprite_asset_path: String,
     },
-    WaterEmitter {
+    ParticleEmitter {
         #[serde(default)]
         offset: Vec2,
         spawn_rate: f32,
@@ -68,6 +68,8 @@ pub enum SubAssembly {
         initial_angle_deg_max: f32,
         particle_lifetime_s: f32,
         particle_gravity_scale: f32,
+        #[serde(default)]
+        kind: ParticleContents,
     },
     HeatSource {
         #[serde(default)]
@@ -232,7 +234,7 @@ impl MachinePartConfig {
                                 }
                             }
                         }
-                        SubAssembly::WaterEmitter {
+                        SubAssembly::ParticleEmitter{
                             offset,
                             spawn_rate,
                             initial_speed_min,
@@ -241,16 +243,12 @@ impl MachinePartConfig {
                             initial_angle_deg_max,
                             particle_lifetime_s,
                             particle_gravity_scale,
+                            kind,
                         } => {
                             parent.spawn((
                                 Transform::from_xyz(offset.x, offset.y, 0.0),
                                 ParticleEmitter::new(
-                                    ParticleContents {
-                                        tea: 0.0,
-                                        heat: 0.0,
-                                        milk: 0.0,
-                                        sugar: 0.0,
-                                    },
+                                    *kind,
                                     *spawn_rate,
                                     *initial_speed_min,
                                     *initial_speed_max,

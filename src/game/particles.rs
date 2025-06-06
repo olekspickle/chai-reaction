@@ -43,9 +43,13 @@ impl ParticleContents {
 
 #[derive(Default, Debug, Copy, Clone, Reflect, Serialize, Deserialize)]
 pub struct ParticleContents {
+    #[serde(default)]
     pub heat: f32,
+    #[serde(default)]
     pub tea: f32,
+    #[serde(default)]
     pub sugar: f32,
+    #[serde(default)]
     pub milk: f32,
 }
 
