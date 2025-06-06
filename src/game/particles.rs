@@ -10,8 +10,8 @@ pub fn plugin(app: &mut App) {
         Update,
         (
             spawn_particles,
-            despawn_particles,
-            (recolor_particles, mix_particles).before(crate::game::levels::prepare_levels),
+            (spawn_particles, recolor_particles, mix_particles)
+                .before(crate::game::levels::prepare_levels),
         )
             .run_if(in_state(Screen::Gameplay)),
     );
@@ -27,27 +27,65 @@ pub struct Particle {
     pub contents: ParticleContents,
 }
 
-impl Particle {
+impl ParticleContents {
     pub fn is_tea(&self) -> bool {
-        self.contents.tea > 0.5
+        self.tea > 0.5
     }
 
     pub fn is_milky(&self) -> bool {
-        self.contents.milk > 0.5
+        self.milk > 0.5
     }
 
     pub fn is_sweet(&self) -> bool {
-        self.contents.sugar > 0.5
+        self.sugar > 0.5
     }
 }
 
-#[derive(Debug, Clone, Reflect, Serialize, Deserialize)]
+#[derive(Default, Debug, Copy, Clone, Reflect, Serialize, Deserialize)]
 pub struct ParticleContents {
     pub heat: f32,
     pub tea: f32,
-    pub water: f32,
     pub sugar: f32,
     pub milk: f32,
+}
+
+impl std::ops::Add for ParticleContents {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            heat: self.heat + other.heat,
+            tea: self.tea + other.tea,
+            sugar: self.sugar + other.sugar,
+            milk: self.milk + other.milk,
+        }
+    }
+}
+
+impl std::ops::Div<f32> for ParticleContents {
+    type Output = Self;
+
+    fn div(self, other: f32) -> Self {
+        Self {
+            heat: self.heat / other,
+            tea: self.tea / other,
+            sugar: self.sugar / other,
+            milk: self.milk / other,
+        }
+    }
+}
+
+impl std::ops::Mul<f32> for ParticleContents {
+    type Output = Self;
+
+    fn mul(self, other: f32) -> Self {
+        Self {
+            heat: self.heat * other,
+            tea: self.tea * other,
+            sugar: self.sugar * other,
+            milk: self.milk * other,
+        }
+    }
 }
 
 #[derive(Component, Debug, Clone, Reflect, Serialize, Deserialize)]
@@ -190,18 +228,12 @@ fn recolor_particles(
     for (entity, particle) in &particles {
         let water = WATER.to_linear();
         let brewed_tea = BREWED_TEA.to_linear();
-        let total_stuff = particle.contents.water + particle.contents.tea + particle.contents.milk;
-        let r = (water.red * particle.contents.water
-            + brewed_tea.red * particle.contents.tea
-            + particle.contents.milk)
+        let total_stuff = 1.0 + particle.contents.tea + particle.contents.milk;
+        let r = (water.red + brewed_tea.red * particle.contents.tea + particle.contents.milk)
             / total_stuff;
-        let g = (water.green * particle.contents.water
-            + brewed_tea.green * particle.contents.tea
-            + particle.contents.milk)
+        let g = (water.green + brewed_tea.green * particle.contents.tea + particle.contents.milk)
             / total_stuff;
-        let b = (water.blue * particle.contents.water
-            + brewed_tea.blue * particle.contents.tea
-            + particle.contents.milk)
+        let b = (water.blue + brewed_tea.blue * particle.contents.tea + particle.contents.milk)
             / total_stuff;
         let color = Color::linear_rgba(r, g, b, 1.0);
         commands
@@ -215,24 +247,15 @@ fn mix_particles(
     collisions: Collisions,
     time: Res<Time>,
 ) {
-    let d = time.delta().as_secs_f32();
+    let d = time.delta().as_secs_f32() * 10.0;
     let entities: Vec<_> = particles.iter().map(|(e, _)| e).collect();
     for entity in entities {
         for other in collisions.entities_colliding_with(entity) {
             if let Ok([(_, mut src_particle), (_, dst_particle)]) =
                 particles.get_many_mut([entity, other])
             {
-                let heat = (src_particle.contents.heat + dst_particle.contents.heat) / 2.0;
-                let milk = (src_particle.contents.milk + dst_particle.contents.milk) / 2.0;
-                let sugar = (src_particle.contents.sugar + dst_particle.contents.sugar) / 2.0;
-                let water = (src_particle.contents.water + dst_particle.contents.water) / 2.0;
-                let tea = (src_particle.contents.tea + dst_particle.contents.tea) / 2.0;
-
-                src_particle.contents.heat = src_particle.contents.heat * (1.0 - d) + heat * d;
-                src_particle.contents.milk = src_particle.contents.milk * (1.0 - d) + milk * d;
-                src_particle.contents.sugar = src_particle.contents.sugar * (1.0 - d) + sugar * d;
-                src_particle.contents.water = src_particle.contents.water * (1.0 - d) + water * d;
-                src_particle.contents.tea = src_particle.contents.tea * (1.0 - d) + tea * d;
+                let avg = (src_particle.contents + dst_particle.contents) / 2.0;
+                src_particle.contents = src_particle.contents * (1.0 - d) + avg * d;
             }
         }
     }

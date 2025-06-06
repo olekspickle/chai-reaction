@@ -1,11 +1,12 @@
 use crate::prelude::*;
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use serde::{Deserialize, Serialize};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
-        (apply_tea, count_tea)
+        (apply_tea, update_tea_sensors)
             .run_if(resource_exists::<Config>)
             .run_if(resource_exists::<AudioSources>),
     );
@@ -14,12 +15,14 @@ pub fn plugin(app: &mut App) {
 #[derive(Component, Copy, Clone, PartialEq)]
 pub struct Tea;
 #[derive(Default, Component, Copy, Clone, PartialEq)]
-pub struct TeaCounter(pub u32);
+pub struct TeaSensor(pub Recipe);
+#[derive(Component)]
+pub struct Satisfied;
 
-#[derive(Component, Copy, Clone, PartialEq)]
+#[derive(Component, Debug, Default, Copy, Clone, PartialEq, Reflect, Serialize, Deserialize)]
 pub struct Recipe {
-    sugar: f32,
-    milk: f32,
+    milky: bool,
+    sweet: bool,
 }
 
 fn apply_tea(
@@ -41,27 +44,28 @@ fn apply_tea(
     }
 }
 
-fn count_tea(
+fn update_tea_sensors(
     collisions: Collisions,
-    settings: Res<Settings>,
-    audio_sources: Res<AudioSources>,
     mut commands: Commands,
-    mut counter: Query<(Entity, &mut TeaCounter)>,
-    mut particles: Query<(Entity, &Particle)>,
-    mut score: ResMut<Score>,
+    tea_sensors: Query<(Entity, &TeaSensor)>,
+    particles: Query<(Entity, &Particle)>,
 ) {
-    for (counter_entity, mut counter) in &mut counter {
+    for (sensor_entity, sensor) in &tea_sensors {
+        let mut total = ParticleContents::default();
+        let mut count = 0;
         for (particle_entity, particle) in &particles {
-            if !particle.is_tea() {
-                let vol = settings.sound.general * settings.sound.sfx;
-                // commands.spawn(sfx(audio_sources.cup_drop_brewed.clone(), vol));
-                continue;
+            if collisions.contains(sensor_entity, particle_entity) {
+                total = total + particle.contents;
+                count += 1;
             }
-            if collisions.contains(counter_entity, particle_entity) {
-                let vol = settings.sound.general * settings.sound.sfx;
-                // commands.spawn(sfx(audio_sources.cup_drop.clone(), vol));
-                counter.0 += 1;
-                score.0 += 1;
+        }
+
+        commands.entity(sensor_entity).remove::<Satisfied>();
+        if count >= 10 {
+            let avg = total / count as f32;
+            if avg.is_tea() && avg.is_milky() == sensor.0.milky && avg.is_sweet() == sensor.0.sweet
+            {
+                commands.entity(sensor_entity).insert(Satisfied);
             }
         }
     }

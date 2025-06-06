@@ -57,12 +57,51 @@
             )
         ],
     ),
-    "Victory Sensor": (
+    "Tea Sensor": (
         cost: 1,
         is_dynamic: false,
         subassemblies: [
-            VictorySensor(
+            TeaSensor(
                 radius: 32.0,
+            )
+        ],
+    ),
+    "Milky Tea Sensor": (
+        cost: 1,
+        is_dynamic: false,
+        subassemblies: [
+            TeaSensor(
+                radius: 32.0,
+                recipe: (
+                    milky: true,
+                    sweet: false,
+                ),
+            )
+        ],
+    ),
+    "Sweet Tea Sensor": (
+        cost: 1,
+        is_dynamic: false,
+        subassemblies: [
+            TeaSensor(
+                radius: 32.0,
+                recipe: (
+                    milky: false,
+                    sweet: true,
+                ),
+            )
+        ],
+    ),
+    "Milky Sweet Tea Sensor": (
+        cost: 1,
+        is_dynamic: false,
+        subassemblies: [
+            TeaSensor(
+                radius: 32.0,
+                recipe: (
+                    milky: true,
+                    sweet: true,
+                ),
             )
         ],
     ),

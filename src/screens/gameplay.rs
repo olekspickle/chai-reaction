@@ -2,7 +2,7 @@
 
 use super::*;
 use crate::{
-    game::{input_dispatch::*, tea::TeaCounter},
+    game::{input_dispatch::*, tea::TeaSensor},
     screens::settings,
 };
 use bevy::ui::Val::*;
@@ -58,14 +58,16 @@ pub struct ScoreLabel;
 fn change_score(
     mut commands: Commands,
     mut score: ResMut<Score>,
-    counter: Query<&TeaCounter, Changed<TeaCounter>>,
+    //counter: Query<&TeaCounter, Changed<TeaCounter>>,
     mut score_label: Query<&mut Text, With<ScoreLabel>>,
 ) -> Result {
+    /*
     for counter in counter.iter() {
         let mut label = score_label.single_mut()?;
         score.0 = (counter.0 * 10) as i32;
         label.0 = format!("{}", score.0);
     }
+    */
 
     Ok(())
 }

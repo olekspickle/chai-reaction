@@ -1,7 +1,7 @@
 use crate::{
     game::{
         heat::HeatSource,
-        tea::{Tea, TeaCounter},
+        tea::{Recipe, Tea, TeaSensor},
     },
     prelude::*,
 };
@@ -79,10 +79,12 @@ pub enum SubAssembly {
         offset: Vec2,
         radius: f32,
     },
-    VictorySensor {
+    TeaSensor {
         #[serde(default)]
         offset: Vec2,
         radius: f32,
+        #[serde(default)]
+        recipe: Recipe,
     },
     FlowField {
         #[serde(default)]
@@ -244,7 +246,6 @@ impl MachinePartConfig {
                                 Transform::from_xyz(offset.x, offset.y, 0.0),
                                 ParticleEmitter::new(
                                     ParticleContents {
-                                        water: 1.0,
                                         tea: 0.0,
                                         heat: 0.0,
                                         milk: 0.0,
@@ -270,6 +271,7 @@ impl MachinePartConfig {
                                 Mesh2d(meshes.add(Circle::new(*radius))),
                                 #[cfg(debug_assertions)]
                                 MeshMaterial2d(materials.add(Color::srgba(0.9, 0.7, 0.2, 0.01))),
+                                Pickable::IGNORE,
                             ));
                         }
                         SubAssembly::Tea { offset, radius } => {
@@ -280,16 +282,21 @@ impl MachinePartConfig {
                                 Sensor,
                             ));
                         }
-                        SubAssembly::VictorySensor { offset, radius } => {
+                        SubAssembly::TeaSensor {
+                            offset,
+                            radius,
+                            recipe,
+                        } => {
                             parent.spawn((
                                 Transform::from_xyz(offset.x, offset.y, 0.0),
-                                TeaCounter::default(),
+                                TeaSensor(recipe.clone()),
                                 Collider::circle(*radius),
                                 Sensor,
                                 #[cfg(debug_assertions)]
                                 Mesh2d(meshes.add(Circle::new(*radius))),
                                 #[cfg(debug_assertions)]
                                 MeshMaterial2d(materials.add(Color::srgba(0.3, 0.7, 0.3, 0.01))),
+                                Pickable::IGNORE,
                             ));
                         }
                         SubAssembly::FlowField {

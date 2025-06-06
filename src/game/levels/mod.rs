@@ -75,7 +75,14 @@ fn init_level(
     loaded_level: Res<LoadedLevel>,
     level_configs: Res<Assets<LevelConfig>>,
     mut machine_part_request_writer: EventWriter<MachinePartRequest>,
-    existing_parts: Query<Entity, With<SpawnedMachinePart>>,
+    existing_parts: Query<
+        Entity,
+        Or<(
+            With<Particle>,
+            With<SpawnedMachinePart>,
+            With<ParticleEmitter>,
+        )>,
+    >,
 ) {
     for entity in &existing_parts {
         commands.entity(entity).despawn();

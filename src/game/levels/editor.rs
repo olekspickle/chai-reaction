@@ -44,6 +44,7 @@ fn save(
 ) {
     if keyboard_input.just_pressed(KeyCode::KeyS) {
         let mut level = level_configs.get(&editor_level.0).unwrap().clone();
+        level.initial_machine_parts.clear();
         for part_type in &machine_parts {
             level.initial_machine_parts.push(part_type.clone());
         }

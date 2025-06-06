@@ -42,5 +42,13 @@
                 flipped: false,
             ),
         ),
+        (
+            name: "Milky Tea Sensor",
+            context: (
+                position: (16.0, -64.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
     ],
 )
