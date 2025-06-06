@@ -30,7 +30,7 @@ pub(crate) mod prelude {
         machine_parts::{
             MachinePartsPlugin, consts::*, events::*, machine_part_config::*,
             machine_part_config_by_type::*, machine_part_spawner::*, machine_part_type::*,
-            picked_machine_part_type::*,
+            picked_machine_part_type::*, flow_field::*,
         },
         particles::*,
         settings::{Action, Modal, Settings},

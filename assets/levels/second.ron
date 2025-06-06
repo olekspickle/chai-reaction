@@ -1,0 +1,28 @@
+(
+    name: "",
+    zen_points: 4000,
+    available_machine_parts: [
+        "WaterEmitter",
+        "HeatSource",
+        "Pipe",
+        "Tea bag",
+    ],
+    initial_machine_parts: [
+        (
+            name: "Shelf",
+            context: (
+                position: (64.0, -128.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Shelf",
+            context: (
+                position: (-112.0, -128.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+    ],
+)

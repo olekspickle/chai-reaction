@@ -16,6 +16,10 @@ mod sink;
 #[cfg(feature="dev")]
 mod editor;
 
+#[derive(Resource)]
+pub struct EditorMode(pub bool);
+
+
 #[derive(Default, Asset, Resource, Reflect, Clone, Debug)]
 pub struct LevelList(pub Vec<Handle<LevelConfig>>);
 
@@ -25,7 +29,6 @@ pub struct LoadedLevel(pub Handle<LevelConfig>);
 pub fn plugin(app: &mut App) {
     app.insert_state(GameLevel::Start)
         .enable_state_scoped_entities::<GameLevel>()
-        .add_systems(OnEnter(Screen::Gameplay), prepare_levels)
         .add_systems(OnEnter(GameLevel::Sink), sink::spawn_sink_scene)
         .add_systems(OnEnter(Screen::Title), reset_level)
         .add_systems(Update, init_level.run_if(resource_exists_and_changed::<LoadedLevel>))
@@ -34,9 +37,18 @@ pub fn plugin(app: &mut App) {
         .register_asset_loader(LevelListLoader)
         .load_resource_from_path::<LevelList>("levels.ron");
 
+    let mut in_editor = false;
     #[cfg(feature="dev")]
     if let Some(path) = env::args().nth(1) {
         app.add_plugins(editor::LevelEditor(path.to_string()));
+        in_editor = true;
+    }
+
+    if in_editor {
+        app.insert_resource(EditorMode(true));
+    } else {
+        app.add_systems(OnEnter(Screen::Gameplay), prepare_levels);
+        app.insert_resource(EditorMode(false));
     }
 }
 
@@ -89,8 +101,8 @@ fn init_level(
         for part in &config.initial_machine_parts {
             machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
                 MachinePartSpawnRequest {
-                    location: part.position.extend(MACHINE_PARTS_BASIC_Z_LAYER),
-                    part_type: MachinePartType(part.part_type.clone()),
+                    location: part.context.position,
+                    part_type: part.clone(),
                     force: true,
                 },
             ));
@@ -168,19 +180,13 @@ fn spawn_level_part(
     }
 }
 
-#[derive(Default, Reflect, Clone, Serialize, Deserialize)]
-pub struct PartPlacement {
-    part_type: String,
-    position: Vec2,
-    rotation: u32,
-    flip: u32,
-}
 
 #[derive(Default, Asset, Reflect, Clone, Serialize, Deserialize)]
 pub struct LevelConfig {
     pub name: String,
     pub zen_points: u32,
-    pub initial_machine_parts: Vec<PartPlacement>,
+    pub available_machine_parts: Vec<String>,
+    pub initial_machine_parts: Vec<MachinePartType>,
 }
 
 

@@ -1,7 +1,11 @@
 ({
-    "Scale": (
+    "Pipe": (
         cost: 42,
         is_dynamic: false,
+        texture_info: (
+            frames: 1,
+            rotations: 4,
+        ),
         subassemblies: [
             Sprite(
                 sprite_asset_path: "textures/pipe_fore.png",
@@ -12,6 +16,10 @@
             ),
             Collider(
                 mesh_image_path: "textures/pipe_collider.png",
+            ),
+            FlowField(
+                flow_texture_path: "textures/pipe_flow.png"
+
             )
         ],
     ),
@@ -55,6 +63,98 @@
             VictorySensor(
                 radius: 32.0,
             )
+        ],
+    ),
+    "Funnel": (
+        cost: 42,
+        is_dynamic: false,
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/funnel_fore.png",
+            ),
+            Sprite(
+                layer: Background,
+                sprite_asset_path: "textures/funnel_back.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/funnel_collider.png",
+            ),
+        ],
+    ),
+    "PipeTurn": (
+        cost: 42,
+        is_dynamic: false,
+        texture_info: (
+            frames: 1,
+            rotations: 8,
+            flippable: true,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/pipe_turn_fore.png",
+            ),
+            Sprite(
+                layer: Background,
+                sprite_asset_path: "textures/pipe_turn_back.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/pipe_turn_collider.png",
+            ),
+            FlowField(
+                flow_texture_path: "textures/pipe_turn_flow.png"
+
+            )
+        ],
+    ),
+    "Shelf": (
+        cost: 42,
+        is_dynamic: false,
+        texture_info: (
+            frames: 1,
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/shelf.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/shelf.png",
+            ),
+        ],
+    ),
+    "Big Table": (
+        cost: 42,
+        is_dynamic: false,
+        texture_info: (
+            frames: 1,
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/big_table.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/big_table.png",
+            ),
+        ],
+    ),
+    "Water Glass": (
+        cost: 42,
+        is_dynamic: true,
+        texture_info: (
+            frames: 1,
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/glass.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/glass_collider.png",
+            ),
         ],
     ),
 })

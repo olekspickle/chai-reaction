@@ -56,6 +56,10 @@ pub enum Action {
     TogglePause,
     ToggleUiDebug,
     Back,
+
+    RotateCcw,
+    RotateCw,
+    Flip,
 }
 
 fn spawn_player_input_map(mut commands: Commands) {
@@ -67,6 +71,10 @@ fn spawn_player_input_map(mut commands: Commands) {
     input_map.insert(Action::ToggleUiDebug, KeyCode::Backquote);
     input_map.insert(Action::TogglePause, KeyCode::KeyP);
     input_map.insert(Action::Back, KeyCode::Escape);
+
+    input_map.insert(Action::RotateCcw, KeyCode::KeyQ);
+    input_map.insert(Action::RotateCw, KeyCode::KeyE);
+    input_map.insert(Action::Flip, KeyCode::KeyF);
 
     commands.spawn(input_map);
 }

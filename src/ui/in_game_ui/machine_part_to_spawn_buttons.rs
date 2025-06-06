@@ -6,22 +6,39 @@ pub struct MachinePartToSpawnButtonsPlugin;
 
 impl Plugin for MachinePartToSpawnButtonsPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(OnEnter(Screen::Gameplay), spawn_part_picking_buttons);
+        app.add_systems(Update, spawn_part_picking_buttons.run_if(in_state(Screen::Gameplay).and(resource_exists_and_changed::<LoadedLevel>)));
     }
 }
 
-fn spawn_part_picking_buttons(mut commands: Commands, machine_parts: Res<MachinePartConfigByType>) {
+#[derive(Component)]
+struct MachinePartButtonNode;
+
+fn spawn_part_picking_buttons(mut commands: Commands, machine_parts: Res<MachinePartConfigByType>, loaded_level: Res<LoadedLevel>, level_configs: Res<Assets<LevelConfig>>, existing_area: Query<Entity, With<MachinePartButtonNode>>, editor_mode: Res<EditorMode>) {
+
+    for entity in &existing_area {
+        commands.entity(entity).despawn();
+    }
+
+    let config = level_configs.get(&loaded_level.0).unwrap();
+
     let mut buttons = Vec::new();
     for part in machine_parts.0.keys() {
-        let button_bundle = btn_with_machine_part_type(MachinePartType(part.clone()), part);
-        buttons.push(commands.spawn(button_bundle).id());
+        if editor_mode.0 || config.available_machine_parts.contains(part) {
+            // You need to provide the correct PlacementContext value for each part.
+            let button_bundle = btn_with_machine_part_type(
+                MachinePartType { name: part.clone(), context: PlacementContext::default() }, // Replace PlacementContext::default() with the correct context if needed
+                part,
+            );
+            buttons.push(commands.spawn(button_bundle).id());
+        }
     }
     let mut node_commands = commands.spawn((Node {
         flex_direction: FlexDirection::Row,
         justify_content: JustifyContent::SpaceEvenly,
         width: Percent(50.0),
+        flex_wrap: FlexWrap::Wrap,
         ..default()
-    },));
+    }, MachinePartButtonNode));
     node_commands.add_children(&buttons);
     node_commands.with_children(|parent| {
         parent.spawn((

@@ -6,9 +6,7 @@ use rand::prelude::*;
 use serde::{Deserialize, Serialize};
 
 pub fn plugin(app: &mut App) {
-    app.add_plugins(PhysicsPlugins::default())
-        // app.add_plugins((PhysicsDebugPlugin::default(), PhysicsPlugins::default()))
-        .add_systems(
+    app.add_systems(
             Update,
             (spawn_particles, despawn_particles, recolor_particles.before(crate::game::levels::prepare_levels))
                 .run_if(in_state(Screen::Gameplay)),
@@ -72,7 +70,11 @@ fn spawn_particles(
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut emitter: Query<(&mut ParticleEmitter, &GlobalTransform)>,
     droplet_count_query: Query<&ParticleKind>,
+    editor_mode: Res<EditorMode>,
 ) {
+    if editor_mode.0 {
+        return
+    }
     let mut rng = rand::thread_rng();
 
     let max_particles = cfg.physics.water.max_particles as usize;

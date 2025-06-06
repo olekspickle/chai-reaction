@@ -12,7 +12,7 @@ impl Plugin for MachinePartSpawnerPlugin {
             listen_to_spawn_requests.run_if(resource_exists::<MachinePartConfigByType>),
         );
     }
-}
+}    
 
 fn listen_to_spawn_requests(
     mut request_listener: EventReader<MachinePartRequest>,
@@ -25,7 +25,7 @@ fn listen_to_spawn_requests(
     {
         if let Some(part_config) = machine_part_config_by_type
             .0
-            .get(&spawn_request.part_type.0)
+            .get(&spawn_request.part_type.name)
         {
             if spawn_request.force || available_zen_points
                 .buy_if_affordable(part_config.cost)
@@ -35,7 +35,6 @@ fn listen_to_spawn_requests(
                 info!("Approved spawn request {:?}", spawn_request);
 
                 part_config.spawn(
-                    spawn_request.location,
                     spawn_request.part_type.clone(),
                     &mut commands,
                 );
