@@ -9,9 +9,17 @@
     ],
     initial_machine_parts: [
         (
-            name: "Shelf",
+            name: "Big Table",
             context: (
-                position: (64.0, -128.0, 10.0),
+                position: (400.0, -288.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Victory Sensor",
+            context: (
+                position: (304.0, -176.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
@@ -19,7 +27,31 @@
         (
             name: "Shelf",
             context: (
-                position: (-112.0, -128.0, 10.0),
+                position: (-304.0, 112.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Shelf",
+            context: (
+                position: (-128.0, 48.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Shelf",
+            context: (
+                position: (48.0, -32.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Water Glass",
+            context: (
+                position: (304.0, -176.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
