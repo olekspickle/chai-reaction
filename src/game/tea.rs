@@ -16,19 +16,26 @@ pub struct Tea;
 #[derive(Default, Component, Copy, Clone, PartialEq)]
 pub struct TeaCounter(pub u32);
 
+#[derive(Component, Copy, Clone, PartialEq)]
+pub struct Recipe {
+    sugar: f32,
+    milk: f32,
+}
+
 fn apply_tea(
     collisions: Collisions,
     tea: Query<Entity, With<Tea>>,
-    mut particles: Query<(Entity, &Particle, &mut ParticleKind)>,
+    mut particles: Query<(Entity, &mut Particle)>,
     config: Res<Config>,
+    time: Res<Time>,
 ) {
     for tea_entity in &tea {
-        for (particle_entity, particle, mut kind) in &mut particles {
-            if *kind != ParticleKind::Water || particle.heat < config.physics.brewing_temperature {
+        for (particle_entity, mut particle) in &mut particles {
+            if particle.contents.heat < config.physics.brewing_temperature {
                 continue;
             }
             if collisions.contains(tea_entity, particle_entity) {
-                *kind = ParticleKind::BrewedTea;
+                particle.contents.tea += time.delta().as_secs_f32();
             }
         }
     }
@@ -40,12 +47,12 @@ fn count_tea(
     audio_sources: Res<AudioSources>,
     mut commands: Commands,
     mut counter: Query<(Entity, &mut TeaCounter)>,
-    mut particles: Query<(Entity, &Particle, &mut ParticleKind)>,
+    mut particles: Query<(Entity, &Particle)>,
     mut score: ResMut<Score>,
 ) {
     for (counter_entity, mut counter) in &mut counter {
-        for (particle_entity, particle, mut kind) in &mut particles {
-            if *kind != ParticleKind::BrewedTea {
+        for (particle_entity, particle) in &particles {
+            if !particle.is_tea() {
                 let vol = settings.sound.general * settings.sound.sfx;
                 // commands.spawn(sfx(audio_sources.cup_drop_brewed.clone(), vol));
                 continue;

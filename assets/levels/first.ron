@@ -13,7 +13,7 @@
         (
             name: "Big Table",
             context: (
-                position: (-48.0, -288.0, 10.0),
+                position: (-0.0, -160.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
@@ -21,7 +21,7 @@
         (
             name: "Shelf",
             context: (
-                position: (-256.0, 0.0, 10.0),
+                position: (-112.0, 0.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
@@ -29,7 +29,7 @@
         (
             name: "Shelf",
             context: (
-                position: (96.0, 112.0, 10.0),
+                position: (128.0, 48.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
@@ -37,7 +37,7 @@
         (
             name: "Water Glass",
             context: (
-                position: (-48.0, -176.0, 10.0),
+                position: (16.0, -48.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),

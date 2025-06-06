@@ -243,7 +243,13 @@ impl MachinePartConfig {
                             parent.spawn((
                                 Transform::from_xyz(offset.x, offset.y, 0.0),
                                 ParticleEmitter::new(
-                                    ParticleKind::Water,
+                                    ParticleContents {
+                                        water: 1.0,
+                                        tea: 0.0,
+                                        heat: 0.0,
+                                        milk: 0.0,
+                                        sugar: 0.0,
+                                    },
                                     *spawn_rate,
                                     *initial_speed_min,
                                     *initial_speed_max,

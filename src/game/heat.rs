@@ -12,17 +12,14 @@ pub struct HeatSource;
 fn apply_heat(
     collisions: Collisions,
     heat_sources: Query<Entity, With<HeatSource>>,
-    mut particles: Query<(Entity, &mut Particle, &ParticleKind)>,
+    mut particles: Query<(Entity, &mut Particle)>,
     time: Res<Time>,
 ) {
     for heat_source in &heat_sources {
-        for (particle_entity, mut particle, kind) in &mut particles {
-            if *kind != ParticleKind::Water {
-                continue;
-            }
+        for (particle_entity, mut particle) in &mut particles {
             if collisions.contains(heat_source, particle_entity) {
                 info!("heat source collided");
-                particle.heat += time.delta().as_secs_f32();
+                particle.contents.heat += time.delta().as_secs_f32();
             }
         }
     }

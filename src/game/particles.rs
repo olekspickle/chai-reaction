@@ -11,30 +11,48 @@ pub fn plugin(app: &mut App) {
         (
             spawn_particles,
             despawn_particles,
-            recolor_particles.before(crate::game::levels::prepare_levels),
+            (recolor_particles, mix_particles).before(crate::game::levels::prepare_levels),
         )
             .run_if(in_state(Screen::Gameplay)),
     );
 }
 
-#[derive(Component, Debug, Clone, Reflect, PartialEq, Eq, Serialize, Deserialize)]
-pub enum ParticleKind {
-    Water,
-    BrewedTea,
-    Fire,
-}
 #[derive(Component)]
 pub struct WaterDrop;
 #[derive(Component)]
 pub struct Spark;
-#[derive(Component)]
+#[derive(Component, Debug, Clone, Reflect, Serialize, Deserialize)]
 pub struct Particle {
     pub lifetime: Timer,
-    pub heat: f32,
+    pub contents: ParticleContents,
 }
+
+impl Particle {
+    pub fn is_tea(&self) -> bool {
+        self.contents.tea > 0.5
+    }
+
+    pub fn is_milky(&self) -> bool {
+        self.contents.milk > 0.5
+    }
+
+    pub fn is_sweet(&self) -> bool {
+        self.contents.sugar > 0.5
+    }
+}
+
+#[derive(Debug, Clone, Reflect, Serialize, Deserialize)]
+pub struct ParticleContents {
+    pub heat: f32,
+    pub tea: f32,
+    pub water: f32,
+    pub sugar: f32,
+    pub milk: f32,
+}
+
 #[derive(Component, Debug, Clone, Reflect, Serialize, Deserialize)]
 pub struct ParticleEmitter {
-    kind: ParticleKind,
+    kind: ParticleContents,
     spawn_rate: f32,                 // Particles per second
     spawn_timer: Timer,              // Timer to control spawn rate
     initial_speed_range: (f32, f32), // Min and max initial speed
@@ -45,7 +63,7 @@ pub struct ParticleEmitter {
 
 impl ParticleEmitter {
     pub fn new(
-        kind: ParticleKind,
+        kind: ParticleContents,
         spawn_rate: f32,
         initial_speed_min: f32,
         initial_speed_max: f32,
@@ -73,7 +91,7 @@ fn spawn_particles(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     mut emitter: Query<(&mut ParticleEmitter, &GlobalTransform)>,
-    droplet_count_query: Query<&ParticleKind>,
+    droplet_count_query: Query<&Particle>,
     editor_mode: Res<EditorMode>,
 ) {
     if editor_mode.0 {
@@ -82,11 +100,7 @@ fn spawn_particles(
     let mut rng = rand::thread_rng();
 
     let max_particles = cfg.physics.water.max_particles as usize;
-    let current_droplet_count: usize = droplet_count_query
-        .iter()
-        .filter(|p| **p == ParticleKind::Water)
-        .collect::<Vec<&ParticleKind>>()
-        .len();
+    let current_droplet_count: usize = droplet_count_query.iter().count();
 
     for (mut emitter, global_transform) in emitter.iter_mut() {
         emitter.spawn_timer.tick(time.delta());
@@ -124,14 +138,11 @@ fn spawn_particles(
                 let initial_velocity = Vec2::new(angle_rad.cos() * speed, angle_rad.sin() * speed);
 
                 let mesh = meshes.add(Circle::new(cfg.droplet_radius));
-                let (color, marker) = match emitter.kind {
-                    ParticleKind::Water => (WATER, ParticleKind::Water),
-                    ParticleKind::Fire => (FIRE, ParticleKind::Fire),
-                    ParticleKind::BrewedTea => (BREWED_TEA, ParticleKind::BrewedTea),
-                };
-                let material = materials.add(color);
+
+                let contents = emitter.kind.clone();
+
+                let material = materials.add(WATER);
                 commands.spawn((
-                    marker,
                     Mesh2d(mesh),
                     MeshMaterial2d(material),
                     Transform::from_translation(spawn_position.extend(0.0)),
@@ -148,7 +159,7 @@ fn spawn_particles(
                     SleepingDisabled,
                     Particle {
                         lifetime: Timer::from_seconds(emitter.particle_lifetime_s, TimerMode::Once),
-                        heat: 0.0,
+                        contents,
                     },
                 ));
             }
@@ -173,17 +184,56 @@ fn despawn_particles(
 
 fn recolor_particles(
     mut commands: Commands,
-    particles: Query<(Entity, &ParticleKind), Changed<ParticleKind>>,
+    particles: Query<(Entity, &Particle), Changed<Particle>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
-    for (entity, kind) in &particles {
-        let color = match kind {
-            ParticleKind::Water => WATER,
-            ParticleKind::Fire => FIRE,
-            ParticleKind::BrewedTea => BREWED_TEA,
-        };
+    for (entity, particle) in &particles {
+        let water = WATER.to_linear();
+        let brewed_tea = BREWED_TEA.to_linear();
+        let total_stuff = particle.contents.water + particle.contents.tea + particle.contents.milk;
+        let r = (water.red * particle.contents.water
+            + brewed_tea.red * particle.contents.tea
+            + particle.contents.milk)
+            / total_stuff;
+        let g = (water.green * particle.contents.water
+            + brewed_tea.green * particle.contents.tea
+            + particle.contents.milk)
+            / total_stuff;
+        let b = (water.blue * particle.contents.water
+            + brewed_tea.blue * particle.contents.tea
+            + particle.contents.milk)
+            / total_stuff;
+        let color = Color::linear_rgba(r, g, b, 1.0);
         commands
             .entity(entity)
             .insert(MeshMaterial2d(materials.add(color)));
+    }
+}
+
+fn mix_particles(
+    mut particles: Query<(Entity, &mut Particle)>,
+    collisions: Collisions,
+    time: Res<Time>,
+) {
+    let d = time.delta().as_secs_f32();
+    let entities: Vec<_> = particles.iter().map(|(e, _)| e).collect();
+    for entity in entities {
+        for other in collisions.entities_colliding_with(entity) {
+            if let Ok([(_, mut src_particle), (_, dst_particle)]) =
+                particles.get_many_mut([entity, other])
+            {
+                let heat = (src_particle.contents.heat + dst_particle.contents.heat) / 2.0;
+                let milk = (src_particle.contents.milk + dst_particle.contents.milk) / 2.0;
+                let sugar = (src_particle.contents.sugar + dst_particle.contents.sugar) / 2.0;
+                let water = (src_particle.contents.water + dst_particle.contents.water) / 2.0;
+                let tea = (src_particle.contents.tea + dst_particle.contents.tea) / 2.0;
+
+                src_particle.contents.heat = src_particle.contents.heat * (1.0 - d) + heat * d;
+                src_particle.contents.milk = src_particle.contents.milk * (1.0 - d) + milk * d;
+                src_particle.contents.sugar = src_particle.contents.sugar * (1.0 - d) + sugar * d;
+                src_particle.contents.water = src_particle.contents.water * (1.0 - d) + water * d;
+                src_particle.contents.tea = src_particle.contents.tea * (1.0 - d) + tea * d;
+            }
+        }
     }
 }

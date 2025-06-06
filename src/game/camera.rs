@@ -1,5 +1,5 @@
-use bevy::prelude::*;
 use crate::prelude::*;
+use bevy::prelude::*;
 
 pub fn plugin(app: &mut App) {
     app.add_systems(Update, spawn_camera.run_if(resource_added::<Config>));
@@ -26,28 +26,28 @@ pub fn spawn_camera(
             ..OrthographicProjection::default_2d()
         }),
         MainCamera,
-        IsDefaultUiCamera
+        IsDefaultUiCamera,
     ));
 
     // Mask overlay
     commands.spawn((
         Mesh2d(meshes.add(Rectangle::new(10000.0, 10000.0))),
         MeshMaterial2d(materials.add(Color::BLACK)),
-        Transform::from_xyz(-5000.0 - screen_width*0.5, 0.0, 100.0),
+        Transform::from_xyz(-5000.0 - screen_width * 0.5, 0.0, 100.0),
     ));
     commands.spawn((
         Mesh2d(meshes.add(Rectangle::new(10000.0, 10000.0))),
         MeshMaterial2d(materials.add(Color::BLACK)),
-        Transform::from_xyz(5000.0 + screen_width*0.5, 0.0, 100.0),
+        Transform::from_xyz(5000.0 + screen_width * 0.5, 0.0, 100.0),
     ));
     commands.spawn((
         Mesh2d(meshes.add(Rectangle::new(10000.0, 10000.0))),
         MeshMaterial2d(materials.add(Color::BLACK)),
-        Transform::from_xyz(0.0, 5000.0 + screen_height*0.5, 100.0),
+        Transform::from_xyz(0.0, 5000.0 + screen_height * 0.5, 100.0),
     ));
     commands.spawn((
         Mesh2d(meshes.add(Rectangle::new(10000.0, 10000.0))),
         MeshMaterial2d(materials.add(Color::BLACK)),
-        Transform::from_xyz(0.0, -5000.0 - screen_height*0.5, 100.0),
+        Transform::from_xyz(0.0, -5000.0 - screen_height * 0.5, 100.0),
     ));
 }
