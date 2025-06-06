@@ -67,6 +67,7 @@ fn on_machine_spawn_area_click(
                             * MACHINE_PARTS_GRID_SCALE)
                             .with_z(MACHINE_PARTS_BASIC_Z_LAYER),
                         part_type: ty.clone(),
+                        ..default()
                     },
                 ));
             }

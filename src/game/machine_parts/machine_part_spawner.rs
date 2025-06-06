@@ -27,7 +27,7 @@ fn listen_to_spawn_requests(
             .0
             .get(&spawn_request.part_type.0)
         {
-            if available_zen_points
+            if spawn_request.force || available_zen_points
                 .buy_if_affordable(part_config.cost)
                 .done()
             {
@@ -39,37 +39,6 @@ fn listen_to_spawn_requests(
                     spawn_request.part_type.clone(),
                     &mut commands,
                 );
-                /*
-                commands.spawn((
-                    Transform::from_translation(spawn_request.location),
-                    spawn_request.part_type.clone(),
-                    Sprite{
-                        image: part_config.sprite.clone(),
-                        ..default()
-                    },
-                    if part_config.is_dynamic {
-                        RigidBody::Dynamic
-                    } else {
-                        RigidBody::Static
-                    },
-                    Pickable::default(),
-                )).observe(handle_erase_click).with_children(|parent| {
-                    for collider in &part_config.colliders {
-                        parent.spawn(
-                            Collider::from(SharedShape::new(collider.clone())),
-                        );
-                    }
-                    if let Some(sprite) = &part_config.background_sprite {
-                        parent.spawn((
-                            Transform::from_xyz(0.0, 0.0, -100.0),
-                            Sprite{
-                                image: sprite.clone(),
-                                ..default()
-                            },
-                        ));
-                    }
-                });
-                */
             }
         }
     }

@@ -10,7 +10,7 @@ pub fn plugin(app: &mut App) {
         // app.add_plugins((PhysicsDebugPlugin::default(), PhysicsPlugins::default()))
         .add_systems(
             Update,
-            (spawn_particles, despawn_particles, recolor_particles)
+            (spawn_particles, despawn_particles, recolor_particles.before(crate::game::levels::prepare_levels))
                 .run_if(in_state(Screen::Gameplay)),
         );
 }

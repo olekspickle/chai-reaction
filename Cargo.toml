@@ -83,6 +83,7 @@ geo = "0.30.0"
 itertools = "0.14.0"
 parry2d = "0.21.1"
 contour = "0.13.1"
+bevy_common_assets = {version = "0.13.0", features=["ron"]}
 
 [lints.clippy]
 # Bevy supplies arguments to systems via dependency injection, so it's natural for systems to

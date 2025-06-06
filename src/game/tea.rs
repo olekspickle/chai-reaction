@@ -41,6 +41,7 @@ fn count_tea(
     mut commands: Commands,
     mut counter: Query<(Entity, &mut TeaCounter)>,
     mut particles: Query<(Entity, &Particle, &mut ParticleKind)>,
+    mut score: ResMut<Score>,
 ) {
     for (counter_entity, mut counter) in &mut counter {
         for (particle_entity, particle, mut kind) in &mut particles {
@@ -53,6 +54,7 @@ fn count_tea(
                 let vol = settings.sound.general * settings.sound.sfx;
                 commands.spawn(sfx(audio_sources.cup_drop.clone(), vol));
                 counter.0 += 1;
+                score.0 += 1;
             }
         }
     }

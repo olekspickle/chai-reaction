@@ -84,6 +84,10 @@ pub enum SubAssembly {
     },
 }
 
+
+#[derive(Component)]
+pub struct SpawnedMachinePart;
+
 impl MachinePartConfig {
     pub fn spawn_sprites(&self, mut commands: EntityCommands) {
         commands.with_children(|parent| {
@@ -110,6 +114,7 @@ impl MachinePartConfig {
     pub fn spawn(&self, position: Vec3, part_type: MachinePartType, commands: &mut Commands) {
         commands
             .spawn((
+                SpawnedMachinePart,
                 Transform::from_translation(position),
                 part_type,
                 if self.is_dynamic {

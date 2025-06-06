@@ -7,10 +7,11 @@ pub enum MachinePartRequest {
     WhateverOtherRequests,
 }
 
-#[derive(Debug)]
+#[derive(Default, Debug)]
 pub struct MachinePartSpawnRequest {
     pub part_type: MachinePartType,
     pub location: Vec3,
+    pub force: bool,
 }
 
 pub struct MachinePartEventsPlugin;

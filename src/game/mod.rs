@@ -26,8 +26,15 @@ pub fn plugin(app: &mut App) {
         tea::plugin,
         victory::plugin,
     ))
+    .add_systems(OnEnter(Screen::Gameplay), clear_score)
     .add_plugins((MachinePartsPlugin, CurrencyPlugin));
 }
 
 #[derive(Default, Resource)]
 pub struct Score(pub i32);
+
+fn clear_score(
+    mut score: ResMut<Score>
+) {
+    score.0 = 0;
+}

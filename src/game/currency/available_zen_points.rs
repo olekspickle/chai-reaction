@@ -11,7 +11,7 @@ impl Plugin for AvailableZenPointsPlugin {
     fn build(&self, app: &mut App) {
         app.init_resource::<AvailableZenPoints>().add_systems(
             Update,
-            set_on_level_start.run_if(state_changed::<GameLevel>),
+            set_on_level_start.run_if(resource_exists_and_changed::<LoadedLevel>),
         );
 
         //DEBUG
@@ -23,13 +23,12 @@ impl Plugin for AvailableZenPointsPlugin {
 }
 
 fn set_on_level_start(
-    game_level: Res<State<GameLevel>>,
+    game_level: Res<LoadedLevel>,
     mut available_zen_points: ResMut<AvailableZenPoints>,
-    initial_zen_points: Res<InitialZenPointByLevel>,
+    level_configs: Res<Assets<LevelConfig>>,
 ) {
-    let game_level = game_level.get();
-    if let Some(initial_points) = initial_zen_points.0.get(game_level) {
-        available_zen_points.0 = *initial_points;
+    if let Some(config) = level_configs.get(&game_level.0) {
+        available_zen_points.0 = config.zen_points;
     }
 }
 

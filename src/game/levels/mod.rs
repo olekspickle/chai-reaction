@@ -1,8 +1,26 @@
+use std::env;
 use crate::prelude::*;
 use avian2d::prelude::*;
-use bevy::prelude::*;
+use bevy::{
+    asset::{AssetLoader, LoadContext, io::Reader},
+    prelude::*,
+};
+use thiserror::Error;
+use bevy_common_assets::ron::RonAssetPlugin;
+
+use crate::loading::LoadResource;
+
+use serde::{Serialize, Deserialize};
 
 mod sink;
+#[cfg(feature="dev")]
+mod editor;
+
+#[derive(Default, Asset, Resource, Reflect, Clone, Debug)]
+pub struct LevelList(pub Vec<Handle<LevelConfig>>);
+
+#[derive(Resource)]
+pub struct LoadedLevel(pub Handle<LevelConfig>);
 
 pub fn plugin(app: &mut App) {
     app.insert_state(GameLevel::Start)
@@ -10,7 +28,16 @@ pub fn plugin(app: &mut App) {
         .add_systems(OnEnter(Screen::Gameplay), prepare_levels)
         .add_systems(OnEnter(GameLevel::Sink), sink::spawn_sink_scene)
         .add_systems(OnEnter(Screen::Title), reset_level)
-        .add_observer(spawn_level_part);
+        .add_systems(Update, init_level.run_if(resource_exists_and_changed::<LoadedLevel>))
+        .add_observer(spawn_level_part)
+        .add_plugins(RonAssetPlugin::<LevelConfig>::new(&["level.ron"]))
+        .register_asset_loader(LevelListLoader)
+        .load_resource_from_path::<LevelList>("levels.ron");
+
+    #[cfg(feature="dev")]
+    if let Some(path) = env::args().nth(1) {
+        app.add_plugins(editor::LevelEditor(path.to_string()));
+    }
 }
 
 #[derive(States, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -38,13 +65,37 @@ fn reset_level(mut game_level: ResMut<NextState<GameLevel>>) {
     game_level.set(GameLevel::Start);
 }
 
-fn prepare_levels(
+pub fn prepare_levels(
     cfg: Res<Config>,
     mut commands: Commands,
-    mut game_level: ResMut<NextState<GameLevel>>,
+    level_list: Res<LevelList>,
 ) {
     commands.insert_resource(Gravity(Vec2::NEG_Y * 9.81 * cfg.physics.gravity));
-    game_level.set(GameLevel::Sink);
+    commands.insert_resource(LoadedLevel(level_list.0[0].clone()));
+}
+
+fn init_level(
+    mut commands: Commands,
+    loaded_level: Res<LoadedLevel>,
+    level_configs: Res<Assets<LevelConfig>>,
+    mut machine_part_request_writer: EventWriter<MachinePartRequest>,
+    existing_parts: Query<Entity, With<SpawnedMachinePart>>,
+) {
+    for entity in &existing_parts {
+        commands.entity(entity).despawn();
+    }
+
+    if let Some(config) = level_configs.get(&loaded_level.0) {
+        for part in &config.initial_machine_parts {
+            machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
+                MachinePartSpawnRequest {
+                    location: part.position.extend(MACHINE_PARTS_BASIC_Z_LAYER),
+                    part_type: MachinePartType(part.part_type.clone()),
+                    force: true,
+                },
+            ));
+        }
+    }
 }
 
 fn spawn_level_part(
@@ -114,5 +165,68 @@ fn spawn_level_part(
                 shape.collider(),
             ));
         }
+    }
+}
+
+#[derive(Default, Reflect, Clone, Serialize, Deserialize)]
+pub struct PartPlacement {
+    part_type: String,
+    position: Vec2,
+    rotation: u32,
+    flip: u32,
+}
+
+#[derive(Default, Asset, Reflect, Clone, Serialize, Deserialize)]
+pub struct LevelConfig {
+    pub name: String,
+    pub zen_points: u32,
+    pub initial_machine_parts: Vec<PartPlacement>,
+}
+
+
+
+#[derive(Default)]
+struct LevelListLoader;
+
+#[non_exhaustive]
+#[derive(Debug, Error)]
+enum LevelListLoaderError {
+    /// An [IO](std::io) Error
+    #[error("Could not load asset: {0}")]
+    Io(#[from] std::io::Error),
+    /// A [RON](ron) Error
+    #[error("Could not parse RON: {0}")]
+    RonSpannedError(#[from] ron::error::SpannedError),
+    #[error(transparent)]
+    LoadDirectError(#[from] bevy::asset::LoadDirectError),
+}
+
+impl AssetLoader for LevelListLoader {
+    type Asset = LevelList;
+    type Settings = ();
+    type Error = LevelListLoaderError;
+    async fn load(
+        &self,
+        reader: &mut dyn Reader,
+        _settings: &(),
+        load_context: &mut LoadContext<'_>,
+    ) -> Result<Self::Asset, Self::Error> {
+        let mut bytes = Vec::new();
+        reader.read_to_end(&mut bytes).await?;
+        let levels = ron::de::from_bytes::<Vec<String>>(&bytes)?;
+
+        let mut level_list = LevelList::default();
+        for path in levels {
+            level_list.0.push(load_context
+                .loader()
+                .with_static_type()
+                .load::<LevelConfig>(path.clone()));
+        }
+
+        Ok(level_list)
+    }
+
+    fn extensions(&self) -> &[&str] {
+        &["ron"]
     }
 }
