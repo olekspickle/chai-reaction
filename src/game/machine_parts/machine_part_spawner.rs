@@ -23,6 +23,8 @@ fn listen_to_spawn_requests(
     mut available_zen_points: ResMut<AvailableZenPoints>,
     mut commands: Commands,
     editor_mode: Res<EditorMode>,
+    #[cfg(debug_assertions)] mut meshes: ResMut<Assets<Mesh>>,
+    #[cfg(debug_assertions)] mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     for spawn_request in
         read_single_field_variant!(request_listener, MachinePartRequest::SpawnMachinePart)
@@ -40,7 +42,15 @@ fn listen_to_spawn_requests(
                 //DEBUG
                 info!("Approved spawn request {:?}", spawn_request);
 
+                #[cfg(not(debug_assertions))]
                 let spawned = part_config.spawn(spawn_request.part_type.clone(), &mut commands);
+                #[cfg(debug_assertions)]
+                let spawned = part_config.spawn(
+                    spawn_request.part_type.clone(),
+                    &mut commands,
+                    &mut meshes,
+                    &mut materials,
+                );
                 if spawn_request.initial_part {
                     commands.entity(spawned).insert(IsInitialPart);
                 }

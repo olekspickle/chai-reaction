@@ -123,9 +123,9 @@ where
                     BorderRadius::all(Px(opts.border_radius)),
                     BorderColor(opts.border_color),
                     InteractionPalette {
-                        none: LIGHT_GREEN,
-                        hovered: DIM_GREEN,
-                        pressed: LIGHT_GREEN,
+                        none: DIM_GREEN,
+                        hovered: LIGHT_GREEN,
+                        pressed: DIM_GREEN,
                     },
                     children![Name::new("Button text"), text(opts.clone())],
                 ))

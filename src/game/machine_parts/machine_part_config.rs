@@ -165,12 +165,18 @@ impl MachinePartConfig {
         });
     }
 
-    pub fn spawn(&self, part_type: MachinePartType, commands: &mut Commands) -> Entity {
+    pub fn spawn(
+        &self,
+        part_type: MachinePartType,
+        commands: &mut Commands,
+        #[cfg(debug_assertions)] meshes: &mut ResMut<Assets<Mesh>>,
+        #[cfg(debug_assertions)] materials: &mut ResMut<Assets<ColorMaterial>>,
+    ) -> Entity {
         let context = part_type.context.clone();
         commands
             .spawn((
                 SpawnedMachinePart,
-                Transform::from_translation(context.position.clone()),
+                Transform::from_translation(context.position),
                 part_type.clone(),
                 if self.is_dynamic {
                     RigidBody::Dynamic
@@ -254,6 +260,10 @@ impl MachinePartConfig {
                                 HeatSource,
                                 Collider::circle(*radius),
                                 Sensor,
+                                #[cfg(debug_assertions)]
+                                Mesh2d(meshes.add(Circle::new(*radius))),
+                                #[cfg(debug_assertions)]
+                                MeshMaterial2d(materials.add(Color::srgba(0.9, 0.7, 0.2, 0.1))),
                             ));
                         }
                         SubAssembly::Tea { offset, radius } => {
