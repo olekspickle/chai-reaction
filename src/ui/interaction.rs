@@ -17,9 +17,9 @@ pub(super) fn plugin(app: &mut App) {
 #[derive(Component, Debug, Reflect)]
 #[reflect(Component)]
 pub struct InteractionPalette {
-    pub none: Color,
-    pub hovered: Color,
-    pub pressed: Color,
+    pub none: (Color, Color),
+    pub hovered: (Color, Color),
+    pub pressed: (Color, Color),
 }
 
 fn apply_interaction_palette(
@@ -33,21 +33,14 @@ fn apply_interaction_palette(
         Changed<Interaction>,
     >,
 ) {
-    for (interaction, palette, mut border, mut background) in &mut palette_query {
-        match interaction {
-            Interaction::None => {
-                *background = palette.none.into();
-                *border = palette.none.into();
-            }
-            Interaction::Hovered => {
-                *background = palette.hovered.into();
-                *border = palette.hovered.into();
-            }
-            Interaction::Pressed => {
-                *background = palette.pressed.into();
-                *border = palette.pressed.into();
-            }
-        }
+    for (interaction, palette, mut border_color, mut background) in &mut palette_query {
+        let (bg, border) = match interaction {
+            Interaction::None => palette.none,
+            Interaction::Hovered => palette.hovered,
+            Interaction::Pressed => palette.pressed,
+        };
+        *background = bg.into();
+        *border_color = border.into();
     }
 }
 

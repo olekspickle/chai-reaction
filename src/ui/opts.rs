@@ -53,6 +53,10 @@ impl Opts {
         self.font.font_size = s;
         self
     }
+    pub fn border_color(mut self, color: Color) -> Self {
+        self.border_color = color;
+        self
+    }
     pub fn node(mut self, new: Node) -> Self {
         self.node = new;
         self

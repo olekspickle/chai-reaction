@@ -62,6 +62,27 @@ pub fn header(opts: impl Into<Opts>) -> impl Bundle {
     (Label, Name::new(format!("Header {short}")), text(opts))
 }
 
+// buttons used in gameplay
+pub fn btn_sq<E, B, M, I>(opts: impl Into<Opts>, action: I) -> impl Bundle
+where
+    E: Event,
+    B: Bundle,
+    I: IntoObserverSystem<E, B, M>,
+{
+    let opts: Opts = opts.into();
+    let new_node = Node {
+        width: Vw(5.0),
+        height: Vw(5.0),
+        padding: UiRect::all(Vw(3.0)),
+        align_items: AlignItems::Center,
+        justify_content: JustifyContent::Center,
+        ..opts.node.clone()
+    };
+    let opts = opts.node(new_node).border_color(WHITEISH);
+
+    btn(opts, action)
+}
+
 // A regular wide button with text and an action defined as an [`Observer`].
 pub fn btn_big<E, B, M, I>(opts: impl Into<Opts>, action: I) -> impl Bundle
 where
@@ -123,9 +144,9 @@ where
                     BorderRadius::all(Px(opts.border_radius)),
                     BorderColor(opts.border_color),
                     InteractionPalette {
-                        none: DIM_GREEN,
-                        hovered: LIGHT_GREEN,
-                        pressed: DIM_GREEN,
+                        none: (DIM_GREEN, DIM_GREEN),
+                        hovered: (LIGHT_GREEN, WHITEISH),
+                        pressed: (DIM_GREEN, WHITEISH),
                     },
                     children![Name::new("Button text"), text(opts.clone())],
                 ))

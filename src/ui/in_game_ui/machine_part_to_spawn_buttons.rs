@@ -1,6 +1,6 @@
 use crate::prelude::Val::Percent;
 use crate::prelude::*;
-use bevy::prelude::*;
+use bevy::{prelude::*, ui::Val::*};
 
 pub struct MachinePartToSpawnButtonsPlugin;
 
@@ -45,30 +45,34 @@ fn spawn_part_picking_buttons(
             buttons.push(commands.spawn(button_bundle).id());
         }
     }
-    let mut node_commands = commands.spawn((
-        Node {
-            flex_direction: FlexDirection::Row,
-            justify_content: JustifyContent::SpaceEvenly,
-            width: Percent(50.0),
-            flex_wrap: FlexWrap::Wrap,
-            ..default()
-        },
-        MachinePartButtonNode,
-    ));
-    node_commands.add_children(&buttons);
-    node_commands.with_children(|parent| {
-        parent.spawn((
-            StateScoped(Screen::Gameplay),
-            btn("Remove", set_delete_mode),
-        ));
-    });
+
+    commands
+        .spawn((
+            Node {
+                flex_direction: FlexDirection::Row,
+                justify_content: JustifyContent::SpaceEvenly,
+                width: Percent(100.0),
+                flex_wrap: FlexWrap::Wrap,
+                position_type: PositionType::Absolute,
+                bottom: Px(0.0),
+                ..default()
+            },
+            MachinePartButtonNode,
+        ))
+        .add_children(&buttons)
+        .with_children(|parent| {
+            parent.spawn((
+                StateScoped(Screen::Gameplay),
+                btn_sq("Remove", set_delete_mode),
+            ));
+        });
 }
 
 fn btn_with_machine_part_type(part_type: MachinePartType, text: impl Into<String>) -> impl Bundle {
     (
         StateScoped(Screen::Gameplay),
         part_type,
-        btn(text.into(), set_picked_machine_part),
+        btn_sq(text.into(), set_picked_machine_part),
     )
 }
 

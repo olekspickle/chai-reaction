@@ -18,7 +18,6 @@ fn apply_heat(
     for heat_source in &heat_sources {
         for (particle_entity, mut particle) in &mut particles {
             if collisions.contains(heat_source, particle_entity) {
-                info!("heat source collided");
                 particle.contents.heat += time.delta().as_secs_f32();
             }
         }
