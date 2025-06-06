@@ -16,8 +16,8 @@ impl Plugin for InitialZenPointByLevelPlugin {
 impl Default for InitialZenPointByLevel {
     fn default() -> Self {
         Self(HashMap::from([
-            (GameLevel::Sink, 420),
-            (GameLevel::GreatGap, 600),
+            (GameLevel::First, 420),
+            (GameLevel::Second, 600),
         ]))
     }
 }

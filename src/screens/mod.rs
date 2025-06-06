@@ -4,7 +4,6 @@ use crate::prelude::*;
 use bevy::prelude::*;
 
 mod credits;
-mod gameover;
 pub mod gameplay;
 mod loading;
 pub mod settings;
@@ -22,7 +21,6 @@ pub(super) fn plugin(app: &mut App) {
         settings::plugin,
         credits::plugin,
         gameplay::plugin,
-        gameover::plugin,
     ))
     .add_systems(Update, track_last_screen.run_if(state_changed::<Screen>))
     .add_observer(on_back)
@@ -45,7 +43,6 @@ pub enum Screen {
     Title,
     // During this State the actual game logic is executed
     Gameplay,
-    GameOver,
 }
 
 // TODO: figure out how to make it a cool observer

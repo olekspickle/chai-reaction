@@ -81,7 +81,7 @@ fn main() {
     };
     let log_level = log::LogPlugin {
         level: log::Level::TRACE,
-        filter: "info,naga=off,wgpu=warn".to_string(),
+        filter: "info,symphonia=off,naga=off,wgpu=warn".to_string(),
         ..Default::default()
     };
 

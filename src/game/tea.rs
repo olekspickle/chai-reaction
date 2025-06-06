@@ -47,12 +47,12 @@ fn count_tea(
         for (particle_entity, particle, mut kind) in &mut particles {
             if *kind != ParticleKind::BrewedTea {
                 let vol = settings.sound.general * settings.sound.sfx;
-                commands.spawn(sfx(audio_sources.cup_drop_brewed.clone(), vol));
+                // commands.spawn(sfx(audio_sources.cup_drop_brewed.clone(), vol));
                 continue;
             }
             if collisions.contains(counter_entity, particle_entity) {
                 let vol = settings.sound.general * settings.sound.sfx;
-                commands.spawn(sfx(audio_sources.cup_drop.clone(), vol));
+                // commands.spawn(sfx(audio_sources.cup_drop.clone(), vol));
                 counter.0 += 1;
                 score.0 += 1;
             }

@@ -20,6 +20,7 @@ pub struct Settings {
     /// Modal stack. kudo for the idea to @skyemakesgames
     /// Only relevant in [`Screen::Gameplay`]
     pub modals: Vec<Modal>,
+    pub current_level: GameLevel,
     pub paused: bool,
     pub last_screen: Screen,
 }
@@ -30,6 +31,7 @@ impl Default for Settings {
             last_screen: Screen::Title,
             sound: Sound::default(),
             modals: vec![],
+            current_level: GameLevel::Start,
             paused: false,
         }
     }
@@ -38,6 +40,7 @@ impl Default for Settings {
 #[derive(Debug, Clone)]
 pub enum Modal {
     Main,
+    Gameover,
     Settings,
 }
 

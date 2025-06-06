@@ -13,7 +13,7 @@ fn check_tea_counters(
     config: Res<Config>,
     mut loaded_level: ResMut<LoadedLevel>,
     level_list: Res<LevelList>,
-    mut screen: ResMut<NextState<Screen>>,
+    mut commands: Commands,
 ) {
     for counter in &counters {
         if counter.0 >= config.tea_particles_for_victory {
@@ -22,7 +22,7 @@ fn check_tea_counters(
                 if new_idx < level_list.0.len() {
                     loaded_level.0 = level_list.0[new_idx].clone();
                 } else {
-                    screen.set(Screen::GameOver);
+                    commands.trigger(OnNewModal(Modal::Gameover));
                 }
             }
             break;

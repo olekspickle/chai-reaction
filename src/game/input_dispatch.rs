@@ -5,9 +5,9 @@ use leafwing_input_manager::prelude::*;
 pub fn plugin(app: &mut App) {
     app.add_event::<OnBack>()
         .add_event::<OnGoTo>()
+        .add_event::<OnRotate>()
         .add_event::<OnNewModal>()
         .add_event::<OnPopModal>()
-        .add_event::<OnLevelPartSpawn>()
         .add_event::<OnPauseToggle>()
         .add_event::<OnClearModals>()
         .add_event::<OnDebugUiToggle>()
@@ -29,27 +29,9 @@ pub struct OnPauseToggle;
 #[derive(Event)]
 pub struct OnDebugUiToggle;
 #[derive(Event)]
-pub struct OnLevelPartSpawn {
-    pub pos: Vec2,
-    pub level: GameLevel,
-    pub part: LevelPart,
-}
-
-#[derive(Event)]
 pub struct OnRotate(pub i32);
 #[derive(Event)]
 pub struct OnFlip;
-
-#[derive(Event)]
-pub struct OnGlassSpawn {
-    pub pos: Vec2,
-    pub level: GameLevel,
-}
-impl OnGlassSpawn {
-    pub fn new(pos: Vec2, level: GameLevel) -> Self {
-        Self { pos, level }
-    }
-}
 
 fn trigger_input_dispatch(
     mut commands: Commands,

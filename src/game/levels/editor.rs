@@ -11,7 +11,8 @@ pub struct EditorLevel(pub Handle<LevelConfig>);
 
 impl Plugin for LevelEditor {
     fn build(&self, app: &mut App) {
-        app.insert_resource(LevelPath(self.0.clone()))
+        let path = format!("assets/levels/{}.ron", self.0.clone());
+        app.insert_resource(LevelPath(path))
             .add_systems(Update, save.run_if(resource_exists::<EditorLevel>))
             .add_systems(OnEnter(Screen::Gameplay), load);
     }
