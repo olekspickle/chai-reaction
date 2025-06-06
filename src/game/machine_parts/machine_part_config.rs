@@ -177,7 +177,7 @@ impl MachinePartConfig {
         });
     }
 
-    pub fn spawn(&self, part_type: MachinePartType, commands: &mut Commands) {
+    pub fn spawn(&self, part_type: MachinePartType, commands: &mut Commands) -> Entity {
         let context = part_type.context.clone();
         commands
             .spawn((
@@ -308,7 +308,7 @@ impl MachinePartConfig {
                         }
                     }
                 }
-            });
+            }).id()
     }
 }
 
@@ -319,12 +319,15 @@ fn handle_erase_click(
     part_type: Query<&MachinePartType>,
     machine_part_config_by_type: Res<MachinePartConfigByType>,
     mut available_zen_points: ResMut<AvailableZenPoints>,
+    initial_part: Query<&IsInitialPart>,
 ) {
     if *picking_state == PickingState::Erasing {
-        if let Ok(ty) = part_type.get(trigger.target()) {
-            if let Some(part_config) = machine_part_config_by_type.0.get(&ty.name) {
-                available_zen_points.refund(part_config.cost);
-                commands.entity(trigger.target()).despawn();
+        if !initial_part.contains(trigger.target()) {
+            if let Ok(ty) = part_type.get(trigger.target()) {
+                if let Some(part_config) = machine_part_config_by_type.0.get(&ty.name) {
+                    available_zen_points.refund(part_config.cost);
+                    commands.entity(trigger.target()).despawn();
+                }
             }
         }
     }

@@ -103,7 +103,7 @@ fn init_level(
                 MachinePartSpawnRequest {
                     location: part.context.position,
                     part_type: part.clone(),
-                    force: true,
+                    initial_part: true,
                 },
             ));
         }

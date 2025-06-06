@@ -11,7 +11,7 @@ pub enum MachinePartRequest {
 pub struct MachinePartSpawnRequest {
     pub part_type: MachinePartType,
     pub location: Vec3,
-    pub force: bool,
+    pub initial_part: bool,
     // pub location: PlacementContext,
 }
 
