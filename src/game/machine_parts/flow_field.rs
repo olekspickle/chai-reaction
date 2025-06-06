@@ -87,8 +87,8 @@ fn do_flow_fields(
                         Vec2::new((rgba.red - 0.5) * 2.0, (rgba.green - 0.5) * 2.0) * rgba.alpha;
 
                     // Adjust vertical force multiplier based on sign
-                    new_force.y *= if new_force.y > 0.0 { 500.0 } else { 5.0 };
-                    new_force.x *= 50.0;
+                    new_force.y *= if new_force.y > 0.0 { 4.0 } else { 1.0 };
+                    new_force.x *= 2.0;
 
                     force.set_impulse(new_force);
 

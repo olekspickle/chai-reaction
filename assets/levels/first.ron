@@ -5,6 +5,8 @@
         "WaterEmitter",
         "HeatSource",
         "Pipe",
+        "PipeTurn",
+        "Funnel",
         "Tea bag",
     ],
     initial_machine_parts: [

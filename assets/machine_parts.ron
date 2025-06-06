@@ -4,7 +4,8 @@
         is_dynamic: false,
         texture_info: (
             frames: 1,
-            rotations: 4,
+            rotations: 8,
+            flippable: true,
         ),
         subassemblies: [
             Sprite(
