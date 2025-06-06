@@ -26,8 +26,10 @@ fn flip_preview(
     if let PickingState::Placing(ref mut part_type) = *picking_state {
         let mut context = &mut part_type.context;
         if let Some(config) = machine_part_config_by_type.0.get(&part_type.name) {
-            if !config.texture_info.flippable { return; }
-            
+            if !config.texture_info.flippable {
+                return;
+            }
+
             context.flipped ^= true;
 
             let max = config.texture_info.rotations;
@@ -46,7 +48,6 @@ fn flip_preview(
             }
         }
     }
-    
 }
 
 fn rotate_preview(
@@ -57,26 +58,26 @@ fn rotate_preview(
     if let PickingState::Placing(ref mut part_type) = *picking_state {
         let mut context = &mut part_type.context;
         if let Some(config) = machine_part_config_by_type.0.get(&part_type.name) {
-
             let mut max = config.texture_info.rotations as i32;
             if config.texture_info.flippable {
                 max /= 2;
             }
-            
+
             let mut new_index: i32 = context.rotation_index as i32;
-            if context.flipped { new_index -= max }
+            if context.flipped {
+                new_index -= max
+            }
             new_index += on_rotate.0;
             new_index %= max;
-            
+
             if new_index < 0 {
                 new_index += max;
             }
             if context.flipped {
                 new_index += max;
             }
-        
+
             context.rotation_index = new_index as u32;
         }
     }
 }
-

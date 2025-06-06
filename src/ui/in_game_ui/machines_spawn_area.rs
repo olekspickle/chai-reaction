@@ -63,8 +63,8 @@ fn on_machine_spawn_area_click(
             if let Some(hit_position) = trigger.hit.position {
                 let mut part = ty.clone();
                 part.context.position = ((hit_position / MACHINE_PARTS_GRID_SCALE).round()
-                                    * MACHINE_PARTS_GRID_SCALE)
-                                    .with_z(MACHINE_PARTS_BASIC_Z_LAYER);
+                    * MACHINE_PARTS_GRID_SCALE)
+                    .with_z(MACHINE_PARTS_BASIC_Z_LAYER);
 
                 machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
                     MachinePartSpawnRequest {

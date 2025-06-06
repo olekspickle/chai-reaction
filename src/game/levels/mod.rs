@@ -1,24 +1,23 @@
-use std::env;
 use crate::prelude::*;
 use avian2d::prelude::*;
 use bevy::{
     asset::{AssetLoader, LoadContext, io::Reader},
     prelude::*,
 };
-use thiserror::Error;
 use bevy_common_assets::ron::RonAssetPlugin;
+use std::env;
+use thiserror::Error;
 
 use crate::loading::LoadResource;
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-mod sink;
-#[cfg(feature="dev")]
+#[cfg(feature = "dev")]
 mod editor;
+mod sink;
 
 #[derive(Resource)]
 pub struct EditorMode(pub bool);
-
 
 #[derive(Default, Asset, Resource, Reflect, Clone, Debug)]
 pub struct LevelList(pub Vec<Handle<LevelConfig>>);
@@ -31,14 +30,17 @@ pub fn plugin(app: &mut App) {
         .enable_state_scoped_entities::<GameLevel>()
         .add_systems(OnEnter(GameLevel::Sink), sink::spawn_sink_scene)
         .add_systems(OnEnter(Screen::Title), reset_level)
-        .add_systems(Update, init_level.run_if(resource_exists_and_changed::<LoadedLevel>))
+        .add_systems(
+            Update,
+            init_level.run_if(resource_exists_and_changed::<LoadedLevel>),
+        )
         .add_observer(spawn_level_part)
         .add_plugins(RonAssetPlugin::<LevelConfig>::new(&["level.ron"]))
         .register_asset_loader(LevelListLoader)
         .load_resource_from_path::<LevelList>("levels.ron");
 
     let mut in_editor = false;
-    #[cfg(feature="dev")]
+    #[cfg(feature = "dev")]
     if let Some(path) = env::args().nth(1) {
         app.add_plugins(editor::LevelEditor(path.to_string()));
         in_editor = true;
@@ -77,11 +79,7 @@ fn reset_level(mut game_level: ResMut<NextState<GameLevel>>) {
     game_level.set(GameLevel::Start);
 }
 
-pub fn prepare_levels(
-    cfg: Res<Config>,
-    mut commands: Commands,
-    level_list: Res<LevelList>,
-) {
+pub fn prepare_levels(cfg: Res<Config>, mut commands: Commands, level_list: Res<LevelList>) {
     commands.insert_resource(Gravity(Vec2::NEG_Y * 9.81 * cfg.physics.gravity));
     commands.insert_resource(LoadedLevel(level_list.0[0].clone()));
 }
@@ -180,7 +178,6 @@ fn spawn_level_part(
     }
 }
 
-
 #[derive(Default, Asset, Reflect, Clone, Serialize, Deserialize)]
 pub struct LevelConfig {
     pub name: String,
@@ -188,8 +185,6 @@ pub struct LevelConfig {
     pub available_machine_parts: Vec<String>,
     pub initial_machine_parts: Vec<MachinePartType>,
 }
-
-
 
 #[derive(Default)]
 struct LevelListLoader;
@@ -223,10 +218,12 @@ impl AssetLoader for LevelListLoader {
 
         let mut level_list = LevelList::default();
         for path in levels {
-            level_list.0.push(load_context
-                .loader()
-                .with_static_type()
-                .load::<LevelConfig>(path.clone()));
+            level_list.0.push(
+                load_context
+                    .loader()
+                    .with_static_type()
+                    .load::<LevelConfig>(path.clone()),
+            );
         }
 
         Ok(level_list)

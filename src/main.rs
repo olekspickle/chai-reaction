@@ -28,9 +28,9 @@ pub(crate) mod prelude {
         input_dispatch::*,
         levels::*,
         machine_parts::{
-            MachinePartsPlugin, consts::*, events::*, machine_part_config::*,
+            MachinePartsPlugin, consts::*, events::*, flow_field::*, machine_part_config::*,
             machine_part_config_by_type::*, machine_part_spawner::*, machine_part_type::*,
-            picked_machine_part_type::*, flow_field::*,
+            picked_machine_part_type::*,
         },
         particles::*,
         settings::{Action, Modal, Settings},

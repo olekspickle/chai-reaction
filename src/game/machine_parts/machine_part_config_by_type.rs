@@ -1,7 +1,7 @@
 use crate::prelude::*;
+use bevy::prelude::*;
 use bevy::render::render_resource::{TextureDimension, TextureFormat};
 use bevy::{platform::collections::HashMap, render::render_resource::Extent3d};
-use bevy::prelude::*;
 use std::collections::VecDeque;
 
 use avian2d::{parry::shape::Compound, prelude::*};
@@ -58,7 +58,12 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
         let mut bytes = Vec::new();
         reader.read_to_end(&mut bytes).await?;
         let mut library = ron::de::from_bytes::<MachinePartConfigByType>(&bytes)?;
-        for MachinePartConfig { subassemblies, texture_info, .. } in library.0.values_mut() {
+        for MachinePartConfig {
+            subassemblies,
+            texture_info,
+            ..
+        } in library.0.values_mut()
+        {
             for subassembly in subassemblies {
                 match subassembly {
                     SubAssembly::Collider {
@@ -72,21 +77,22 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             .with_static_type()
                             .load::<Image>(mesh_image_path.clone())
                             .await?;
-                            let image = loaded_image.get();
-                            let size = image.size();
-                            let rotations = texture_info.rotations;
+                        let image = loaded_image.get();
+                        let size = image.size();
+                        let rotations = texture_info.rotations;
 
-                            let row_height = size.y / rotations;
-                            let mut rotation_colliders = Vec::new();
+                        let row_height = size.y / rotations;
+                        let mut rotation_colliders = Vec::new();
 
-                            for rot in 0..rotations {
-                                let offset = UVec2::new(0, row_height * rot);
-                                let region_size = UVec2::new(size.x, row_height);
-                                let new_colliders = colliders_from_image_region(&image, offset, region_size);
-                                rotation_colliders.push(new_colliders);
-                            }
+                        for rot in 0..rotations {
+                            let offset = UVec2::new(0, row_height * rot);
+                            let region_size = UVec2::new(size.x, row_height);
+                            let new_colliders =
+                                colliders_from_image_region(&image, offset, region_size);
+                            rotation_colliders.push(new_colliders);
+                        }
 
-                            *colliders = rotation_colliders;
+                        *colliders = rotation_colliders;
                     }
                     SubAssembly::Sprite {
                         sprite,
@@ -101,18 +107,20 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             .await?;
 
                         let size = loaded_texture.get().size().as_vec2();
-                        sprite.image = load_context.add_loaded_labeled_asset(sprite_asset_path.clone(), loaded_texture);
-                
-                        
+                        sprite.image = load_context
+                            .add_loaded_labeled_asset(sprite_asset_path.clone(), loaded_texture);
+
                         let rotations = texture_info.rotations;
                         let frames = texture_info.frames;
                         if rotations != 1 || frames != 1 {
                             let pixel_size = size.as_uvec2();
-                            let tile_size = UVec2::new(pixel_size.x / frames, pixel_size.y / rotations);
+                            let tile_size =
+                                UVec2::new(pixel_size.x / frames, pixel_size.y / rotations);
                             let columns = frames;
                             let rows = rotations;
                             // TextureAtlasLayout::from_grid expects tile_size: Vec2, columns: usize, rows: usize, padding: Option<Vec2>, offset: Option<Vec2>
-                            let layout = TextureAtlasLayout::from_grid(tile_size, columns, rows, None, None);
+                            let layout =
+                                TextureAtlasLayout::from_grid(tile_size, columns, rows, None, None);
                             // Add the layout as an asset and get a handle
                             let layout_handle = load_context.add_loaded_labeled_asset(
                                 format!("{sprite_asset_path}_layout"),
@@ -121,10 +129,10 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             sprite.layout = Some(layout_handle);
                         }
                     }
-                    SubAssembly::FlowField { 
-                        flow_texture_path, 
-                        flow_texture, 
-                        collider 
+                    SubAssembly::FlowField {
+                        flow_texture_path,
+                        flow_texture,
+                        collider,
                     } => {
                         let loaded_flow_texture = load_context
                             .loader()
@@ -134,7 +142,10 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             .await?;
 
                         let size = loaded_flow_texture.get().size().as_vec2();
-                        flow_texture.image = load_context.add_loaded_labeled_asset(flow_texture_path.clone(), loaded_flow_texture);
+                        flow_texture.image = load_context.add_loaded_labeled_asset(
+                            flow_texture_path.clone(),
+                            loaded_flow_texture,
+                        );
 
                         let rotations = texture_info.rotations;
                         if rotations != 1 {
@@ -142,7 +153,8 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             let tile_size = UVec2::new(pixel_size.x, pixel_size.y / rotations);
                             let columns = 1;
                             let rows = rotations;
-                            let layout = TextureAtlasLayout::from_grid(tile_size, columns, rows, None, None);
+                            let layout =
+                                TextureAtlasLayout::from_grid(tile_size, columns, rows, None, None);
                             let layout_handle = load_context.add_loaded_labeled_asset(
                                 format!("{flow_texture_path}_layout"),
                                 layout.into(),

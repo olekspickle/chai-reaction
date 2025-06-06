@@ -30,17 +30,15 @@ fn listen_to_spawn_requests(
             .0
             .get(&spawn_request.part_type.name)
         {
-            if spawn_request.initial_part || available_zen_points
-                .buy_if_affordable(part_config.cost)
-                .done()
+            if spawn_request.initial_part
+                || available_zen_points
+                    .buy_if_affordable(part_config.cost)
+                    .done()
             {
                 //DEBUG
                 info!("Approved spawn request {:?}", spawn_request);
 
-                let spawned = part_config.spawn(
-                    spawn_request.part_type.clone(),
-                    &mut commands,
-                );
+                let spawned = part_config.spawn(spawn_request.part_type.clone(), &mut commands);
                 if spawn_request.initial_part {
                     commands.entity(spawned).insert(IsInitialPart);
                 }

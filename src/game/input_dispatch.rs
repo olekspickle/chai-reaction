@@ -83,7 +83,7 @@ fn trigger_input_dispatch(
     }
     if state.just_pressed(&Action::Flip) {
         commands.trigger(OnFlip);
-    } 
+    }
 
     Ok(())
 }

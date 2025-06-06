@@ -92,9 +92,8 @@ pub enum SubAssembly {
         #[serde(skip)]
         #[reflect(ignore)]
         collider: Collider,
-    }
+    },
 }
-
 
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
 pub struct TextureInfo {
@@ -122,24 +121,12 @@ pub struct MachineSpriteInfo {
     pub layout: Option<Handle<TextureAtlasLayout>>,
 }
 
-
-
-
-#[derive(
-    Debug,
-    Clone,
-    PartialEq,
-    Default,
-    Reflect,
-    Serialize,
-    Deserialize,
-)]
+#[derive(Debug, Clone, PartialEq, Default, Reflect, Serialize, Deserialize)]
 pub struct PlacementContext {
     pub position: Vec3,
     pub rotation_index: u32,
     pub flipped: bool,
 }
-
 
 #[derive(Component)]
 pub struct SpawnedMachinePart;
@@ -155,7 +142,8 @@ impl MachinePartConfig {
                     ..
                 } = subassembly
                 {
-                    let mut child = parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
+                    let mut child =
+                        parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
 
                     if let Some(layout) = &sprite.layout {
                         child.insert(Sprite {
@@ -201,7 +189,8 @@ impl MachinePartConfig {
                             sprite,
                             ..
                         } => {
-                            let mut child = parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
+                            let mut child =
+                                parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
                             child.insert(Pickable::default());
 
                             if let Some(layout) = &sprite.layout {
@@ -224,7 +213,9 @@ impl MachinePartConfig {
                             offset, colliders, ..
                         } => {
                             // Select the set of colliders based on the current rotation index
-                            if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
+                            if let Some(collider_set) =
+                                colliders.get(context.rotation_index as usize)
+                            {
                                 for collider in collider_set {
                                     parent.spawn((
                                         Transform::from_xyz(offset.x, offset.y, 0.0),
@@ -281,10 +272,14 @@ impl MachinePartConfig {
                                 Sensor,
                             ));
                         }
-                        SubAssembly::FlowField { flow_texture, collider, .. } => { 
+                        SubAssembly::FlowField {
+                            flow_texture,
+                            collider,
+                            ..
+                        } => {
                             parent.spawn((
-                                FlowField { 
-                                    sprite_info: flow_texture.clone(), 
+                                FlowField {
+                                    sprite_info: flow_texture.clone(),
                                     rotation_index: context.rotation_index as u32,
                                 },
                                 collider.clone(),
@@ -302,13 +297,14 @@ impl MachinePartConfig {
                                         image: flow_texture.image.clone(),
                                         color: Color::WHITE.with_alpha(0.3),
                                         ..default()
-                                    }
+                                    },
                                 },
                             ));
                         }
                     }
                 }
-            }).id()
+            })
+            .id()
     }
 }
 

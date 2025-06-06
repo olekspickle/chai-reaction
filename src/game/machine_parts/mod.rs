@@ -3,12 +3,12 @@ use bevy::prelude::*;
 
 pub mod consts;
 pub mod events;
+pub mod flow_field;
 pub mod machine_part_config;
 pub mod machine_part_config_by_type;
 pub mod machine_part_spawner;
 pub mod machine_part_type;
 pub mod picked_machine_part_type;
-pub mod flow_field;
 
 pub struct MachinePartsPlugin;
 

@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use bevy::{prelude::*};
+use bevy::prelude::*;
 
 #[derive(Event, Debug)]
 pub enum MachinePartRequest {

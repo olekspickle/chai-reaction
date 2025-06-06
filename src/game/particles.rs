@@ -7,10 +7,14 @@ use serde::{Deserialize, Serialize};
 
 pub fn plugin(app: &mut App) {
     app.add_systems(
-            Update,
-            (spawn_particles, despawn_particles, recolor_particles.before(crate::game::levels::prepare_levels))
-                .run_if(in_state(Screen::Gameplay)),
-        );
+        Update,
+        (
+            spawn_particles,
+            despawn_particles,
+            recolor_particles.before(crate::game::levels::prepare_levels),
+        )
+            .run_if(in_state(Screen::Gameplay)),
+    );
 }
 
 #[derive(Component, Debug, Clone, Reflect, PartialEq, Eq, Serialize, Deserialize)]
@@ -73,7 +77,7 @@ fn spawn_particles(
     editor_mode: Res<EditorMode>,
 ) {
     if editor_mode.0 {
-        return
+        return;
     }
     let mut rng = rand::thread_rng();
 

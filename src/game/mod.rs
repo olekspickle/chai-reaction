@@ -8,11 +8,11 @@ pub mod input_dispatch;
 pub mod levels;
 pub mod machine_parts;
 pub mod particles;
+pub mod physics;
 pub mod settings;
 pub mod sound;
 pub mod tea;
 pub mod victory;
-pub mod physics;
 
 pub fn plugin(app: &mut App) {
     app.insert_resource(Score(0));
@@ -35,8 +35,6 @@ pub fn plugin(app: &mut App) {
 #[derive(Default, Resource)]
 pub struct Score(pub i32);
 
-fn clear_score(
-    mut score: ResMut<Score>
-) {
+fn clear_score(mut score: ResMut<Score>) {
     score.0 = 0;
 }

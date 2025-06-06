@@ -1,5 +1,5 @@
-use bevy::prelude::*;
 use crate::prelude::*;
+use bevy::prelude::*;
 
 pub struct LevelEditor(pub String);
 
@@ -22,7 +22,10 @@ fn load(
     level_path: Res<LevelPath>,
     mut level_configs: ResMut<Assets<LevelConfig>>,
 ) {
-    let handle = if let Some(config) = std::fs::read_to_string(&level_path.0).ok().and_then(|d| ron::from_str::<LevelConfig>(&d).ok()) {
+    let handle = if let Some(config) = std::fs::read_to_string(&level_path.0)
+        .ok()
+        .and_then(|d| ron::from_str::<LevelConfig>(&d).ok())
+    {
         level_configs.add(config)
     } else {
         level_configs.add(LevelConfig::default())
@@ -43,6 +46,10 @@ fn save(
         for part_type in &machine_parts {
             level.initial_machine_parts.push(part_type.clone());
         }
-        std::fs::write(&level_path.0, ron::ser::to_string_pretty(&level, Default::default()).unwrap()).unwrap();
+        std::fs::write(
+            &level_path.0,
+            ron::ser::to_string_pretty(&level, Default::default()).unwrap(),
+        )
+        .unwrap();
     }
 }
