@@ -6,10 +6,7 @@ pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Title), setup_menu);
 }
 
-fn setup_menu(
-    //font: Res<Fira>,
-    mut commands: Commands,
-) {
+fn setup_menu(mut commands: Commands) {
     commands.spawn((
         StateScoped(Screen::Title),
         ui_root("Title"),

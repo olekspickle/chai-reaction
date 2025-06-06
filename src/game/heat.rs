@@ -21,6 +21,7 @@ fn apply_heat(
                 continue;
             }
             if collisions.contains(heat_source, particle_entity) {
+                info!("heat source collided");
                 particle.heat += time.delta().as_secs_f32();
             }
         }
