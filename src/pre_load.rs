@@ -10,6 +10,7 @@ pub struct Config {
     pub credits: Credits,
     pub droplet_radius: f32,
     pub tea_particles_for_victory: u32,
+    pub screen_size_in_tiles: UVec2,
 }
 
 #[derive(Clone, Debug, Serialize, Deserialize, Reflect)]

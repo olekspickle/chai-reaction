@@ -22,6 +22,7 @@ fn listen_to_spawn_requests(
     machine_part_config_by_type: Res<MachinePartConfigByType>,
     mut available_zen_points: ResMut<AvailableZenPoints>,
     mut commands: Commands,
+    editor_mode: Res<EditorMode>,
 ) {
     for spawn_request in
         read_single_field_variant!(request_listener, MachinePartRequest::SpawnMachinePart)
@@ -31,6 +32,7 @@ fn listen_to_spawn_requests(
             .get(&spawn_request.part_type.name)
         {
             if spawn_request.initial_part
+                || editor_mode.0
                 || available_zen_points
                     .buy_if_affordable(part_config.cost)
                     .done()
