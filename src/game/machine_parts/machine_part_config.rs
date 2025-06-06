@@ -283,22 +283,22 @@ impl MachinePartConfig {
                                     rotation_index: context.rotation_index as u32,
                                 },
                                 collider.clone(),
-                                match &flow_texture.layout {
-                                    Some(layout) => Sprite {
-                                        image: flow_texture.image.clone(),
-                                        color: Color::WHITE.with_alpha(0.3),
-                                        texture_atlas: Some(TextureAtlas {
-                                            layout: layout.clone(),
-                                            index: context.rotation_index as usize,
-                                        }),
-                                        ..default()
-                                    },
-                                    None => Sprite {
-                                        image: flow_texture.image.clone(),
-                                        color: Color::WHITE.with_alpha(0.3),
-                                        ..default()
-                                    },
-                                },
+                                // match &flow_texture.layout {
+                                //     Some(layout) => Sprite {
+                                //         image: flow_texture.image.clone(),
+                                //         color: Color::WHITE.with_alpha(0.3),
+                                //         texture_atlas: Some(TextureAtlas {
+                                //             layout: layout.clone(),
+                                //             index: context.rotation_index as usize,
+                                //         }),
+                                //         ..default()
+                                //     },
+                                //     None => Sprite {
+                                //         image: flow_texture.image.clone(),
+                                //         color: Color::WHITE.with_alpha(0.3),
+                                //         ..default()
+                                //     },
+                                // },
                             ));
                         }
                     }
