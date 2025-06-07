@@ -97,7 +97,6 @@ fn btn_sounds(
             Interaction::Pressed => audio_sources.btn_press.clone(),
             _ => continue,
         };
-        let vol = settings.sound.general * settings.sound.sfx;
-        commands.spawn(sfx(source, vol));
+        commands.spawn(sfx(source, settings.sfx()));
     }
 }

@@ -12,7 +12,8 @@ impl Plugin for MachinePartSpawnerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            listen_to_spawn_requests.run_if(resource_exists::<MachinePartConfigByType>)
+            listen_to_spawn_requests
+                .run_if(resource_exists::<MachinePartConfigByType>)
                 .run_if(resource_exists::<AudioSources>),
         );
     }
@@ -58,8 +59,7 @@ fn listen_to_spawn_requests(
                 );
 
                 let source = sounds.place_piece.clone();
-                let vol = settings.sound.general * settings.sound.sfx;
-                commands.spawn(sfx(source, vol));
+                commands.spawn(sfx(source, settings.sfx()));
 
                 if spawn_request.initial_part {
                     commands.entity(spawned).insert(IsInitialPart);

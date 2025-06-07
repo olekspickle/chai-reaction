@@ -21,7 +21,7 @@ pub(crate) mod prelude {
 
     pub use bevy::prelude::*;
 
-    pub use audio::{General, Music, Sfx, Sound, music, sfx};
+    pub use audio::*;
     pub(crate) use game::{
         Score,
         currency::*,

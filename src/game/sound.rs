@@ -20,8 +20,7 @@ fn start_or_resume_soundtrack(
         }
     } else {
         let handle = *[&sources.bg_music].choose(&mut thread_rng()).unwrap();
-        let vol = settings.sound.general * settings.sound.music;
-        cmds.spawn(music(handle.clone(), vol));
+        cmds.spawn(music_looping(handle.clone(), settings.music()));
     }
 
     Ok(())

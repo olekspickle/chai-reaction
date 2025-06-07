@@ -77,6 +77,6 @@ fn start_credits_music(
     commands.spawn((
         StateScoped(Screen::Credits),
         Name::new("Credits Music"),
-        music(handle, vol),
+        music_looping(handle, vol),
     ));
 }

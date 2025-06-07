@@ -1,6 +1,8 @@
 use crate::{
     game::{
-        heat::HeatSource, machine_parts::animator::{BasicSpriteAnimationController, SpriteFrames}, tea::{Recipe, Tea, TeaSensor}
+        heat::HeatSource,
+        machine_parts::animator::{BasicSpriteAnimationController, SpriteFrames},
+        tea::{Recipe, Tea, TeaSensor},
     },
     prelude::*,
 };
@@ -8,7 +10,7 @@ use avian2d::{
     parry::shape::{Compound, SharedShape},
     prelude::*,
 };
-use bevy::{prelude::*, scene::ron::de};
+use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize, Reflect)]
@@ -206,223 +208,215 @@ impl MachinePartConfig {
         #[cfg(debug_assertions)] materials: &mut ResMut<Assets<ColorMaterial>>,
     ) -> Entity {
         let context = part_type.context.clone();
-        let mut part = commands
-            .spawn((
-                SpawnedMachinePart,
-                Transform::from_translation(context.position),
-                part_type.clone(),
-                if self.is_dynamic {
-                    RigidBody::Dynamic
-                } else {
-                    RigidBody::Static
-                },
-                Pickable::default(),
-            ));
-        
+        let mut part = commands.spawn((
+            SpawnedMachinePart,
+            Transform::from_translation(context.position),
+            part_type.clone(),
+            if self.is_dynamic {
+                RigidBody::Dynamic
+            } else {
+                RigidBody::Static
+            },
+            Pickable::default(),
+        ));
+
         match self.texture_info.frames {
-            SpriteFrames::ONE => {},
+            SpriteFrames::ONE => {}
             SpriteFrames::Basic(count, time) => {
                 part.insert(BasicSpriteAnimationController {
                     frame_count: count,
                     current_frame: 0,
                     timer: Timer::from_seconds(time, TimerMode::Repeating),
                 });
-            },
+            }
         }
         part.observe(handle_erase_click);
         part.with_children(|parent| {
-                for subassembly in &self.subassemblies {
-                    match subassembly {
-                        SubAssembly::Sprite {
-                            offset,
-                            layer,
-                            sprite,
-                            ..
-                        } => {
-                            let mut child =
-                                parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
-                            child.insert(Pickable::default());
-                            child.insert(MachineSprite);
+            for subassembly in &self.subassemblies {
+                match subassembly {
+                    SubAssembly::Sprite {
+                        offset,
+                        layer,
+                        sprite,
+                        ..
+                    } => {
+                        let mut child =
+                            parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
+                        child.insert(Pickable::default());
+                        child.insert(MachineSprite);
 
-                            if let Some(layout) = &sprite.layout {
-                                child.insert(Sprite {
-                                    image: sprite.image.clone(),
-                                    texture_atlas: Some(TextureAtlas {
-                                        layout: layout.clone(),
-                                        index: context.rotation_index as usize,
-                                    }),
-                                    ..default()
-                                });
-                            } else {
-                                child.insert(Sprite {
-                                    image: sprite.image.clone(),
-                                    ..default()
-                                });
-                            }
-                        }
-                        SubAssembly::Collider {
-                            offset, colliders, ..
-                        } => {
-                            // Select the set of colliders based on the current rotation index
-                            if let Some(collider_set) =
-                                colliders.get(context.rotation_index as usize)
-                            {
-                                for collider in collider_set {
-                                    parent.spawn((
-                                        Transform::from_xyz(offset.x, offset.y, 0.0),
-                                        Collider::from(SharedShape::new(collider.clone())),
-                                    ));
-                                }
-                            }
-                        }
-                        SubAssembly::ConveyorBelt {
-                            offset, colliders, speed, ..
-                        } => {
-                            // Select the set of colliders based on the current rotation index
-                            if let Some(collider_set) =
-                                colliders.get(context.rotation_index as usize)
-                            {
-                                for collider in collider_set {
-                                    parent.spawn((
-                                        Transform::from_xyz(offset.x, offset.y, 0.0),
-                                        Collider::from(SharedShape::new(collider.clone())),
-                                        crate::game::conveyor_belts::ConveyorBelt {
-                                            speed: *speed,
-                                        },
-                                    ));
-                                }
-                            }
-                        }
-                        SubAssembly::FluidFilter {
-                            offset, colliders, ..
-                        } => {
-                            // Select the set of colliders based on the current rotation index
-                            if let Some(collider_set) =
-                                colliders.get(context.rotation_index as usize)
-                            {
-                                for collider in collider_set {
-                                    parent.spawn((
-                                        Transform::from_xyz(offset.x, offset.y, 0.0),
-                                        Collider::from(SharedShape::new(collider.clone())),
-                                        FluidFilter,
-                                    ));
-                                }
-                            }
-                        }
-                        SubAssembly::FluidFilterButton{
-                            offset, colliders, ..
-                        } => {
-                            // Select the set of colliders based on the current rotation index
-                            if let Some(collider_set) =
-                                colliders.get(context.rotation_index as usize)
-                            {
-                                for collider in collider_set {
-                                    parent.spawn((
-                                        Transform::from_xyz(offset.x, offset.y, 0.0),
-                                        Collider::from(SharedShape::new(collider.clone())),
-                                        FluidFilterButton::default(),
-                                        Sensor
-                                    ));
-                                }
-                            }
-                        }
-                        SubAssembly::ParticleEmitter{
-                            offset,
-                            spawn_rate,
-                            initial_speed_min,
-                            initial_speed_max,
-                            initial_angle_deg_min,
-                            initial_angle_deg_max,
-                            particle_lifetime_s,
-                            particle_gravity_scale,
-                            kind,
-                        } => {
-                            parent.spawn((
-                                Transform::from_xyz(offset.x, offset.y, 0.0),
-                                ParticleEmitter::new(
-                                    *kind,
-                                    *spawn_rate,
-                                    *initial_speed_min,
-                                    *initial_speed_max,
-                                    *initial_angle_deg_min,
-                                    *initial_angle_deg_max,
-                                    *particle_lifetime_s,
-                                    *particle_gravity_scale,
-                                ),
-                            ));
-                        }
-                        SubAssembly::HeatSource { offset, radius } => {
-                            parent.spawn((
-                                music(sounds.stove_looping.clone(), settings.sound.general * settings.sound.sfx),
-                                Transform::from_xyz(offset.x, offset.y, 0.0),
-                                HeatSource,
-                                Collider::circle(*radius),
-                                Sensor,
-                                #[cfg(debug_assertions)]
-                                Mesh2d(meshes.add(Circle::new(*radius))),
-                                #[cfg(debug_assertions)]
-                                MeshMaterial2d(materials.add(Color::srgba(0.9, 0.7, 0.2, 0.01))),
-                                Pickable::IGNORE,
-                            ));
-                        }
-                        SubAssembly::Tea { offset, radius } => {
-                            parent.spawn((
-                                Transform::from_xyz(offset.x, offset.y, 0.0),
-                                Tea,
-                                Collider::circle(*radius),
-                                Sensor,
-                            ));
-                        }
-                        SubAssembly::TeaSensor {
-                            offset,
-                            radius,
-                            recipe,
-                        } => {
-                            parent.spawn((
-                                Transform::from_xyz(offset.x, offset.y, 0.0),
-                                TeaSensor(recipe.clone()),
-                                Collider::circle(*radius),
-                                Sensor,
-                                #[cfg(debug_assertions)]
-                                Mesh2d(meshes.add(Circle::new(*radius))),
-                                #[cfg(debug_assertions)]
-                                MeshMaterial2d(materials.add(Color::srgba(0.3, 0.7, 0.3, 0.01))),
-                                Pickable::IGNORE,
-                            ));
-                        }
-                        SubAssembly::FlowField {
-                            flow_texture,
-                            collider,
-                            ..
-                        } => {
-                            parent.spawn((
-                                FlowField {
-                                    sprite_info: flow_texture.clone(),
-                                    rotation_index: context.rotation_index as u32,
-                                },
-                                collider.clone(),
-                                // match &flow_texture.layout {
-                                //     Some(layout) => Sprite {
-                                //         image: flow_texture.image.clone(),
-                                //         color: Color::WHITE.with_alpha(0.3),
-                                //         texture_atlas: Some(TextureAtlas {
-                                //             layout: layout.clone(),
-                                //             index: context.rotation_index as usize,
-                                //         }),
-                                //         ..default()
-                                //     },
-                                //     None => Sprite {
-                                //         image: flow_texture.image.clone(),
-                                //         color: Color::WHITE.with_alpha(0.3),
-                                //         ..default()
-                                //     },
-                                // },
-                            ));
+                        if let Some(layout) = &sprite.layout {
+                            child.insert(Sprite {
+                                image: sprite.image.clone(),
+                                texture_atlas: Some(TextureAtlas {
+                                    layout: layout.clone(),
+                                    index: context.rotation_index as usize,
+                                }),
+                                ..default()
+                            });
+                        } else {
+                            child.insert(Sprite {
+                                image: sprite.image.clone(),
+                                ..default()
+                            });
                         }
                     }
+                    SubAssembly::Collider {
+                        offset, colliders, ..
+                    } => {
+                        // Select the set of colliders based on the current rotation index
+                        if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
+                            for collider in collider_set {
+                                parent.spawn((
+                                    Transform::from_xyz(offset.x, offset.y, 0.0),
+                                    Collider::from(SharedShape::new(collider.clone())),
+                                ));
+                            }
+                        }
+                    }
+                    SubAssembly::ConveyorBelt {
+                        offset,
+                        colliders,
+                        speed,
+                        ..
+                    } => {
+                        // Select the set of colliders based on the current rotation index
+                        if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
+                            for collider in collider_set {
+                                parent.spawn((
+                                    Transform::from_xyz(offset.x, offset.y, 0.0),
+                                    Collider::from(SharedShape::new(collider.clone())),
+                                    crate::game::conveyor_belts::ConveyorBelt { speed: *speed },
+                                ));
+                            }
+                        }
+                    }
+                    SubAssembly::FluidFilter {
+                        offset, colliders, ..
+                    } => {
+                        // Select the set of colliders based on the current rotation index
+                        if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
+                            for collider in collider_set {
+                                parent.spawn((
+                                    Transform::from_xyz(offset.x, offset.y, 0.0),
+                                    Collider::from(SharedShape::new(collider.clone())),
+                                    FluidFilter,
+                                ));
+                            }
+                        }
+                    }
+                    SubAssembly::FluidFilterButton {
+                        offset, colliders, ..
+                    } => {
+                        // Select the set of colliders based on the current rotation index
+                        if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
+                            for collider in collider_set {
+                                parent.spawn((
+                                    Transform::from_xyz(offset.x, offset.y, 0.0),
+                                    Collider::from(SharedShape::new(collider.clone())),
+                                    FluidFilterButton::default(),
+                                    Sensor,
+                                ));
+                            }
+                        }
+                    }
+                    SubAssembly::ParticleEmitter {
+                        offset,
+                        spawn_rate,
+                        initial_speed_min,
+                        initial_speed_max,
+                        initial_angle_deg_min,
+                        initial_angle_deg_max,
+                        particle_lifetime_s,
+                        particle_gravity_scale,
+                        kind,
+                    } => {
+                        parent.spawn((
+                            Transform::from_xyz(offset.x, offset.y, 0.0),
+                            ParticleEmitter::new(
+                                *kind,
+                                *spawn_rate,
+                                *initial_speed_min,
+                                *initial_speed_max,
+                                *initial_angle_deg_min,
+                                *initial_angle_deg_max,
+                                *particle_lifetime_s,
+                                *particle_gravity_scale,
+                            ),
+                        ));
+                    }
+                    SubAssembly::HeatSource { offset, radius } => {
+                        parent.spawn((
+                            sfx_looping(sounds.stove_looping.clone(), settings.sfx()),
+                            Transform::from_xyz(offset.x, offset.y, 0.0),
+                            HeatSource,
+                            Collider::circle(*radius),
+                            Sensor,
+                            #[cfg(debug_assertions)]
+                            Mesh2d(meshes.add(Circle::new(*radius))),
+                            #[cfg(debug_assertions)]
+                            MeshMaterial2d(materials.add(Color::srgba(0.9, 0.7, 0.2, 0.01))),
+                            Pickable::IGNORE,
+                        ));
+                    }
+                    SubAssembly::Tea { offset, radius } => {
+                        parent.spawn((
+                            Transform::from_xyz(offset.x, offset.y, 0.0),
+                            Tea,
+                            Collider::circle(*radius),
+                            Sensor,
+                        ));
+                    }
+                    SubAssembly::TeaSensor {
+                        offset,
+                        radius,
+                        recipe,
+                    } => {
+                        parent.spawn((
+                            Transform::from_xyz(offset.x, offset.y, 0.0),
+                            TeaSensor(*recipe),
+                            Collider::circle(*radius),
+                            Sensor,
+                            #[cfg(debug_assertions)]
+                            Mesh2d(meshes.add(Circle::new(*radius))),
+                            #[cfg(debug_assertions)]
+                            MeshMaterial2d(materials.add(Color::srgba(0.3, 0.7, 0.3, 0.01))),
+                            Pickable::IGNORE,
+                        ));
+                    }
+                    SubAssembly::FlowField {
+                        flow_texture,
+                        collider,
+                        ..
+                    } => {
+                        parent.spawn((
+                            FlowField {
+                                sprite_info: flow_texture.clone(),
+                                rotation_index: context.rotation_index,
+                            },
+                            collider.clone(),
+                            // match &flow_texture.layout {
+                            //     Some(layout) => Sprite {
+                            //         image: flow_texture.image.clone(),
+                            //         color: Color::WHITE.with_alpha(0.3),
+                            //         texture_atlas: Some(TextureAtlas {
+                            //             layout: layout.clone(),
+                            //             index: context.rotation_index as usize,
+                            //         }),
+                            //         ..default()
+                            //     },
+                            //     None => Sprite {
+                            //         image: flow_texture.image.clone(),
+                            //         color: Color::WHITE.with_alpha(0.3),
+                            //         ..default()
+                            //     },
+                            // },
+                        ));
+                    }
                 }
-            });
-        
+            }
+        });
+
         part.id()
     }
 }
@@ -443,8 +437,7 @@ fn handle_erase_click(
             if let Ok(ty) = part_type.get(trigger.target()) {
                 if let Some(part_config) = machine_part_config_by_type.0.get(&ty.name) {
                     let source = sounds.cancel_piece.clone();
-                    let vol = settings.sound.general * settings.sound.sfx;
-                    commands.spawn(sfx(source, vol));
+                    commands.spawn(sfx(source, settings.sfx()));
 
                     available_zen_points.refund(part_config.cost);
                     commands.entity(trigger.target()).despawn();
