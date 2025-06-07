@@ -57,6 +57,24 @@
             )
         ]
     ),
+    "SugarEmitter": (
+        cost: 1000,
+        is_dynamic: false,
+        subassemblies: [
+            ParticleEmitter(
+                spawn_rate: 10.0,
+                initial_speed_min: 20.0,
+                initial_speed_max: 50.0,
+                initial_angle_deg_min: 45.0,
+                initial_angle_deg_max: 160.0,
+                particle_lifetime_s: 10.0,
+                particle_gravity_scale: 0.5,
+                kind: (
+                    sugar: 1.0,
+                )
+            )
+        ]
+    ),
     "HeatSource": (
         cost: 1000,
         is_dynamic: false,
@@ -178,6 +196,29 @@
             ),
             Collider(
                 mesh_image_path: "textures/shelf.png",
+            ),
+        ],
+    ),
+    "Fluid Filter": (
+        cost: 42,
+        is_dynamic: false,
+        texture_info: (
+            frames: 1,
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/filter_sprite.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/filter_collider.png",
+            ),
+            FluidFilter(
+                mesh_image_path: "textures/filter_base_collider.png",
+            ),
+            FluidFilterButton(
+                mesh_image_path: "textures/filter_trigger_sprite.png",
             ),
         ],
     ),

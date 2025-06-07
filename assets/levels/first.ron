@@ -36,6 +36,14 @@
             ),
         ),
         (
+            name: "Milky Tea Sensor",
+            context: (
+                position: (16.0, -64.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
             name: "Water Glass",
             context: (
                 position: (16.0, -48.0, 10.0),
@@ -44,9 +52,9 @@
             ),
         ),
         (
-            name: "Milky Tea Sensor",
+            name: "Fluid Filter",
             context: (
-                position: (16.0, -64.0, 10.0),
+                position: (32.0, 16.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),

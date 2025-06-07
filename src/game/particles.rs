@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{prelude::*, game::ParticleLayer};
 use avian2d::prelude::*;
 use bevy::prelude::*;
 use rand::prelude::*;
@@ -9,12 +9,15 @@ pub fn plugin(app: &mut App) {
     app.add_systems(
         Update,
         (
-            spawn_particles,
+            despawn_particles,
+            trigger_fluid_filter_buttons,
             (spawn_particles, recolor_particles, mix_particles)
                 .before(crate::game::levels::prepare_levels),
         )
             .run_if(in_state(Screen::Gameplay)),
-    );
+    )
+    .add_observer(activate_fluid_filter)
+    .add_observer(deactivate_fluid_filter);
 }
 
 #[derive(Component)]
@@ -198,6 +201,10 @@ fn spawn_particles(
                     Restitution::new(cfg.physics.water.restitution)
                         .with_combine_rule(CoefficientCombine::Min), // How bounciness is combined
                     Mass(0.1),
+                    CollisionLayers::new(
+                        ParticleLayer::Fluid,
+                        [ParticleLayer::Default, ParticleLayer::Fluid, ParticleLayer::TeaLeaves],
+                    ),
                     SleepingDisabled,
                     Particle {
                         lifetime: Timer::from_seconds(emitter.particle_lifetime_s, TimerMode::Once),
@@ -261,6 +268,78 @@ fn mix_particles(
                 let avg = (src_particle.contents + dst_particle.contents) / 2.0;
                 src_particle.contents = src_particle.contents * (1.0 - d) + avg * d;
             }
+        }
+    }
+}
+
+#[derive(Event)]
+#[event(auto_propagate)]
+pub struct ActivateFluidFilter;
+#[derive(Event)]
+#[event(auto_propagate)]
+pub struct DeactivateFluidFilter;
+
+#[derive(Component)]
+pub struct FluidFilter;
+#[derive(Default, Component)]
+pub struct FluidFilterButton(pub bool);
+
+fn activate_fluid_filter(
+    trigger: Trigger<ActivateFluidFilter>,
+    mut commands: Commands,
+    filters: Query<&FluidFilter>,
+) {
+    if filters.contains(trigger.target()) {
+        commands.entity(trigger.target()).insert(CollisionLayers::new(
+            ParticleLayer::Default,
+            [ParticleLayer::Default, ParticleLayer::TeaLeaves],
+        ));
+    }
+}
+
+fn deactivate_fluid_filter(
+    trigger: Trigger<DeactivateFluidFilter>,
+    mut commands: Commands,
+    filters: Query<&FluidFilter>,
+) {
+    if filters.contains(trigger.target()) {
+        commands.entity(trigger.target()).insert(CollisionLayers::new(
+            ParticleLayer::Default,
+            [ParticleLayer::Default, ParticleLayer::TeaLeaves, ParticleLayer::Fluid],
+        ));
+    }
+}
+
+fn trigger_fluid_filter_buttons(
+    mut commands: Commands,
+    collisions: Collisions,
+    mut buttons: Query<(Entity, &ChildOf, &mut FluidFilterButton)>,
+    particles: Query<Entity, With<Particle>>,
+    children: Query<&Children>,
+    filters: Query<Entity, With<FluidFilter>>,
+) {
+    for (button_entity, parent, mut button) in &mut buttons {
+        let mut triggered = false;
+        for particle_entity in &particles {
+            if collisions.contains(button_entity, particle_entity) {
+                if !button.0 {
+                    for entity in children.iter_descendants(parent.0) {
+                        if filters.contains(entity) {
+                            commands.entity(entity).trigger(ActivateFluidFilter);
+                        }
+                    }
+                    button.0 = true;
+                }
+                triggered = true;
+            }
+        }
+        if !triggered && button.0 {
+                for entity in children.iter_descendants(parent.0) {
+                    if filters.contains(entity) {
+                        commands.entity(entity).trigger(DeactivateFluidFilter);
+                    }
+                }
+                button.0 = false;
         }
     }
 }

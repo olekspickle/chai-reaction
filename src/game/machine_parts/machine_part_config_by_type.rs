@@ -66,6 +66,16 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
         {
             for subassembly in subassemblies {
                 match subassembly {
+                    SubAssembly::FluidFilter {
+                        mesh_image_path,
+                        colliders,
+                        ..
+                    } |
+                    SubAssembly::FluidFilterButton {
+                        mesh_image_path,
+                        colliders,
+                        ..
+                    } |
                     SubAssembly::Collider {
                         mesh_image_path,
                         colliders,

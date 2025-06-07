@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use bevy::prelude::*;
+use avian2d::prelude::*;
 
 pub mod camera;
 pub mod currency;
@@ -37,4 +38,12 @@ pub struct Score(pub i32);
 
 fn clear_score(mut score: ResMut<Score>) {
     score.0 = 0;
+}
+
+#[derive(PhysicsLayer, Default)]
+pub enum ParticleLayer {
+    #[default]
+    Default,
+    Fluid,
+    TeaLeaves,
 }
