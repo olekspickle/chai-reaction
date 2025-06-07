@@ -23,6 +23,8 @@ fn listen_to_spawn_requests(
     mut available_zen_points: ResMut<AvailableZenPoints>,
     mut commands: Commands,
     editor_mode: Res<EditorMode>,
+    sounds: Res<AudioSources>,
+    settings: Res<Settings>,
     #[cfg(debug_assertions)] mut meshes: ResMut<Assets<Mesh>>,
     #[cfg(debug_assertions)] mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
@@ -51,6 +53,11 @@ fn listen_to_spawn_requests(
                     &mut meshes,
                     &mut materials,
                 );
+
+                let source = sounds.place_piece.clone();
+                let vol = settings.sound.general * settings.sound.sfx;
+                commands.spawn(sfx(source, vol));
+
                 if spawn_request.initial_part {
                     commands.entity(spawned).insert(IsInitialPart);
                 }

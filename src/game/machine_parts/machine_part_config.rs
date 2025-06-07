@@ -200,6 +200,8 @@ impl MachinePartConfig {
         &self,
         part_type: MachinePartType,
         commands: &mut Commands,
+        sounds: Res<AudioSources>,
+        settings: Res<Settings>,
         #[cfg(debug_assertions)] meshes: &mut ResMut<Assets<Mesh>>,
         #[cfg(debug_assertions)] materials: &mut ResMut<Assets<ColorMaterial>>,
     ) -> Entity {
@@ -351,6 +353,7 @@ impl MachinePartConfig {
                         }
                         SubAssembly::HeatSource { offset, radius } => {
                             parent.spawn((
+                                music(sounds.stove_looping.clone(), settings.sound.general * settings.sound.sfx),
                                 Transform::from_xyz(offset.x, offset.y, 0.0),
                                 HeatSource,
                                 Collider::circle(*radius),
@@ -432,11 +435,17 @@ fn handle_erase_click(
     machine_part_config_by_type: Res<MachinePartConfigByType>,
     mut available_zen_points: ResMut<AvailableZenPoints>,
     initial_part: Query<&IsInitialPart>,
+    sounds: Res<AudioSources>,
+    settings: Res<Settings>,
 ) {
     if *picking_state == PickingState::Erasing {
         if !initial_part.contains(trigger.target()) {
             if let Ok(ty) = part_type.get(trigger.target()) {
                 if let Some(part_config) = machine_part_config_by_type.0.get(&ty.name) {
+                    let source = sounds.cancel_piece.clone();
+                    let vol = settings.sound.general * settings.sound.sfx;
+                    commands.spawn(sfx(source, vol));
+
                     available_zen_points.refund(part_config.cost);
                     commands.entity(trigger.target()).despawn();
                 }
