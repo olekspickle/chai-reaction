@@ -9,6 +9,7 @@
         "PipeTurn",
         "Funnel",
         "Tea bag",
+        "Red Ball",
     ],
     initial_machine_parts: [
         (

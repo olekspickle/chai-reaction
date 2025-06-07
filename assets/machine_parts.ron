@@ -256,4 +256,21 @@
             ),
         ],
     ),
+    "Red Ball": (
+        cost: 42,
+        is_dynamic: true,
+        texture_info: (
+            frames: 1,
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/red_ball.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/red_ball.png",
+            ),
+        ],
+    )
 })

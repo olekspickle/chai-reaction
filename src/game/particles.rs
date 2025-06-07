@@ -314,24 +314,23 @@ fn trigger_fluid_filter_buttons(
     mut commands: Commands,
     collisions: Collisions,
     mut buttons: Query<(Entity, &ChildOf, &mut FluidFilterButton)>,
-    particles: Query<Entity, With<Particle>>,
     children: Query<&Children>,
     filters: Query<Entity, With<FluidFilter>>,
 ) {
     for (button_entity, parent, mut button) in &mut buttons {
         let mut triggered = false;
-        for particle_entity in &particles {
-            if collisions.contains(button_entity, particle_entity) {
-                if !button.0 {
-                    for entity in children.iter_descendants(parent.0) {
-                        if filters.contains(entity) {
-                            commands.entity(entity).trigger(ActivateFluidFilter);
-                        }
+        let cs: Vec<_> = collisions.entities_colliding_with(button_entity).collect();
+        if !cs.is_empty() {
+            if !button.0 {
+                for entity in children.iter_descendants(parent.0) {
+                    if filters.contains(entity) {
+                        commands.entity(entity).trigger(ActivateFluidFilter);
+                        println!("Triggered");
                     }
-                    button.0 = true;
                 }
-                triggered = true;
+                button.0 = true;
             }
+            triggered = true;
         }
         if !triggered && button.0 {
                 for entity in children.iter_descendants(parent.0) {
