@@ -72,6 +72,16 @@ pub struct AudioSources {
     pub cup_drop: Handle<Sample>,
     #[dependency]
     pub cup_drop_brewed: Handle<Sample>,
+    #[dependency]
+    pub cancel_piece: Handle<Sample>,
+    #[dependency]
+    pub place_piece: Handle<Sample>,
+    #[dependency]
+    pub pipe_hits: Vec<Handle<Sample>>,
+    #[dependency]
+    pub into_cup_plops: Vec<Handle<Sample>>,
+    #[dependency]
+    pub stove_looping: Handle<Sample>,
 
     // music
     #[dependency]
@@ -83,6 +93,20 @@ impl AudioSources {
     pub const CUP_DROP_BREWED: &'static str = "audio/sfx/plop.ogg";
     pub const BTN_HOVER: &'static str = "audio/sfx/btn-hover.ogg";
     pub const BTN_PRESS: &'static str = "audio/sfx/btn-press.ogg";
+    pub const CANCEL_PIECE: &'static str = "audio/sfx/cancelPiece.ogg";
+    pub const PLACE_PIECE: &'static str = "audio/sfx/placePiece.ogg";
+    pub const PIPE_HITS: &'static [&'static str] = &[
+        "audio/sfx/pipeHit1.ogg",
+        "audio/sfx/pipeHit2.ogg",
+        "audio/sfx/pipeHit3.ogg",
+        "audio/sfx/pipeHit4.ogg",
+    ];
+    pub const INTO_CUP_PLOPS: &'static [&'static str] = &[
+        "audio/sfx/intoTheCup1.ogg",
+        "audio/sfx/intoTheCup2.ogg",
+    ];
+    pub const STOVE_LOOPING: &'static str = "audio/sfx/stoveLoopingBitcrushed.ogg";
+
 
     pub const BG_MUSIC: &'static str = "audio/music/smnbl-time-for-fun.ogg";
 }
@@ -96,6 +120,11 @@ impl FromWorld for AudioSources {
             bg_music: assets.load(Self::BG_MUSIC),
             cup_drop: assets.load(Self::CUP_DROP),
             cup_drop_brewed: assets.load(Self::CUP_DROP_BREWED),
+            cancel_piece: assets.load(Self::CANCEL_PIECE),
+            place_piece: assets.load(Self::PLACE_PIECE),
+            pipe_hits: Self::PIPE_HITS.iter().map(|p| assets.load(*p)).collect(),
+            into_cup_plops: Self::INTO_CUP_PLOPS.iter().map(|p| assets.load(*p)).collect(),
+            stove_looping: assets.load(Self::STOVE_LOOPING),
         }
     }
 }
