@@ -126,7 +126,7 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             .add_loaded_labeled_asset(sprite_asset_path.clone(), loaded_texture);
 
                         let rotations = texture_info.rotations;
-                        let frames = texture_info.frames;
+                        let frames = texture_info.frames.frames();
                         if rotations != 1 || frames != 1 {
                             let pixel_size = size.as_uvec2();
                             let tile_size =

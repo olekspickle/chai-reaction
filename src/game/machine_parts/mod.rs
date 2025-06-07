@@ -1,6 +1,7 @@
-use crate::prelude::*;
+use crate::{game::machine_parts::animator::AnimatorPlugin, prelude::*};
 use bevy::prelude::*;
 
+pub mod animator;
 pub mod consts;
 pub mod events;
 pub mod flow_field;
@@ -15,11 +16,13 @@ pub struct MachinePartsPlugin;
 impl Plugin for MachinePartsPlugin {
     fn build(&self, app: &mut App) {
         app.add_plugins((
-            FlowFieldPlugin,
             MachinePartConfigByTypePlugin,
             MachinePartEventsPlugin,
             MachinePartSpawnerPlugin,
             PickedMachinePartTypePlugin,
+            
+            FlowFieldPlugin,
+            AnimatorPlugin
         ));
     }
 }

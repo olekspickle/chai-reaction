@@ -3,7 +3,6 @@
         cost: 42,
         is_dynamic: false,
         texture_info: (
-            frames: 1,
             rotations: 8,
             flippable: true,
         ),
@@ -161,7 +160,6 @@
         cost: 42,
         is_dynamic: false,
         texture_info: (
-            frames: 1,
             rotations: 8,
             flippable: true,
         ),
@@ -186,7 +184,6 @@
         cost: 42,
         is_dynamic: false,
         texture_info: (
-            frames: 1,
             rotations: 1,
             flippable: false,
         ),
@@ -203,7 +200,6 @@
         cost: 42,
         is_dynamic: false,
         texture_info: (
-            frames: 1,
             rotations: 1,
             flippable: false,
         ),
@@ -226,7 +222,6 @@
         cost: 42,
         is_dynamic: false,
         texture_info: (
-            frames: 1,
             rotations: 1,
             flippable: false,
         ),
@@ -243,7 +238,6 @@
         cost: 42,
         is_dynamic: true,
         texture_info: (
-            frames: 1,
             rotations: 1,
             flippable: false,
         ),
@@ -260,7 +254,6 @@
         cost: 42,
         is_dynamic: true,
         texture_info: (
-            frames: 1,
             rotations: 1,
             flippable: false,
         ),
@@ -277,7 +270,7 @@
         cost: 42,
         is_dynamic: false,
         texture_info: (
-            frames: 1,
+            frames: Basic(8,0.1),
             rotations: 1,
             flippable: false,
         ),

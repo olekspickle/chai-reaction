@@ -1,7 +1,6 @@
 use crate::{
     game::{
-        heat::HeatSource,
-        tea::{Recipe, Tea, TeaSensor},
+        heat::HeatSource, machine_parts::animator::{BasicSpriteAnimationController, SpriteFrames}, tea::{Recipe, Tea, TeaSensor}
     },
     prelude::*,
 };
@@ -127,7 +126,7 @@ pub enum SubAssembly {
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
 pub struct TextureInfo {
     #[serde(default)]
-    pub frames: u32,
+    pub frames: SpriteFrames,
     #[serde(default)]
     pub rotations: u32,
     #[serde(default)]
@@ -137,12 +136,15 @@ pub struct TextureInfo {
 impl Default for TextureInfo {
     fn default() -> Self {
         Self {
-            frames: 1,
+            frames: SpriteFrames::ONE,
             rotations: 1,
             flippable: false,
         }
     }
 }
+
+#[derive(Component)]
+pub struct MachineSprite;
 
 #[derive(Debug, Clone, Reflect, Default)]
 pub struct MachineSpriteInfo {
@@ -202,7 +204,7 @@ impl MachinePartConfig {
         #[cfg(debug_assertions)] materials: &mut ResMut<Assets<ColorMaterial>>,
     ) -> Entity {
         let context = part_type.context.clone();
-        commands
+        let mut part = commands
             .spawn((
                 SpawnedMachinePart,
                 Transform::from_translation(context.position),
@@ -213,9 +215,20 @@ impl MachinePartConfig {
                     RigidBody::Static
                 },
                 Pickable::default(),
-            ))
-            .observe(handle_erase_click)
-            .with_children(|parent| {
+            ));
+        
+        match self.texture_info.frames {
+            SpriteFrames::ONE => {},
+            SpriteFrames::Basic(count, time) => {
+                part.insert(BasicSpriteAnimationController {
+                    frame_count: count,
+                    current_frame: 0,
+                    timer: Timer::from_seconds(time, TimerMode::Repeating),
+                });
+            },
+        }
+        part.observe(handle_erase_click);
+        part.with_children(|parent| {
                 for subassembly in &self.subassemblies {
                     match subassembly {
                         SubAssembly::Sprite {
@@ -227,6 +240,7 @@ impl MachinePartConfig {
                             let mut child =
                                 parent.spawn(Transform::from_xyz(offset.x, offset.y, layer.to_z()));
                             child.insert(Pickable::default());
+                            child.insert(MachineSprite);
 
                             if let Some(layout) = &sprite.layout {
                                 child.insert(Sprite {
@@ -404,8 +418,9 @@ impl MachinePartConfig {
                         }
                     }
                 }
-            })
-            .id()
+            });
+        
+        part.id()
     }
 }
 
