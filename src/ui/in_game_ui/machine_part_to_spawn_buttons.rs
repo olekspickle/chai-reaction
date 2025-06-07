@@ -30,6 +30,7 @@ fn spawn_part_picking_buttons(
     }
 
     let config = level_configs.get(&loaded_level.0).unwrap();
+    let level = GameLevel::Loaded(config.name.clone());
 
     let mut buttons = Vec::new();
     for part in machine_parts.0.keys() {
@@ -41,6 +42,7 @@ fn spawn_part_picking_buttons(
                     context: PlacementContext::default(),
                 }, // Replace PlacementContext::default() with the correct context if needed
                 part,
+                level.clone(),
             );
             buttons.push(commands.spawn(button_bundle).id());
         }
@@ -48,6 +50,7 @@ fn spawn_part_picking_buttons(
 
     commands
         .spawn((
+            StateScoped(level),
             Node {
                 flex_direction: FlexDirection::Row,
                 justify_content: JustifyContent::SpaceEvenly,
@@ -61,16 +64,17 @@ fn spawn_part_picking_buttons(
         ))
         .add_children(&buttons)
         .with_children(|parent| {
-            parent.spawn((
-                StateScoped(Screen::Gameplay),
-                btn_sq("Remove", set_delete_mode),
-            ));
+            parent.spawn(btn_sq("Remove", set_delete_mode));
         });
 }
 
-fn btn_with_machine_part_type(part_type: MachinePartType, text: impl Into<String>) -> impl Bundle {
+fn btn_with_machine_part_type(
+    part_type: MachinePartType,
+    text: impl Into<String>,
+    level: GameLevel,
+) -> impl Bundle {
     (
-        StateScoped(Screen::Gameplay),
+        StateScoped(level),
         part_type,
         btn_sq(text.into(), set_picked_machine_part),
     )

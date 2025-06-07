@@ -20,9 +20,17 @@ pub struct Settings {
     /// Modal stack. kudo for the idea to @skyemakesgames
     /// Only relevant in [`Screen::Gameplay`]
     pub modals: Vec<Modal>,
-    pub current_level: GameLevel,
     pub paused: bool,
     pub last_screen: Screen,
+}
+
+impl Settings {
+    pub fn music(&self) -> f32 {
+        self.sound.general * self.sound.music
+    }
+    pub fn sfx(&self) -> f32 {
+        self.sound.general * self.sound.sfx
+    }
 }
 
 impl Default for Settings {
@@ -31,7 +39,6 @@ impl Default for Settings {
             last_screen: Screen::Title,
             sound: Sound::default(),
             modals: vec![],
-            current_level: GameLevel::Start,
             paused: false,
         }
     }
@@ -56,6 +63,7 @@ pub enum Action {
     One,
     Two,
 
+    Restart,
     TogglePause,
     ToggleUiDebug,
     Back,
@@ -68,8 +76,7 @@ pub enum Action {
 fn spawn_player_input_map(mut commands: Commands) {
     let mut input_map = InputMap::default();
 
-    input_map.insert(Action::One, KeyCode::KeyA);
-    input_map.insert(Action::Two, KeyCode::KeyD);
+    input_map.insert(Action::Restart, KeyCode::KeyR);
 
     input_map.insert(Action::ToggleUiDebug, KeyCode::Backquote);
     input_map.insert(Action::TogglePause, KeyCode::KeyP);

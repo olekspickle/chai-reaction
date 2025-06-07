@@ -26,12 +26,24 @@ pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
     )
 }
 
+pub fn icon(opts: impl Into<Opts>) -> impl Bundle {
+    let opts = opts.into();
+    (
+        Label,
+        Name::new("Label"),
+        opts.node.clone(),
+        opts.border_radius,
+        // Don't bubble picking events from the text up to parent
+        Pickable::IGNORE,
+        children![opts.into_image_bundle()],
+    )
+}
 pub fn label(opts: impl Into<Opts>) -> impl Bundle {
     let opts = opts.into();
     (
         Label,
         Name::new("Label"),
-        BorderRadius::all(Px(opts.border_radius)),
+        opts.border_radius,
         opts.into_text_bundle(),
         // Don't bubble picking events from the text up to parent
         Pickable::IGNORE,
@@ -100,7 +112,7 @@ where
         ..opts.node.clone()
     };
     let mut opts = opts.node(new_node);
-    opts.border_radius = 7.0;
+    opts.border_radius = BorderRadius::all(Px(7.0));
 
     btn(opts, action)
 }
@@ -120,26 +132,19 @@ where
         Name::new("Button"),
         Node::default(),
         Children::spawn(SpawnWith(move |parent: &mut ChildSpawner| {
-            let child = match &opts.inner {
-                WidgetContent::Sprite(_) => {
-                    // info!("spawning sprite: {opts:?}");
-                    parent.spawn(opts.clone().into_sprite_bundle()).id()
-                }
-                WidgetContent::Text(_) => {
-                    // info!("spawning text");
-                    parent.spawn(opts.clone().into_text_bundle()).id()
-                }
+            let content = match &opts.inner {
+                WidgetContent::Image(_) => parent.spawn(opts.clone().into_image_bundle()).id(),
+                WidgetContent::Text(_) => parent.spawn(opts.clone().into_text_bundle()).id(),
             };
             parent
                 .spawn((
                     Button,
-                    BorderRadius::all(Px(opts.border_radius)),
-                    BorderColor(opts.border_color),
+                    opts.border_radius,
+                    opts.border_color,
                     opts.ui_palette,
-                    children![Name::new("Button content")],
                 ))
                 .insert(opts.node)
-                .add_children(&[child])
+                .add_children(&[content])
                 .observe(action);
         })),
     )

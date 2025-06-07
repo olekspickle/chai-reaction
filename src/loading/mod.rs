@@ -54,7 +54,7 @@ impl FromWorld for Textures {
             cup: assets.load("textures/glass.png"),
             tealeaf: assets.load("textures/glass.png"),
             exit: assets.load("textures/Icons/exit.png"),
-            pause: assets.load("textures/Icons/play.png"),
+            pause: assets.load("textures/Icons/exit.png"),
             play: assets.load("textures/Icons/play.png"),
         }
     }

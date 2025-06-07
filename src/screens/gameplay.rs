@@ -5,12 +5,16 @@ use crate::{
     game::{input_dispatch::*, tea::TeaSensor},
     screens::settings,
 };
-use bevy::{ecs::spawn::SpawnWith, ui::Val::*};
+use bevy::ui::Val::*;
+use leafwing_input_manager::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(crate::game::plugin)
         .add_systems(OnEnter(Screen::Gameplay), spawn_gameplay_ui)
-        .add_systems(Update, change_score.run_if(in_state(Screen::Gameplay)))
+        .add_systems(
+            Update,
+            (change_score.run_if(in_state(Screen::Gameplay)), restart),
+        )
         .add_observer(trigger_menu_toggle_on_esc)
         .add_observer(add_new_modal)
         .add_observer(pop_modal)
@@ -18,7 +22,7 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 #[derive(Component)]
-pub struct DevUi;
+pub struct GameplayUi;
 #[derive(Component)]
 pub struct PauseLabel;
 #[derive(Component)]
@@ -29,10 +33,23 @@ pub struct SettingsModal;
 pub struct GameoverModal;
 
 fn spawn_gameplay_ui(mut cmds: Commands, textures: Res<Textures>) {
-    let (play, exit) = (textures.play.clone(), textures.exit.clone());
+    let (play, exit, glass) = (
+        textures.play.clone(),
+        textures.exit.clone(),
+        textures.cup.clone(),
+    );
+    let score = Opts::new("score: 0")
+        .border_radius(Px(0.0))
+        .color(Color::BLACK);
+    let nav_opts = Opts::default()
+        .image(exit)
+        .width(Vw(5.0))
+        .height(Vw(5.0))
+        .bg_color(TRANSPARENT)
+        .ui_palette(UiPalette::all(TRANSPARENT).hovered((TRANSPARENT, WHITEISH)));
     cmds.spawn((
         StateScoped(Screen::Gameplay),
-        DevUi,
+        GameplayUi,
         ui_root("gameplay ui"),
         children![
             (
@@ -48,8 +65,9 @@ fn spawn_gameplay_ui(mut cmds: Commands, textures: Res<Textures>) {
                 },
                 BackgroundColor(TRANSLUCENT),
                 children![
-                    btn_sq(Sprite::from_image(exit), reset_level),
-                    btn_sq(Sprite::from_image(play), to::title)
+                    btn(nav_opts.clone(), to::title),
+                    (icon(nav_opts.clone().image(play)), PauseLabel),
+                    btn(nav_opts.image(glass), reset_level),
                 ]
             ),
             (
@@ -61,7 +79,8 @@ fn spawn_gameplay_ui(mut cmds: Commands, textures: Res<Textures>) {
                     ..default()
                 },
                 TimeLabel,
-                children![label("time: 0s")]
+                BackgroundColor(YELLOW),
+                children![label(score)]
             )
         ],
     ));
@@ -74,20 +93,34 @@ pub struct TimeLabel;
 
 // TODO: Gameplay UI and systems
 
-fn change_score(
-    mut commands: Commands,
-    mut score: ResMut<Score>,
-    mut score_label: Query<&mut Text, With<TimeLabel>>,
+fn change_score(// mut commands: Commands,
+    // mut score: ResMut<Score>,
+    // mut score_label: Query<&mut Text, With<TimeLabel>>,
 ) -> Result {
     /*
     for counter in counter.iter() {
         let mut label = score_label.single_mut()?;
         score.0 = (counter.0 * 10) as i32;
-        label.0 = format!("time: 0s", score.0);
+        label.0 = format!("score: 0", score.0);
     }
     */
 
     Ok(())
+}
+
+fn restart(
+    level: ResMut<State<GameLevel>>,
+    mut next: ResMut<NextState<GameLevel>>,
+    action: Query<&ActionState<Action>>,
+) {
+    if let Ok(state) = action.single() {
+        if state.just_pressed(&Action::Restart) {
+            let current = level.get();
+            info!("pressed R: {current:?}");
+            next.set(GameLevel::Start);
+            next.set(current.clone());
+        }
+    }
 }
 
 fn reset_level(
@@ -96,8 +129,9 @@ fn reset_level(
     mut next: ResMut<NextState<GameLevel>>,
 ) {
     let current = level.get();
+    info!("reset: {current:?}");
     next.set(GameLevel::Start);
-    next.set(*current);
+    next.set(current.clone());
 }
 
 // Modals and navigation

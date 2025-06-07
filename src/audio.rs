@@ -85,7 +85,9 @@ pub struct Music;
 pub fn music(handle: Handle<Sample>, vol: f32) -> impl Bundle {
     (
         Music,
-        SamplePlayer::new(handle).with_volume(Volume::Linear(vol)),
+        SamplePlayer::new(handle)
+            .with_volume(Volume::Linear(vol))
+            .looping(),
     )
 }
 

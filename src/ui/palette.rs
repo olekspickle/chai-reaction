@@ -8,6 +8,7 @@ pub const BREWED_TEA: Color = Color::srgb(0.2, 0.1, 0.1);
 pub const LIGHT_GREEN: Color = Color::srgb(0.2, 0.7, 0.3);
 pub const DIM_GREEN: Color = Color::srgb(0.1, 0.5, 0.2);
 
+pub const YELLOW: Color = Color::srgb(0.8, 0.8, 0.1);
 pub const DIM_BLUE: Color = Color::srgb(0.186, 0.328, 0.573);
 pub const LIGHT_BLUE: Color = Color::srgb(0.286, 0.478, 0.773);
 

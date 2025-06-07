@@ -1,14 +1,13 @@
 use super::*;
 use std::borrow::Cow;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Bundle)]
 pub struct Opts {
     pub inner: WidgetContent,
     // layout
-    pub border_radius: f32,
-    pub border_color: Color,
-    pub bg_color: Color,
-    pub color: Color,
+    pub border_radius: BorderRadius,
+    pub border_color: BorderColor,
+    pub bg_color: BackgroundColor,
     pub node: Node,
     pub ui_palette: UiPalette,
 }
@@ -34,21 +33,20 @@ impl Opts {
                 hovered: (LIGHT_GREEN, WHITEISH),
                 pressed: (DIM_GREEN, WHITEISH),
             },
-            color: WHITEISH,
-            bg_color: TRANSPARENT,
-            border_color: WHITEISH,
-            border_radius: BORDER_RADIUS,
+            bg_color: BackgroundColor(TRANSPARENT),
+            border_color: BorderColor(WHITEISH),
+            border_radius: BorderRadius::all(Px(BORDER_RADIUS)),
         }
     }
 
-    pub fn sprite(mut self, s: Sprite) -> Self {
-        self.inner = WidgetContent::Sprite(s);
+    pub fn image(mut self, s: Handle<Image>) -> Self {
+        self.inner = WidgetContent::Image(ImageNode::new(s));
         self
     }
     pub fn text(mut self, text: impl Into<Cow<'static, str>>) -> Self {
         match self.inner {
             WidgetContent::Text(ref mut t) => {
-                t.text = text.into();
+                t.text = Text(text.into().to_string());
             }
             _ => self.inner = WidgetContent::Text(text.into().into()),
         }
@@ -66,8 +64,22 @@ impl Opts {
         }
         self
     }
+    pub fn color(mut self, c: Color) -> Self {
+        if let WidgetContent::Text(ref mut t) = self.inner {
+            *t.color = c;
+        }
+        self
+    }
+    pub fn bg_color(mut self, color: Color) -> Self {
+        self.bg_color = BackgroundColor(color);
+        self
+    }
     pub fn border_color(mut self, color: Color) -> Self {
-        self.border_color = color;
+        self.border_color = BorderColor(color);
+        self
+    }
+    pub fn border_radius(mut self, r: Val) -> Self {
+        self.border_radius = BorderRadius::all(r);
         self
     }
     pub fn node(mut self, new: Node) -> Self {
@@ -98,68 +110,55 @@ impl Opts {
         self.ui_palette = p;
         self
     }
-    pub fn into_sprite_bundle(self) -> impl Bundle {
+    // TODO: do a mesh2d ui bundle
+    pub fn into_image_bundle(self) -> impl Bundle {
         match &self.inner {
-            WidgetContent::Sprite(c) => {
-                SpriteWidgetBundle {
-                    sprite: c.clone(),
-                    background_color: BackgroundColor(LIGHT_BLUE),
-                    node: Node {
-                        position_type: PositionType::Absolute, // Ensure it flows in layout
-                        width: Percent(50.0),
-                        height: Percent(50.0),
-                        align_items: AlignItems::Center,
-                        justify_content: JustifyContent::Center,
-                        ..Default::default()
-                    },
-                }
-            }
+            WidgetContent::Image(c) => ImageWidgetBundle {
+                image: c.clone(),
+                node: Node {
+                    position_type: PositionType::Absolute,
+                    width: Percent(100.0),
+                    height: Percent(100.0),
+                    align_items: AlignItems::Center,
+                    justify_content: JustifyContent::Center,
+                    ..Default::default()
+                },
+            },
             _ => unreachable!("Spawning sprite bundle on non sprite content"),
         }
     }
     pub fn into_text_bundle(self) -> impl Bundle {
         match &self.inner {
-            WidgetContent::Text(c) => TextWidgetBundle {
-                font: c.font.clone(),
-                layout: c.layout,
-                text: Text(c.text.to_string()),
-                color: TextColor(self.color),
-                background_color: self.bg_color.into(),
-            },
+            WidgetContent::Text(c) => (c.clone(), self.bg_color),
             _ => unreachable!("Spawning text bundle on non text content"),
         }
     }
 }
 
-#[derive(Bundle)]
-pub struct SpriteWidgetBundle {
-    sprite: Sprite,
-    node: Node,
-    background_color: BackgroundColor,
+impl Default for Opts {
+    fn default() -> Self {
+        Opts::new("")
+    }
 }
-// #[derive(Bundle)]
-// pub struct SpriteWidgetBundle(Sprite);
 
 #[derive(Bundle)]
-pub struct TextWidgetBundle {
-    pub background_color: BackgroundColor,
+pub struct ImageWidgetBundle {
+    node: Node,
+    image: ImageNode,
+}
+
+#[derive(Debug, Clone, Bundle)]
+pub struct TextContent {
     pub text: Text,
     pub color: TextColor,
-    pub font: TextFont,
     pub layout: TextLayout,
-}
-
-#[derive(Debug, Clone)]
-pub struct TextContent {
-    pub layout: TextLayout,
-    pub text: Cow<'static, str>,
     pub font: TextFont,
 }
 
 impl From<Cow<'static, str>> for TextContent {
     fn from(text: Cow<'static, str>) -> Self {
         Self {
-            text,
+            text: Text(text.into()),
             ..Default::default()
         }
     }
@@ -168,6 +167,7 @@ impl Default for TextContent {
     fn default() -> Self {
         Self {
             text: "".into(),
+            color: WHITEISH.into(),
             layout: TextLayout::new_with_justify(JustifyText::Center),
             font: TextFont::from_font_size(FONT_SIZE),
         }
@@ -176,7 +176,7 @@ impl Default for TextContent {
 
 #[derive(Debug, Clone, Component)]
 pub enum WidgetContent {
-    Sprite(Sprite),
+    Image(ImageNode),
     Text(TextContent),
 }
 
@@ -187,9 +187,14 @@ impl<T: Into<WidgetContent>> From<T> for Opts {
     }
 }
 
-impl From<Sprite> for WidgetContent {
-    fn from(value: Sprite) -> Self {
-        Self::Sprite(value)
+impl From<Handle<Image>> for WidgetContent {
+    fn from(value: Handle<Image>) -> Self {
+        Self::Image(ImageNode::new(value))
+    }
+}
+impl From<ImageNode> for WidgetContent {
+    fn from(value: ImageNode) -> Self {
+        Self::Image(value)
     }
 }
 impl From<&'static str> for WidgetContent {
@@ -203,7 +208,7 @@ impl From<&'static str> for WidgetContent {
 impl From<Cow<'static, str>> for WidgetContent {
     fn from(text: Cow<'static, str>) -> Self {
         Self::Text(TextContent {
-            text,
+            text: Text(text.to_string()),
             ..Default::default()
         })
     }

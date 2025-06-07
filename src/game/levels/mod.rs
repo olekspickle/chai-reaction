@@ -51,9 +51,10 @@ pub fn plugin(app: &mut App) {
     }
 }
 
-#[derive(States, Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[derive(States, Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum GameLevel {
     Start,
+    Loaded(String),
 
     First,
     Second,

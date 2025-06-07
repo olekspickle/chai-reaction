@@ -23,6 +23,27 @@ pub struct UiPalette {
     pub hovered: (Color, Color),
     pub pressed: (Color, Color),
 }
+impl UiPalette {
+    pub fn all(c: Color) -> Self {
+        Self {
+            none: (c, c),
+            hovered: (c, c),
+            pressed: (c, c),
+        }
+    }
+    pub fn none(mut self, c: (Color, Color)) -> Self {
+        self.none = c;
+        self
+    }
+    pub fn pressed(mut self, c: (Color, Color)) -> Self {
+        self.pressed = c;
+        self
+    }
+    pub fn hovered(mut self, c: (Color, Color)) -> Self {
+        self.hovered = c;
+        self
+    }
+}
 
 fn apply_interaction_palette(
     mut palette_query: Query<
