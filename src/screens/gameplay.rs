@@ -5,16 +5,11 @@ use crate::{
     game::{input_dispatch::*, tea::TeaSensor},
     screens::settings,
 };
-use bevy::ui::Val::*;
+use bevy::{ecs::spawn::SpawnWith, ui::Val::*};
 
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(crate::game::plugin)
         .add_systems(OnEnter(Screen::Gameplay), spawn_gameplay_ui)
-        .add_systems(
-            Update,
-            spawn_nav_ui
-                .run_if(in_state(Screen::Gameplay).and(resource_exists_and_changed::<LoadedLevel>)),
-        )
         .add_systems(Update, change_score.run_if(in_state(Screen::Gameplay)))
         .add_observer(trigger_menu_toggle_on_esc)
         .add_observer(add_new_modal)
@@ -33,66 +28,66 @@ pub struct SettingsModal;
 #[derive(Component)]
 pub struct GameoverModal;
 
-fn spawn_gameplay_ui(mut cmds: Commands) {
+fn spawn_gameplay_ui(mut cmds: Commands, textures: Res<Textures>) {
+    let (play, exit) = (textures.play.clone(), textures.exit.clone());
     cmds.spawn((
         StateScoped(Screen::Gameplay),
         DevUi,
-        Node {
-            flex_direction: FlexDirection::Row,
-            ..Default::default()
-        },
-        children![(
-            Node {
-                position_type: PositionType::Absolute,
-                top: Px(0.0),
-                right: Px(0.0),
-                ..default()
-            },
-            ScoreLabel,
-            label("0")
-        )],
+        ui_root("gameplay ui"),
+        children![
+            (
+                Node {
+                    flex_direction: FlexDirection::Row,
+                    position_type: PositionType::Absolute,
+                    justify_content: JustifyContent::Center,
+                    left: Vw(40.0),
+                    top: Px(0.0),
+                    height: Vw(5.0),
+                    width: Vw(20.0),
+                    ..Default::default()
+                },
+                BackgroundColor(TRANSLUCENT),
+                children![
+                    btn_sq(Sprite::from_image(exit), reset_level),
+                    btn_sq(Sprite::from_image(play), to::title)
+                ]
+            ),
+            (
+                Node {
+                    position_type: PositionType::Absolute,
+                    top: Px(0.0),
+                    right: Px(0.0),
+                    padding: UiRect::axes(Vw(2.0), Vw(1.0)),
+                    ..default()
+                },
+                TimeLabel,
+                children![label("time: 0s")]
+            )
+        ],
     ));
 }
 
 #[derive(Component)]
-pub struct ScoreLabel;
+pub struct ScoreTimer(pub Timer);
+#[derive(Component)]
+pub struct TimeLabel;
 
 // TODO: Gameplay UI and systems
 
 fn change_score(
     mut commands: Commands,
     mut score: ResMut<Score>,
-    //counter: Query<&TeaCounter, Changed<TeaCounter>>,
-    mut score_label: Query<&mut Text, With<ScoreLabel>>,
+    mut score_label: Query<&mut Text, With<TimeLabel>>,
 ) -> Result {
     /*
     for counter in counter.iter() {
         let mut label = score_label.single_mut()?;
         score.0 = (counter.0 * 10) as i32;
-        label.0 = format!("{}", score.0);
+        label.0 = format!("time: 0s", score.0);
     }
     */
 
     Ok(())
-}
-
-fn spawn_nav_ui(mut cmds: Commands, textures: Res<Textures>) {
-    cmds.spawn((
-        StateScoped(Screen::Gameplay),
-        ui_root("nav ui"),
-        children![(
-            Node {
-                flex_direction: FlexDirection::Row,
-                position_type: PositionType::Absolute,
-                top: Px(0.0),
-                ..Default::default()
-            },
-            children![
-                btn_sq(Sprite::from_image(textures.exit.clone()), reset_level),
-                btn_sq(Sprite::from_image(textures.play.clone()), to::title)
-            ]
-        )],
-    ));
 }
 
 fn reset_level(

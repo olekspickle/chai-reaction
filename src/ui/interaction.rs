@@ -2,7 +2,7 @@ use crate::prelude::*;
 use bevy::prelude::*;
 
 pub(super) fn plugin(app: &mut App) {
-    app.register_type::<InteractionPalette>().add_systems(
+    app.register_type::<UiPalette>().add_systems(
         Update,
         (
             apply_interaction_palette,
@@ -12,11 +12,13 @@ pub(super) fn plugin(app: &mut App) {
 }
 
 /// Palette for widget interactions. Add this to an entity that supports
-/// [`Interaction`]s, such as a button, to change its [`BackgroundColor`] based
-/// on the current interaction state.
-#[derive(Component, Debug, Reflect)]
+/// [`Interaction`]s, such as a button, to change its [`BackgroundColor`]
+/// and [`BorderColor`] based on the current interaction state.
+///
+/// Struct of pairs (bg_color, border_color)
+#[derive(Component, Clone, Debug, Reflect)]
 #[reflect(Component)]
-pub struct InteractionPalette {
+pub struct UiPalette {
     pub none: (Color, Color),
     pub hovered: (Color, Color),
     pub pressed: (Color, Color),
@@ -26,7 +28,7 @@ fn apply_interaction_palette(
     mut palette_query: Query<
         (
             &Interaction,
-            &InteractionPalette,
+            &UiPalette,
             &mut BorderColor,
             &mut BackgroundColor,
         ),

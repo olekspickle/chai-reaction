@@ -113,32 +113,33 @@ where
     B: Bundle,
     I: IntoObserverSystem<E, B, M>,
 {
-    let opts = opts.into();
+    let opts: Opts = opts.into();
     let action = IntoObserverSystem::into_system(action);
 
     (
         Name::new("Button"),
         Node::default(),
         Children::spawn(SpawnWith(move |parent: &mut ChildSpawner| {
+            let child = match &opts.inner {
+                WidgetContent::Sprite(_) => {
+                    // info!("spawning sprite: {opts:?}");
+                    parent.spawn(opts.clone().into_sprite_bundle()).id()
+                }
+                WidgetContent::Text(_) => {
+                    // info!("spawning text");
+                    parent.spawn(opts.clone().into_text_bundle()).id()
+                }
+            };
             parent
                 .spawn((
                     Button,
                     BorderRadius::all(Px(opts.border_radius)),
                     BorderColor(opts.border_color),
-                    InteractionPalette {
-                        none: (DIM_GREEN, DIM_GREEN),
-                        hovered: (LIGHT_GREEN, WHITEISH),
-                        pressed: (DIM_GREEN, WHITEISH),
-                    },
+                    opts.ui_palette,
                     children![Name::new("Button content")],
                 ))
-                .insert(opts.node.clone())
-                .with_children(|parent| {
-                    match &opts.inner {
-                        WidgetContent::Sprite(_) => parent.spawn(opts.into_sprite_bundle()),
-                        WidgetContent::Text(_) => parent.spawn(opts.into_text_bundle()),
-                    };
-                })
+                .insert(opts.node)
+                .add_children(&[child])
                 .observe(action);
         })),
     )

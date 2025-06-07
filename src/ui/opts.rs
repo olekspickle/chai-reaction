@@ -10,6 +10,7 @@ pub struct Opts {
     pub bg_color: Color,
     pub color: Color,
     pub node: Node,
+    pub ui_palette: UiPalette,
 }
 
 #[allow(dead_code)]
@@ -27,6 +28,11 @@ impl Opts {
                 border: UiRect::all(Px(2.0)),
                 padding: UiRect::horizontal(Vw(3.0)),
                 ..Default::default()
+            },
+            ui_palette: UiPalette {
+                none: (DIM_GREEN, DIM_GREEN),
+                hovered: (LIGHT_GREEN, WHITEISH),
+                pressed: (DIM_GREEN, WHITEISH),
             },
             color: WHITEISH,
             bg_color: TRANSPARENT,
@@ -88,9 +94,26 @@ impl Opts {
         self.node.padding = p;
         self
     }
+    pub fn ui_palette(mut self, p: UiPalette) -> Self {
+        self.ui_palette = p;
+        self
+    }
     pub fn into_sprite_bundle(self) -> impl Bundle {
         match &self.inner {
-            WidgetContent::Sprite(c) => SpriteWidgetBundle(c.clone()),
+            WidgetContent::Sprite(c) => {
+                SpriteWidgetBundle {
+                    sprite: c.clone(),
+                    background_color: BackgroundColor(LIGHT_BLUE),
+                    node: Node {
+                        position_type: PositionType::Absolute, // Ensure it flows in layout
+                        width: Percent(50.0),
+                        height: Percent(50.0),
+                        align_items: AlignItems::Center,
+                        justify_content: JustifyContent::Center,
+                        ..Default::default()
+                    },
+                }
+            }
             _ => unreachable!("Spawning sprite bundle on non sprite content"),
         }
     }
@@ -109,7 +132,13 @@ impl Opts {
 }
 
 #[derive(Bundle)]
-pub struct SpriteWidgetBundle(Sprite);
+pub struct SpriteWidgetBundle {
+    sprite: Sprite,
+    node: Node,
+    background_color: BackgroundColor,
+}
+// #[derive(Bundle)]
+// pub struct SpriteWidgetBundle(Sprite);
 
 #[derive(Bundle)]
 pub struct TextWidgetBundle {
