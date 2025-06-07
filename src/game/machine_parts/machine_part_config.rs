@@ -200,8 +200,8 @@ impl MachinePartConfig {
         &self,
         part_type: MachinePartType,
         commands: &mut Commands,
-        sounds: Res<AudioSources>,
-        settings: Res<Settings>,
+        sounds: &Res<AudioSources>,
+        settings: &Res<Settings>,
         #[cfg(debug_assertions)] meshes: &mut ResMut<Assets<Mesh>>,
         #[cfg(debug_assertions)] materials: &mut ResMut<Assets<ColorMaterial>>,
     ) -> Entity {

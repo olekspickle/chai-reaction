@@ -12,7 +12,8 @@ impl Plugin for MachinePartSpawnerPlugin {
     fn build(&self, app: &mut App) {
         app.add_systems(
             Update,
-            listen_to_spawn_requests.run_if(resource_exists::<MachinePartConfigByType>),
+            listen_to_spawn_requests.run_if(resource_exists::<MachinePartConfigByType>)
+                .run_if(resource_exists::<AudioSources>),
         );
     }
 }
@@ -50,6 +51,8 @@ fn listen_to_spawn_requests(
                 let spawned = part_config.spawn(
                     spawn_request.part_type.clone(),
                     &mut commands,
+                    &sounds,
+                    &settings,
                     &mut meshes,
                     &mut materials,
                 );
