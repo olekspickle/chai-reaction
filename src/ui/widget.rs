@@ -26,40 +26,22 @@ pub fn ui_root(name: impl Into<Cow<'static, str>>) -> impl Bundle {
     )
 }
 
-pub fn text(opts: impl Into<Opts>) -> impl Bundle {
+pub fn label(opts: impl Into<Opts>) -> impl Bundle {
     let opts = opts.into();
     (
-        BackgroundColor(opts.bg_color),
-        Text(opts.text.to_string()),
-        TextColor(opts.color),
-        opts.font.clone(),
-        opts.text_layout,
+        Label,
+        Name::new("Label"),
+        BorderRadius::all(Px(opts.border_radius)),
+        opts.into_text_bundle(),
         // Don't bubble picking events from the text up to parent
         Pickable::IGNORE,
     )
 }
 
-pub fn label(opts: impl Into<Opts>) -> impl Bundle {
-    let opts = opts.into();
-    let s = opts.text.clone();
-    let short = if s.len() > 10 { &s[..8] } else { &s };
-
-    (
-        Label,
-        Name::new(format!("Label {short}")),
-        BorderRadius::all(Px(opts.border_radius)),
-        text(opts),
-    )
-}
-
 /// A simple header label. Bigger than [`label`].
 pub fn header(opts: impl Into<Opts>) -> impl Bundle {
-    let mut opts = opts.into();
-    let s = opts.text.clone();
-    let short = if s.len() > 10 { &s[..8] } else { &s };
-    opts.font.font_size = 40.0;
-
-    (Label, Name::new(format!("Header {short}")), text(opts))
+    let opts = opts.into();
+    (Label, Name::new("Header"), opts.into_text_bundle())
 }
 
 // buttons used in gameplay
@@ -148,9 +130,15 @@ where
                         hovered: (LIGHT_GREEN, WHITEISH),
                         pressed: (DIM_GREEN, WHITEISH),
                     },
-                    children![Name::new("Button text"), text(opts.clone())],
+                    children![Name::new("Button content")],
                 ))
-                .insert(opts.node)
+                .insert(opts.node.clone())
+                .with_children(|parent| {
+                    match &opts.inner {
+                        WidgetContent::Sprite(_) => parent.spawn(opts.into_sprite_bundle()),
+                        WidgetContent::Text(_) => parent.spawn(opts.into_text_bundle()),
+                    };
+                })
                 .observe(action);
         })),
     )

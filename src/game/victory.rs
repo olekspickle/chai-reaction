@@ -13,7 +13,6 @@ pub fn plugin(app: &mut App) {
 
 fn check_tea_counters(
     sensors: Query<Has<Satisfied>, With<TeaSensor>>,
-    config: Res<Config>,
     mut loaded_level: ResMut<LoadedLevel>,
     level_list: Res<LevelList>,
     mut commands: Commands,

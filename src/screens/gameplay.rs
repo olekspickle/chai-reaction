@@ -10,7 +10,11 @@ use bevy::ui::Val::*;
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(crate::game::plugin)
         .add_systems(OnEnter(Screen::Gameplay), spawn_gameplay_ui)
-        // TODO: Update systems
+        .add_systems(
+            Update,
+            spawn_nav_ui
+                .run_if(in_state(Screen::Gameplay).and(resource_exists_and_changed::<LoadedLevel>)),
+        )
         .add_systems(Update, change_score.run_if(in_state(Screen::Gameplay)))
         .add_observer(trigger_menu_toggle_on_esc)
         .add_observer(add_new_modal)
@@ -29,7 +33,7 @@ pub struct SettingsModal;
 #[derive(Component)]
 pub struct GameoverModal;
 
-fn spawn_gameplay_ui(mut cmds: Commands, settings: Res<Settings>) {
+fn spawn_gameplay_ui(mut cmds: Commands) {
     cmds.spawn((
         StateScoped(Screen::Gameplay),
         DevUi,
@@ -71,6 +75,37 @@ fn change_score(
 
     Ok(())
 }
+
+fn spawn_nav_ui(mut cmds: Commands, textures: Res<Textures>) {
+    cmds.spawn((
+        StateScoped(Screen::Gameplay),
+        ui_root("nav ui"),
+        children![(
+            Node {
+                flex_direction: FlexDirection::Row,
+                position_type: PositionType::Absolute,
+                top: Px(0.0),
+                ..Default::default()
+            },
+            children![
+                btn_sq(Sprite::from_image(textures.exit.clone()), reset_level),
+                btn_sq(Sprite::from_image(textures.play.clone()), to::title)
+            ]
+        )],
+    ));
+}
+
+fn reset_level(
+    _: Trigger<Pointer<Click>>,
+    level: ResMut<State<GameLevel>>,
+    mut next: ResMut<NextState<GameLevel>>,
+) {
+    let current = level.get();
+    next.set(GameLevel::Start);
+    next.set(*current);
+}
+
+// Modals and navigation
 
 fn click_to_menu(_: Trigger<Pointer<Click>>, mut cmds: Commands) {
     cmds.trigger(OnGoTo(Screen::Title));

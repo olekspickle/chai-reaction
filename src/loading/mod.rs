@@ -37,6 +37,12 @@ pub struct Textures {
     pub cup: Handle<Image>,
     #[dependency]
     pub tealeaf: Handle<Image>,
+    #[dependency]
+    pub exit: Handle<Image>,
+    #[dependency]
+    pub pause: Handle<Image>,
+    #[dependency]
+    pub play: Handle<Image>,
 }
 
 impl FromWorld for Textures {
@@ -47,6 +53,9 @@ impl FromWorld for Textures {
             teabox: assets.load("textures/glass.png"),
             cup: assets.load("textures/glass.png"),
             tealeaf: assets.load("textures/glass.png"),
+            exit: assets.load("textures/Icons/exit.png"),
+            pause: assets.load("textures/Icons/play.png"),
+            play: assets.load("textures/Icons/play.png"),
         }
     }
 }

@@ -12,6 +12,8 @@ mod palette;
 pub mod tags;
 mod widget;
 
+pub use opts::*;
+
 pub fn plugin(app: &mut App) {
     app.add_plugins((
         bevy::diagnostic::FrameTimeDiagnosticsPlugin::default(),

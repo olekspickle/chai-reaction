@@ -75,7 +75,6 @@ thiserror = "2.0.12"
 log = { version = "0.4", features = ["max_level_debug", "release_max_level_warn"] }
 # keep the following in sync with Bevy's dependencies
 winit = { version = "0.30", default-features = false }
-bevy_fix_gltf_coordinate_system = "0.1.0"
 enum-iterator = "2.1.0"
 strum = "0.27.1"
 strum_macros = "0.27.1"
