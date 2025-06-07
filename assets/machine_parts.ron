@@ -321,4 +321,52 @@
             ),
         ],
     ),
+    "Cabinet Large": (
+        cost: 100,
+        is_dynamic: false,
+        texture_info: (
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/cabinet_large.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/cabinet_large_collider.png",
+            ),
+        ],
+    ),
+    "Cabinet Small": (
+        cost: 60,
+        is_dynamic: false,
+        texture_info: (
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/cabinet_small.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/cabinet_small_collider.png",
+            ),
+        ],
+    ),
+    "Shelf": (
+        cost: 42,
+        is_dynamic: false,
+        texture_info: (
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/shelf.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/shelf.png",
+            ),
+        ],
+    ),
 })

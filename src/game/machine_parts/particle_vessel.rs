@@ -97,18 +97,18 @@ pub fn scan_image_for_circles(image: &Image, radius: i32) -> Vec<IVec2> {
         }
     }
 
-    println!("Pixel data:");
-    for y in 0..height {
-        for x in 0..width {
-            let idx = (y * width + x) as usize;
-            if pixel_data[idx] {
-                print!("██");
-            } else {
-                print!("  ");
-            }
-        }
-        println!();
-    }
+    // println!("Pixel data:");
+    // for y in 0..height {
+    //     for x in 0..width {
+    //         let idx = (y * width + x) as usize;
+    //         if pixel_data[idx] {
+    //             print!("██");
+    //         } else {
+    //             print!("  ");
+    //         }
+    //     }
+    //     println!();
+    // }
 
     //check pixels are all true
     for y in radius..(height as i32) {
@@ -148,18 +148,18 @@ pub fn scan_image_for_circles(image: &Image, radius: i32) -> Vec<IVec2> {
         }
     }
 
-    println!("Pixel data:");
-    for y in 0..height {
-        for x in 0..width {
-            let idx = (y * width + x) as usize;
-            if pixel_data[idx] {
-                print!("██");
-            } else {
-                print!("  ");
-            }
-        }
-        println!();
-    }
+    // println!("Pixel data:");
+    // for y in 0..height {
+    //     for x in 0..width {
+    //         let idx = (y * width + x) as usize;
+    //         if pixel_data[idx] {
+    //             print!("██");
+    //         } else {
+    //             print!("  ");
+    //         }
+    //     }
+    //     println!();
+    // }
 
     valid_spawns
 }

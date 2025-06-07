@@ -50,7 +50,7 @@
         (
             name: "Water Glass",
             context: (
-                position: (16.0, -64.0, 10.0),
+                position: (-112.0, 32.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
@@ -58,7 +58,7 @@
         (
             name: "Fluid Filter",
             context: (
-                position: (32.0, 16.0, 10.0),
+                position: (32.0, 96.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
