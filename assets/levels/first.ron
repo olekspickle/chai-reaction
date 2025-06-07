@@ -11,6 +11,8 @@
         "Tea bag",
         "Red Ball",
         "Conveyor",
+        "Wood Ramp",
+        "Wood Block",
     ],
     initial_machine_parts: [
         (
@@ -48,7 +50,7 @@
         (
             name: "Water Glass",
             context: (
-                position: (16.0, -48.0, 10.0),
+                position: (16.0, -64.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),

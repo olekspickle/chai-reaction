@@ -248,6 +248,11 @@
             Collider(
                 mesh_image_path: "textures/glass_collider.png",
             ),
+            ParticleVessel(
+                texture_path: "textures/glass_vessel.png",
+                particle_lifetime_s: 10.0,
+                particle_gravity_scale: 0.5,
+            )
         ],
     ),
     "Red Ball": (
@@ -261,13 +266,13 @@
             Sprite(
                 sprite_asset_path: "textures/red_ball.png",
             ),
-            Collider(
-                mesh_image_path: "textures/red_ball.png",
+            CircleCollider(
+                radius: 8.0,
             ),
         ],
     ),
     "Conveyor": (
-        cost: 42,
+        cost: 100,
         is_dynamic: false,
         texture_info: (
             frames: Basic(8,0.1),
@@ -281,6 +286,38 @@
             ConveyorBelt(
                 mesh_image_path: "textures/conveyor_collider.png",
                 speed: 20.0,
+            ),
+        ],
+    ),
+    "Wood Ramp": (
+        cost: 42,
+        is_dynamic: false,
+        texture_info: (
+            rotations: 2,
+            flippable: true,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/wood_ramp_fore.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/wood_ramp_collider.png",
+            ),
+        ],
+    ),
+    "Wood Block": (
+        cost: 42,
+        is_dynamic: false,
+        texture_info: (
+            rotations: 2,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/wood_block_fore.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/wood_block_collider.png",
             ),
         ],
     ),

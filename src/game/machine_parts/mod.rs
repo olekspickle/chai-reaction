@@ -1,4 +1,4 @@
-use crate::{game::machine_parts::animator::AnimatorPlugin, prelude::*};
+use crate::{game::machine_parts::{animator::AnimatorPlugin, particle_vessel::ParticleVesselPlugin}, prelude::*};
 use bevy::prelude::*;
 
 pub mod animator;
@@ -10,6 +10,7 @@ pub mod machine_part_config_by_type;
 pub mod machine_part_spawner;
 pub mod machine_part_type;
 pub mod picked_machine_part_type;
+pub mod particle_vessel;
 
 pub struct MachinePartsPlugin;
 
@@ -21,8 +22,9 @@ impl Plugin for MachinePartsPlugin {
             MachinePartSpawnerPlugin,
             PickedMachinePartTypePlugin,
             
+            ParticleVesselPlugin,
             FlowFieldPlugin,
-            AnimatorPlugin
+            AnimatorPlugin,
         ));
     }
 }

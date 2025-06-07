@@ -1,8 +1,6 @@
 use crate::{
     game::{
-        heat::HeatSource,
-        machine_parts::animator::{BasicSpriteAnimationController, SpriteFrames},
-        tea::{Recipe, Tea, TeaSensor},
+        heat::HeatSource, machine_parts::{animator::{BasicSpriteAnimationController, SpriteFrames}, particle_vessel::ParticleVessel}, tea::{Recipe, Tea, TeaSensor}
     },
     prelude::*,
 };
@@ -58,6 +56,11 @@ pub enum SubAssembly {
         colliders: Vec<Vec<Compound>>,
         speed: f32,
     },
+    CircleCollider {
+        #[serde(default)]
+        offset: Vec2,
+        radius: f32,
+    },
     FluidFilter {
         #[serde(default)]
         offset: Vec2,
@@ -97,6 +100,18 @@ pub enum SubAssembly {
         #[serde(default)]
         kind: ParticleContents,
     },
+    ParticleVessel {
+        #[serde(default)]
+        texture_path: String,
+        #[serde(skip)]
+        image: Handle<Image>,
+        #[serde(default)]
+        offset: Vec2,
+        particle_lifetime_s: f32,
+        particle_gravity_scale: f32,
+        #[serde(default)]
+        kind: ParticleContents,
+    },
     HeatSource {
         #[serde(default)]
         offset: Vec2,
@@ -122,7 +137,7 @@ pub enum SubAssembly {
         #[serde(skip)]
         #[reflect(ignore)]
         collider: Collider,
-    },
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
@@ -274,6 +289,15 @@ impl MachinePartConfig {
                             }
                         }
                     }
+                    SubAssembly::CircleCollider {
+                        offset,
+                        radius,
+                    } => {
+                        parent.spawn((
+                            Transform::from_xyz(offset.x, offset.y, 0.0),
+                            Collider::circle(*radius),
+                        ));
+                    }
                     SubAssembly::ConveyorBelt {
                         offset,
                         colliders,
@@ -344,7 +368,26 @@ impl MachinePartConfig {
                                 *particle_gravity_scale,
                             ),
                         ));
-                    }
+                    },
+                    SubAssembly::ParticleVessel { 
+                        offset,
+                        image, 
+                        particle_lifetime_s,
+                        particle_gravity_scale,
+                        kind,
+                        .. 
+                    } => {
+                        parent.spawn((
+                            Transform::from_xyz(offset.x, offset.y, 0.0),
+                            ParticleVessel {
+                                image: image.clone(),
+                                completed: false,
+                                kind: kind.clone(),
+                                particle_gravity_scale: *particle_gravity_scale,
+                                particle_lifetime_s: *particle_lifetime_s,
+                            }
+                        ));
+                    },
                     SubAssembly::HeatSource { offset, radius } => {
                         parent.spawn((
                             sfx_looping(sounds.stove_looping.clone(), settings.sfx()),

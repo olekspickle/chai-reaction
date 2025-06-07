@@ -144,6 +144,23 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             sprite.layout = Some(layout_handle);
                         }
                     }
+                    SubAssembly::ParticleVessel { 
+                        texture_path, 
+                        image, 
+                        ..
+                    } => {
+                        let loaded_image = load_context
+                            .loader()
+                            .immediate()
+                            .with_static_type()
+                            .load::<Image>(texture_path.clone())
+                            .await?;
+
+                        *image = load_context.add_loaded_labeled_asset(
+                            texture_path.clone(),
+                            loaded_image,
+                        );
+                    }
                     SubAssembly::FlowField {
                         flow_texture_path,
                         flow_texture,
