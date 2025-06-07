@@ -71,6 +71,11 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                         colliders,
                         ..
                     } |
+                    SubAssembly::ConveyorBelt{
+                        mesh_image_path,
+                        colliders,
+                        ..
+                    } |
                     SubAssembly::FluidFilterButton {
                         mesh_image_path,
                         colliders,

@@ -14,6 +14,7 @@ pub mod settings;
 pub mod sound;
 pub mod tea;
 pub mod victory;
+pub mod conveyor_belts;
 
 pub fn plugin(app: &mut App) {
     app.insert_resource(Score(0));
@@ -28,6 +29,7 @@ pub fn plugin(app: &mut App) {
         heat::plugin,
         tea::plugin,
         victory::plugin,
+        conveyor_belts::plugin,
     ))
     .add_systems(OnEnter(Screen::Gameplay), clear_score)
     .add_plugins((MachinePartsPlugin, CurrencyPlugin));

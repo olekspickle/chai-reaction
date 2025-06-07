@@ -48,6 +48,15 @@ pub enum SubAssembly {
         #[reflect(ignore)]
         colliders: Vec<Vec<Compound>>,
     },
+    ConveyorBelt {
+        #[serde(default)]
+        offset: Vec2,
+        mesh_image_path: String,
+        #[serde(skip)]
+        #[reflect(ignore)]
+        colliders: Vec<Vec<Compound>>,
+        speed: f32,
+    },
     FluidFilter {
         #[serde(default)]
         offset: Vec2,
@@ -246,6 +255,24 @@ impl MachinePartConfig {
                                     parent.spawn((
                                         Transform::from_xyz(offset.x, offset.y, 0.0),
                                         Collider::from(SharedShape::new(collider.clone())),
+                                    ));
+                                }
+                            }
+                        }
+                        SubAssembly::ConveyorBelt {
+                            offset, colliders, speed, ..
+                        } => {
+                            // Select the set of colliders based on the current rotation index
+                            if let Some(collider_set) =
+                                colliders.get(context.rotation_index as usize)
+                            {
+                                for collider in collider_set {
+                                    parent.spawn((
+                                        Transform::from_xyz(offset.x, offset.y, 0.0),
+                                        Collider::from(SharedShape::new(collider.clone())),
+                                        crate::game::conveyor_belts::ConveyorBelt {
+                                            speed: *speed,
+                                        },
                                     ));
                                 }
                             }
