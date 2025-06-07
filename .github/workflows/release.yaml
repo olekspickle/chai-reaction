@@ -22,18 +22,17 @@ permissions:
 
 env:
   pkg_name: chai-reaction
-  build: {
-    web: true,
-    linux: false,
-    windows: false,
-    macos: false,
-  }
-  upload: {
-    # The itch.io project to upload to in the format `user-name/project-name`.
-    # There will be no upload to itch.io if this is commented out.
-    itch: olekspickle/chai-reaction,
-    github: true
-  }
+
+  build_web: true,
+  build_linux: false,
+  build_windows: false,
+  build_macos: false,
+
+  # The itch.io project to upload to in the format `user-name/project-name`.
+  # There will be no upload to itch.io if this is commented out.
+  itch: olekspickle/chai-reaction,
+  github: false
+
   # The path to the assets directory.
   assets_path: assets
 
@@ -160,9 +159,9 @@ jobs:
 
           # Check if building for this platform is enabled.
           echo 'is_platform_enabled=${{
-            (matrix.platform == 'web' && env.build.web == 'true') ||
-            (matrix.platform == 'linux' && env.build.linux == 'true') ||
-            (matrix.platform == 'windows' && env.build.windows == 'true') ||
+            (matrix.platform == 'web' && env.build_web == 'true') ||
+            (matrix.platform == 'linux' && env.build_linux == 'true') ||
+            (matrix.platform == 'windows' && env.build_windows == 'true') ||
             (matrix.platform == 'macos' && env.build_macos == 'true')
           }}' >> "${GITHUB_ENV}"
 
@@ -281,7 +280,7 @@ jobs:
           retention-days: 1
 
       - name: Upload package to GitHub release
-        if: ${{ env.is_platform_enabled == 'true' && env.upload.github }}
+        if: ${{ env.is_platform_enabled == 'true' && env.upload_github }}
         uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
@@ -298,7 +297,7 @@ jobs:
       - forward-env
       - get-version
       - build
-    if: ${{ needs.forward-env.outputs.upload.itch != '' }}
+    if: ${{ needs.forward-env.outputs.upload_itch != '' }}
 
     steps:
       - name: Download all packages
@@ -323,5 +322,5 @@ jobs:
               --fix-permissions \
               --userversion='${{ needs.get-version.outputs.version }}' \
               tmp/"${channel}"/* \
-              '${{ env.upload.itch }}':"${channel#package-}"
+              '${{ env.upload_itch }}':"${channel#package-}"
           done
