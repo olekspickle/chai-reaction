@@ -61,4 +61,3 @@ pub fn animate_basic_sprite(
         }
     }
 }
-

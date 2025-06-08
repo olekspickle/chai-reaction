@@ -24,6 +24,7 @@ fn spawn_part_picking_buttons(
     level_configs: Res<Assets<LevelConfig>>,
     existing_area: Query<Entity, With<MachinePartButtonNode>>,
     editor_mode: Res<EditorMode>,
+    machine_part_configs: Res<MachinePartConfigByType>,
 ) {
     for entity in &existing_area {
         commands.entity(entity).despawn();
@@ -43,6 +44,7 @@ fn spawn_part_picking_buttons(
                 }, // Replace PlacementContext::default() with the correct context if needed
                 part,
                 level.clone(),
+                &machine_part_configs,
             );
             buttons.push(commands.spawn(button_bundle).id());
         }
@@ -72,12 +74,35 @@ fn btn_with_machine_part_type(
     part_type: MachinePartType,
     text: impl Into<String>,
     level: GameLevel,
+    machine_part_configs: &Res<MachinePartConfigByType>,
 ) -> impl Bundle {
-    (
-        StateScoped(level),
-        part_type,
-        btn_sq(text.into(), set_picked_machine_part),
-    )
+    if let Some(image) = try_fetch_button_image(part_type.clone(), machine_part_configs) {
+        (
+            StateScoped(level),
+            part_type,
+            btn_sq(Opts::new(image), set_picked_machine_part),
+        )
+    } else {
+        (
+            StateScoped(level),
+            part_type,
+            btn_sq(Opts::new(text.into()), set_picked_machine_part),
+        )
+    }
+}
+
+fn try_fetch_button_image(
+    part_type: MachinePartType,
+    machine_part_configs: &Res<MachinePartConfigByType>,
+) -> Option<Handle<Image>> {
+    if let Some(config) = machine_part_configs.0.get(&part_type.name) {
+        for subassembly in &config.subassemblies {
+            if let SubAssembly::Sprite { sprite, .. } = subassembly {
+                return Some(sprite.image.clone());
+            }
+        }
+    }
+    None
 }
 
 fn set_picked_machine_part(

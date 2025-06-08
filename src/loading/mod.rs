@@ -101,12 +101,9 @@ impl AudioSources {
         "audio/sfx/pipeHit3.ogg",
         "audio/sfx/pipeHit4.ogg",
     ];
-    pub const INTO_CUP_PLOPS: &'static [&'static str] = &[
-        "audio/sfx/intoTheCup1.ogg",
-        "audio/sfx/intoTheCup2.ogg",
-    ];
+    pub const INTO_CUP_PLOPS: &'static [&'static str] =
+        &["audio/sfx/intoTheCup1.ogg", "audio/sfx/intoTheCup2.ogg"];
     pub const STOVE_LOOPING: &'static str = "audio/sfx/stoveLoopingBitcrushed.ogg";
-
 
     pub const BG_MUSIC: &'static str = "audio/music/smnbl-time-for-fun.ogg";
 }
@@ -123,7 +120,10 @@ impl FromWorld for AudioSources {
             cancel_piece: assets.load(Self::CANCEL_PIECE),
             place_piece: assets.load(Self::PLACE_PIECE),
             pipe_hits: Self::PIPE_HITS.iter().map(|p| assets.load(*p)).collect(),
-            into_cup_plops: Self::INTO_CUP_PLOPS.iter().map(|p| assets.load(*p)).collect(),
+            into_cup_plops: Self::INTO_CUP_PLOPS
+                .iter()
+                .map(|p| assets.load(*p))
+                .collect(),
             stove_looping: assets.load(Self::STOVE_LOOPING),
         }
     }
