@@ -15,6 +15,7 @@ pub mod settings;
 pub mod sound;
 pub mod tea;
 pub mod victory;
+pub mod tea_particles;
 
 pub fn plugin(app: &mut App) {
     app.add_plugins((
@@ -29,6 +30,7 @@ pub fn plugin(app: &mut App) {
         tea::plugin,
         victory::plugin,
         conveyor_belts::plugin,
+        tea_particles::plugin,
     ))
     .add_plugins((MachinePartsPlugin, CurrencyPlugin));
 }

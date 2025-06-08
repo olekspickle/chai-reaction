@@ -46,7 +46,7 @@ impl ParticleContents {
 
 #[derive(Default, Debug, Copy, Clone, Reflect, Serialize, Deserialize)]
 pub struct ParticleContents {
-    #[serde(default)]
+    #[serde(default="default_heat")]
     pub heat: f32,
     #[serde(default)]
     pub tea: f32,
@@ -54,6 +54,9 @@ pub struct ParticleContents {
     pub sugar: f32,
     #[serde(default)]
     pub milk: f32,
+}
+fn default_heat() -> f32 {
+    1.0
 }
 
 impl std::ops::Add for ParticleContents {

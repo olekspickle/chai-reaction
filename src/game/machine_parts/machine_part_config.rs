@@ -6,6 +6,7 @@ use crate::{
             particle_vessel::ParticleVessel,
         },
         tea::{Recipe, Tea, TeaSensor},
+        tea_particles::TeaParticleVessel,
     },
     prelude::*,
 };
@@ -119,6 +120,19 @@ pub enum SubAssembly {
         particle_gravity_scale: f32,
         #[serde(default)]
         kind: ParticleContents,
+    },
+    TeaParticleVessel {
+        #[serde(default)]
+        texture_path: String,
+        #[serde(skip)]
+        image: Handle<Image>,
+        #[serde(default)]
+        particle_texture_path: String,
+        #[serde(skip)]
+        particle_image: Handle<Image>,
+        #[serde(default)]
+        offset: Vec2,
+        particle_gravity_scale: f32,
     },
     HeatSource {
         #[serde(default)]
@@ -419,6 +433,23 @@ impl MachinePartConfig {
                             },
                         ));
                     }
+                    SubAssembly::TeaParticleVessel {
+                        offset,
+                        image,
+                        particle_gravity_scale,
+                        particle_image,
+                        ..
+                    } => {
+                        parent.spawn((
+                            Transform::from_xyz(offset.x, offset.y, 0.0),
+                            TeaParticleVessel {
+                                image: image.clone(),
+                                particle_image: particle_image.clone(),
+                                completed: false,
+                                particle_gravity_scale: *particle_gravity_scale,
+                            },
+                        ));
+                    }
                     SubAssembly::HeatSource { offset, radius } => {
                         parent.spawn((
                             sfx_looping(sounds.stove_looping.clone(), settings.sfx()),
@@ -512,9 +543,10 @@ fn handle_erase_click(
     initial_part: Query<&IsInitialPart>,
     sounds: Res<AudioSources>,
     settings: Res<Settings>,
+    editor_mode: Res<EditorMode>,
 ) {
     if *picking_state == PickingState::Erasing {
-        if !initial_part.contains(trigger.target()) {
+        if editor_mode.0 || !initial_part.contains(trigger.target()) {
             if let Ok(ty) = part_type.get(trigger.target()) {
                 if let Some(part_config) = machine_part_config_by_type.0.get(&ty.name) {
                     let source = sounds.cancel_piece.clone();

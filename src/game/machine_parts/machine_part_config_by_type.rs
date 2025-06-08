@@ -172,6 +172,33 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                         *image = load_context
                             .add_loaded_labeled_asset(texture_path.clone(), loaded_image);
                     }
+                    SubAssembly::TeaParticleVessel {
+                        texture_path,
+                        image,
+                        particle_texture_path,
+                        particle_image,
+                        ..
+                    } => {
+                        let loaded_image = load_context
+                            .loader()
+                            .immediate()
+                            .with_static_type()
+                            .load::<Image>(texture_path.clone())
+                            .await?;
+
+                        *image = load_context
+                            .add_loaded_labeled_asset(texture_path.clone(), loaded_image);
+
+                        let loaded_image = load_context
+                            .loader()
+                            .immediate()
+                            .with_static_type()
+                            .load::<Image>(particle_texture_path.clone())
+                            .await?;
+
+                        *particle_image = load_context
+                            .add_loaded_labeled_asset(particle_texture_path.clone(), loaded_image);
+                    }
                     SubAssembly::FlowField {
                         flow_texture_path,
                         flow_texture,
