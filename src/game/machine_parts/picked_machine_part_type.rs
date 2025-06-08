@@ -24,7 +24,7 @@ fn flip_preview(
     machine_part_config_by_type: Res<MachinePartConfigByType>,
 ) {
     if let PickingState::Placing(ref mut part_type) = *picking_state {
-        let mut context = &mut part_type.context;
+        let context = &mut part_type.context;
         if let Some(config) = machine_part_config_by_type.0.get(&part_type.name) {
             if !config.texture_info.flippable {
                 return;

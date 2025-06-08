@@ -1,4 +1,4 @@
-use crate::{prelude::*, game::ParticleLayer};
+use crate::{game::ParticleLayer, prelude::*};
 use avian2d::prelude::*;
 use bevy::prelude::*;
 use rand::prelude::*;
@@ -184,7 +184,7 @@ fn spawn_particles(
 
                 let mesh = meshes.add(Circle::new(cfg.droplet_radius));
 
-                let contents = emitter.kind.clone();
+                let contents = emitter.kind;
 
                 let material = materials.add(WATER);
                 commands.spawn((
@@ -203,7 +203,11 @@ fn spawn_particles(
                     Mass(0.1),
                     CollisionLayers::new(
                         ParticleLayer::Fluid,
-                        [ParticleLayer::Default, ParticleLayer::Fluid, ParticleLayer::TeaLeaves],
+                        [
+                            ParticleLayer::Default,
+                            ParticleLayer::Fluid,
+                            ParticleLayer::TeaLeaves,
+                        ],
                     ),
                     SleepingDisabled,
                     Particle {
@@ -290,10 +294,12 @@ fn activate_fluid_filter(
     filters: Query<&FluidFilter>,
 ) {
     if filters.contains(trigger.target()) {
-        commands.entity(trigger.target()).insert(CollisionLayers::new(
-            ParticleLayer::Default,
-            [ParticleLayer::Default, ParticleLayer::TeaLeaves],
-        ));
+        commands
+            .entity(trigger.target())
+            .insert(CollisionLayers::new(
+                ParticleLayer::Default,
+                [ParticleLayer::Default, ParticleLayer::TeaLeaves],
+            ));
     }
 }
 
@@ -303,10 +309,16 @@ fn deactivate_fluid_filter(
     filters: Query<&FluidFilter>,
 ) {
     if filters.contains(trigger.target()) {
-        commands.entity(trigger.target()).insert(CollisionLayers::new(
-            ParticleLayer::Default,
-            [ParticleLayer::Default, ParticleLayer::TeaLeaves, ParticleLayer::Fluid],
-        ));
+        commands
+            .entity(trigger.target())
+            .insert(CollisionLayers::new(
+                ParticleLayer::Default,
+                [
+                    ParticleLayer::Default,
+                    ParticleLayer::TeaLeaves,
+                    ParticleLayer::Fluid,
+                ],
+            ));
     }
 }
 
@@ -333,12 +345,12 @@ fn trigger_fluid_filter_buttons(
             triggered = true;
         }
         if !triggered && button.0 {
-                for entity in children.iter_descendants(parent.0) {
-                    if filters.contains(entity) {
-                        commands.entity(entity).trigger(DeactivateFluidFilter);
-                    }
+            for entity in children.iter_descendants(parent.0) {
+                if filters.contains(entity) {
+                    commands.entity(entity).trigger(DeactivateFluidFilter);
                 }
-                button.0 = false;
+            }
+            button.0 = false;
         }
     }
 }
