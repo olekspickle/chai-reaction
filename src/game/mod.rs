@@ -1,8 +1,9 @@
 use crate::prelude::*;
-use bevy::prelude::*;
 use avian2d::prelude::*;
+use bevy::prelude::*;
 
 pub mod camera;
+pub mod conveyor_belts;
 pub mod currency;
 pub mod heat;
 pub mod input_dispatch;
@@ -14,7 +15,6 @@ pub mod settings;
 pub mod sound;
 pub mod tea;
 pub mod victory;
-pub mod conveyor_belts;
 
 pub fn plugin(app: &mut App) {
     app.insert_resource(Score(0));

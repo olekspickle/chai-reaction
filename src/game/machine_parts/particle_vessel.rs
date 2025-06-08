@@ -1,16 +1,22 @@
-use bevy::prelude::*;
 use avian2d::prelude::*;
+use bevy::prelude::*;
 
-use crate::{game::ParticleLayer, prelude::{Config, Particle, ParticleContents}, screens::Screen, ui::WATER};
-
+use crate::{
+    game::ParticleLayer,
+    prelude::{Config, Particle, ParticleContents},
+    screens::Screen,
+    ui::WATER,
+};
 
 pub struct ParticleVesselPlugin;
 impl Plugin for ParticleVesselPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update, do_particle_vessels.run_if(in_state(Screen::Gameplay)));
+        app.add_systems(
+            Update,
+            do_particle_vessels.run_if(in_state(Screen::Gameplay)),
+        );
     }
 }
-
 
 #[derive(Component, Debug, Clone)]
 pub struct ParticleVessel {
@@ -21,19 +27,19 @@ pub struct ParticleVessel {
     pub particle_lifetime_s: f32,
 }
 
-pub fn do_particle_vessels (
+pub fn do_particle_vessels(
     cfg: Res<Config>,
     mut commands: Commands,
     images: Res<Assets<Image>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
-    mut vessels: Query<(&mut ParticleVessel, &GlobalTransform)>
+    mut vessels: Query<(&mut ParticleVessel, &GlobalTransform)>,
 ) {
     for (mut vessel, global_transform) in vessels.iter_mut() {
         if vessel.completed {
             continue;
         }
-        
+
         vessel.completed = true;
 
         let Some(img) = images.get(&vessel.image) else {
@@ -42,7 +48,7 @@ pub fn do_particle_vessels (
 
         let relative_positions = scan_image_for_circles(img, cfg.droplet_radius as i32);
         // let relative_positions = vec![IVec2::new(0.0,m, y)]
-    
+
         let mesh = meshes.add(Circle::new(cfg.droplet_radius));
 
         for position in relative_positions {
@@ -50,7 +56,7 @@ pub fn do_particle_vessels (
 
             let contents = vessel.kind.clone();
             let material = materials.add(WATER);
-            
+
             commands.spawn((
                 Mesh2d(mesh.clone()),
                 MeshMaterial2d(material),
@@ -66,19 +72,20 @@ pub fn do_particle_vessels (
                 Mass(0.1),
                 CollisionLayers::new(
                     ParticleLayer::Fluid,
-                    [ParticleLayer::Default, ParticleLayer::Fluid, ParticleLayer::TeaLeaves],
+                    [
+                        ParticleLayer::Default,
+                        ParticleLayer::Fluid,
+                        ParticleLayer::TeaLeaves,
+                    ],
                 ),
                 SleepingDisabled,
                 Particle {
                     lifetime: Timer::from_seconds(vessel.particle_lifetime_s, TimerMode::Once),
                     contents,
                 },
-
             ));
         }
-    
     }
-
 }
 
 pub fn scan_image_for_circles(image: &Image, radius: i32) -> Vec<IVec2> {
@@ -86,7 +93,6 @@ pub fn scan_image_for_circles(image: &Image, radius: i32) -> Vec<IVec2> {
     let mut valid_spawns = Vec::new();
 
     let r_squared = radius * radius;
-
 
     let mut pixel_data: Vec<bool> = Vec::new();
     for y in 0..height {
