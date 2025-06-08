@@ -36,7 +36,7 @@ fn listen_to_spawn_requests(
             .0
             .get(&spawn_request.part_type.name)
         {
-            if spawn_request.initial_part
+            if spawn_request.free
                 || editor_mode.0
                 || available_zen_points
                     .buy_if_affordable(part_config.cost)

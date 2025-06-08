@@ -122,22 +122,22 @@ fn restart(
 }
 
 #[derive(Resource, Default)]
-pub struct ModifiedLevel(pub Option<Vec<MachinePartType>>);
+pub struct ModifiedLevel(pub Option<Vec<(MachinePartType, bool)>>);
 
 fn toggle_physics(
     _: Trigger<Pointer<Click>>,
     mut commands: Commands,
     physics_state: ResMut<State<PhysicsState>>,
     mut next: ResMut<NextState<PhysicsState>>,
-    machine_parts: Query<&MachinePartType, With<SpawnedMachinePart>>,
+    machine_parts: Query<(&MachinePartType, Has<IsInitialPart>), With<SpawnedMachinePart>>,
     mut machine_part_request_writer: EventWriter<MachinePartRequest>,
     mut modified_level: ResMut<ModifiedLevel>,
 ) {
     match physics_state.get() {
         PhysicsState::Paused => {
             let mut parts = vec![];
-            for part_type in &machine_parts {
-                parts.push(part_type.clone());
+            for (part_type, is_initial) in &machine_parts {
+                parts.push((part_type.clone(), is_initial));
             }
             modified_level.0 = Some(parts);
             next.set(PhysicsState::Running)
@@ -145,12 +145,13 @@ fn toggle_physics(
         PhysicsState::Running => {
             if let Some(parts) = &modified_level.0 {
                 commands.queue(ClearLevel);
-                for part in parts {
+                for (part, is_initial) in parts {
                     machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
                         MachinePartSpawnRequest {
                             location: part.context.position,
                             part_type: part.clone(),
-                            initial_part: true,
+                            initial_part: *is_initial,
+                            free: true,
                         },
                     ));
                 }

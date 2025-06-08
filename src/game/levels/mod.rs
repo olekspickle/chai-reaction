@@ -120,6 +120,7 @@ impl Command for InitLevel {
                         location: part.context.position,
                         part_type: part.clone(),
                         initial_part: true,
+                        free: true,
                     },
                 ));
             }

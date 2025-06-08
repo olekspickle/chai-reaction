@@ -12,6 +12,7 @@ pub struct MachinePartSpawnRequest {
     pub part_type: MachinePartType,
     pub location: Vec3,
     pub initial_part: bool,
+    pub free: bool,
     // pub location: PlacementContext,
 }
 
