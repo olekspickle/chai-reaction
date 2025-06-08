@@ -176,7 +176,7 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                         flow_texture_path,
                         flow_texture,
                         collider,
-                        flow_type,
+                        ..
                     } => {
                         let loaded_flow_texture = load_context
                             .loader()

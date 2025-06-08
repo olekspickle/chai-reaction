@@ -400,12 +400,6 @@ fn level_finished_modal() -> impl Bundle {
         LevelFinishedModal,
         ui_root("game over modal"),
         BackgroundColor(TRANSLUCENT),
-        #[cfg(target_family = "wasm")]
-        children![
-            label(format!("Level Finished")),
-            btn("Next Level", next_level)
-        ],
-        #[cfg(not(target_family = "wasm"))]
         children![
             label("Level finished!"),
             btn_big("Main Menu", enter_gameplay_screen),

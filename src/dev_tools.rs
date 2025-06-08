@@ -3,6 +3,7 @@
 use crate::{
     game::input_dispatch::*, game::physics::PhysicsState, prelude::*, screens::gameplay::PauseLabel,
 };
+#[cfg(feature = "dev_native")]
 use avian2d::prelude::*;
 #[cfg(feature = "dev_native")]
 use bevy::{dev_tools::states::log_transitions, prelude::*, ui::UiDebugOptions};

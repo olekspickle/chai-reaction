@@ -5,7 +5,7 @@
 */
 
 use crate::prelude::{MachineSpriteInfo, Particle, RedBall};
-use avian2d::{collision::collider, prelude::*};
+use avian2d::prelude::*;
 use bevy::prelude::*;
 use serde::{Deserialize, Serialize};
 
