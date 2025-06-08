@@ -230,6 +230,7 @@ impl MachinePartConfig {
         let context = part_type.context.clone();
         let mut part = commands.spawn((
             SpawnedMachinePart,
+            LevelObject,
             Transform::from_translation(context.position),
             part_type.clone(),
             if self.is_dynamic {

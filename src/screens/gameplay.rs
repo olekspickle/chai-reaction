@@ -1,7 +1,7 @@
 //! The screen state for the main gameplay.
 
 use super::*;
-use crate::{game::input_dispatch::*, screens::settings};
+use crate::{game::input_dispatch::*, game::physics::PhysicsState, screens::settings};
 use bevy::ui::Val::*;
 use leafwing_input_manager::prelude::*;
 
@@ -12,6 +12,7 @@ pub(super) fn plugin(app: &mut App) {
             Update,
             (change_score.run_if(in_state(Screen::Gameplay)), restart),
         )
+        .init_resource::<ModifiedLevel>()
         .add_observer(trigger_menu_toggle_on_esc)
         .add_observer(add_new_modal)
         .add_observer(pop_modal)
@@ -63,8 +64,8 @@ fn spawn_gameplay_ui(mut cmds: Commands, textures: Res<Textures>) {
                 BackgroundColor(TRANSLUCENT),
                 children![
                     btn(nav_opts.clone(), to::title),
-                    (icon(nav_opts.clone().image(play)), PauseLabel),
-                    btn(nav_opts.image(glass), reset_level),
+                    btn(nav_opts.clone().image(play), toggle_physics),
+                    btn(nav_opts.image(glass), init_level),
                 ]
             ),
             (
@@ -120,15 +121,52 @@ fn restart(
     }
 }
 
-fn reset_level(
+#[derive(Resource, Default)]
+pub struct ModifiedLevel(pub Option<Vec<MachinePartType>>);
+
+fn toggle_physics(
     _: Trigger<Pointer<Click>>,
-    level: ResMut<State<GameLevel>>,
-    mut next: ResMut<NextState<GameLevel>>,
+    mut commands: Commands,
+    physics_state: ResMut<State<PhysicsState>>,
+    mut next: ResMut<NextState<PhysicsState>>,
+    machine_parts: Query<&MachinePartType, With<SpawnedMachinePart>>,
+    mut machine_part_request_writer: EventWriter<MachinePartRequest>,
+    mut modified_level: ResMut<ModifiedLevel>,
 ) {
-    let current = level.get();
-    info!("reset: {current:?}");
-    next.set(GameLevel::Start);
-    next.set(current.clone());
+    match physics_state.get() {
+        PhysicsState::Paused => {
+            let mut parts = vec![];
+            for part_type in &machine_parts {
+                parts.push(part_type.clone());
+            }
+            modified_level.0 = Some(parts);
+            next.set(PhysicsState::Running)
+        }
+        PhysicsState::Running => {
+            if let Some(parts) = &modified_level.0 {
+                commands.queue(ClearLevel);
+                for part in parts {
+                    machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
+                        MachinePartSpawnRequest {
+                            location: part.context.position,
+                            part_type: part.clone(),
+                            initial_part: true,
+                        },
+                    ));
+                }
+            }
+            next.set(PhysicsState::Paused)
+        }
+    }
+}
+
+fn init_level(
+    _: Trigger<Pointer<Click>>,
+    mut commands: Commands,
+    mut physics_state: ResMut<NextState<PhysicsState>>,
+) {
+    commands.queue(InitLevel);
+    physics_state.set(PhysicsState::Paused);
 }
 
 // Modals and navigation

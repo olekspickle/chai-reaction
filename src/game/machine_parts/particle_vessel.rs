@@ -1,3 +1,4 @@
+use crate::prelude::LevelObject;
 use avian2d::prelude::*;
 use bevy::prelude::*;
 
@@ -60,6 +61,7 @@ pub fn do_particle_vessels(
             commands.spawn((
                 Mesh2d(mesh.clone()),
                 MeshMaterial2d(material),
+                LevelObject,
                 Transform::from_translation(spawn_position.extend(0.0)),
                 // --- Avian2D Physics Components ---
                 RigidBody::Dynamic,

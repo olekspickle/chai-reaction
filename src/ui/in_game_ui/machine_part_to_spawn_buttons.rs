@@ -1,5 +1,5 @@
 use crate::prelude::Val::Percent;
-use crate::prelude::*;
+use crate::{game::physics::PhysicsState, prelude::*};
 use bevy::{prelude::*, ui::Val::*};
 
 pub struct MachinePartToSpawnButtonsPlugin;
@@ -10,6 +10,14 @@ impl Plugin for MachinePartToSpawnButtonsPlugin {
             Update,
             spawn_part_picking_buttons
                 .run_if(in_state(Screen::Gameplay).and(resource_exists_and_changed::<LoadedLevel>)),
+        )
+        .add_systems(
+            OnEnter(PhysicsState::Paused),
+            enable_machine_part_type_buttons,
+        )
+        .add_systems(
+            OnEnter(PhysicsState::Running),
+            disable_machine_part_type_buttons,
         );
     }
 }
@@ -70,6 +78,41 @@ fn spawn_part_picking_buttons(
         });
 }
 
+fn disable_machine_part_type_buttons(
+    mut commands: Commands,
+    buttons: Query<Entity, With<MachinePartButton>>,
+    children: Query<&Children>,
+) {
+    println!("DISABLING");
+    for entity in &buttons {
+        println!("DISABLED");
+        for entity in [entity]
+            .into_iter()
+            .chain(children.iter_descendants(entity))
+        {
+            commands.entity(entity).insert(DisabledButton);
+        }
+    }
+}
+
+fn enable_machine_part_type_buttons(
+    mut commands: Commands,
+    buttons: Query<Entity, With<MachinePartButton>>,
+    children: Query<&Children>,
+) {
+    for entity in &buttons {
+        for entity in [entity]
+            .into_iter()
+            .chain(children.iter_descendants(entity))
+        {
+            commands.entity(entity).remove::<DisabledButton>();
+        }
+    }
+}
+
+#[derive(Component)]
+pub struct MachinePartButton;
+
 fn btn_with_machine_part_type(
     part_type: MachinePartType,
     text: impl Into<String>,
@@ -79,12 +122,14 @@ fn btn_with_machine_part_type(
     if let Some(image) = try_fetch_button_image(part_type.clone(), machine_part_configs) {
         (
             StateScoped(level),
+            MachinePartButton,
             part_type,
             btn_sq(Opts::new(image), set_picked_machine_part),
         )
     } else {
         (
             StateScoped(level),
+            MachinePartButton,
             part_type,
             btn_sq(Opts::new(text.into()), set_picked_machine_part),
         )
@@ -107,10 +152,14 @@ fn try_fetch_button_image(
 
 fn set_picked_machine_part(
     trigger: Trigger<Pointer<Pressed>>,
+    physics_state: Res<State<PhysicsState>>,
     mut picking_state: ResMut<PickingState>,
     part_types: Query<&MachinePartType>,
     child_ofs: Query<&ChildOf>,
 ) {
+    if *physics_state.get() == PhysicsState::Running {
+        return;
+    }
     if let Ok(child_of) = child_ofs.get(trigger.target()) {
         if let Ok(part) = part_types.get(child_of.0) {
             *picking_state = PickingState::Placing(part.clone());

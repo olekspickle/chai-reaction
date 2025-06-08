@@ -188,6 +188,7 @@ fn spawn_particles(
 
                 let material = materials.add(WATER);
                 commands.spawn((
+                    LevelObject,
                     Mesh2d(mesh),
                     MeshMaterial2d(material),
                     Transform::from_translation(spawn_position.extend(0.0)),
@@ -337,7 +338,6 @@ fn trigger_fluid_filter_buttons(
                 for entity in children.iter_descendants(parent.0) {
                     if filters.contains(entity) {
                         commands.entity(entity).trigger(ActivateFluidFilter);
-                        println!("Triggered");
                     }
                 }
                 button.0 = true;

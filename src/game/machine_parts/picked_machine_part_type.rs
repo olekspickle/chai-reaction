@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::{game::physics::PhysicsState, prelude::*};
 
 #[derive(Resource, Debug, Default, PartialEq)]
 pub enum PickingState {
@@ -15,7 +15,12 @@ impl Plugin for PickedMachinePartTypePlugin {
         app.init_resource::<PickingState>();
         app.add_observer(rotate_preview);
         app.add_observer(flip_preview);
+        app.add_systems(OnEnter(PhysicsState::Running), disable_picking);
     }
+}
+
+fn disable_picking(mut picking_state: ResMut<PickingState>) {
+    *picking_state = PickingState::None;
 }
 
 fn flip_preview(

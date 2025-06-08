@@ -2,18 +2,22 @@ use crate::prelude::*;
 use avian2d::prelude::*;
 use bevy::{
     asset::{AssetLoader, LoadContext, io::Reader},
+    ecs::system::SystemState,
     prelude::*,
 };
 use bevy_common_assets::ron::RonAssetPlugin;
 use std::env;
 use thiserror::Error;
 
-use crate::loading::LoadResource;
+use crate::{loading::LoadResource, screens::gameplay::ModifiedLevel};
 
 use serde::{Deserialize, Serialize};
 
 #[cfg(feature = "dev")]
 mod editor;
+
+#[derive(Component)]
+pub struct LevelObject;
 
 #[derive(Resource)]
 pub struct EditorMode(pub bool);
@@ -71,35 +75,62 @@ pub fn prepare_levels(cfg: Res<Config>, mut commands: Commands, level_list: Res<
     commands.insert_resource(LoadedLevel(level_list.0[0].clone()));
 }
 
-fn init_level(
-    mut commands: Commands,
-    loaded_level: Res<LoadedLevel>,
-    level_configs: Res<Assets<LevelConfig>>,
-    mut machine_part_request_writer: EventWriter<MachinePartRequest>,
-    existing_parts: Query<
-        Entity,
-        Or<(
-            With<Particle>,
-            With<SpawnedMachinePart>,
-            With<ParticleEmitter>,
-        )>,
-    >,
-) {
-    for entity in &existing_parts {
-        commands.entity(entity).despawn();
-    }
+pub struct ClearLevel;
+impl Command for ClearLevel {
+    fn apply(self, world: &mut World) {
+        let mut system_state: SystemState<(Commands, Query<Entity, With<LevelObject>>)> =
+            SystemState::new(world);
 
-    if let Some(config) = level_configs.get(&loaded_level.0) {
-        for part in &config.initial_machine_parts {
-            machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
-                MachinePartSpawnRequest {
-                    location: part.context.position,
-                    part_type: part.clone(),
-                    initial_part: true,
-                },
-            ));
+        let (mut commands, objects) = system_state.get_mut(world);
+
+        for entity in &objects {
+            commands.entity(entity).despawn();
         }
+
+        system_state.apply(world);
     }
+}
+
+pub struct InitLevel;
+impl Command for InitLevel {
+    fn apply(self, world: &mut World) {
+        let mut system_state: SystemState<(
+            Commands,
+            Res<LoadedLevel>,
+            Res<Assets<LevelConfig>>,
+            EventWriter<MachinePartRequest>,
+            ResMut<ModifiedLevel>,
+        )> = SystemState::new(world);
+
+        let (
+            mut commands,
+            loaded_level,
+            level_configs,
+            mut machine_part_request_writer,
+            mut modified_level,
+        ) = system_state.get_mut(world);
+
+        commands.queue(ClearLevel);
+        modified_level.0 = None;
+
+        if let Some(config) = level_configs.get(&loaded_level.0) {
+            for part in &config.initial_machine_parts {
+                machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
+                    MachinePartSpawnRequest {
+                        location: part.context.position,
+                        part_type: part.clone(),
+                        initial_part: true,
+                    },
+                ));
+            }
+        }
+
+        system_state.apply(world);
+    }
+}
+
+pub fn init_level(mut commands: Commands) {
+    commands.queue(InitLevel);
 }
 
 #[derive(Default, Asset, Reflect, Clone, Serialize, Deserialize)]

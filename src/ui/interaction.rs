@@ -45,6 +45,9 @@ impl UiPalette {
     }
 }
 
+#[derive(Component)]
+pub struct DisabledButton;
+
 fn apply_interaction_palette(
     mut palette_query: Query<
         (
@@ -53,7 +56,7 @@ fn apply_interaction_palette(
             &mut BorderColor,
             &mut BackgroundColor,
         ),
-        Changed<Interaction>,
+        (Changed<Interaction>, Without<DisabledButton>),
     >,
 ) {
     for (interaction, palette, mut border_color, mut background) in &mut palette_query {
@@ -89,7 +92,7 @@ fn btn_sounds(
     mut commands: Commands,
     settings: Res<Settings>,
     audio_sources: Res<AudioSources>,
-    interaction_query: Query<&Interaction, Changed<Interaction>>,
+    interaction_query: Query<&Interaction, (Changed<Interaction>, Without<DisabledButton>)>,
 ) {
     for interaction in &interaction_query {
         let source = match interaction {
