@@ -69,7 +69,9 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                     .await;
 
                 icon.handle = match loaded_icon {
-                    Ok(icon_asset) => Some(load_context.add_loaded_labeled_asset(icon.path.clone(), icon_asset)),
+                    Ok(icon_asset) => {
+                        Some(load_context.add_loaded_labeled_asset(icon.path.clone(), icon_asset))
+                    }
                     Err(_) => None,
                 };
             }

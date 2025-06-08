@@ -247,7 +247,7 @@ impl MachinePartConfig {
     ) -> Entity {
         let context = part_type.context.clone();
         let sprite_index = self.texture_info.frames.frames() * context.rotation_index;
-        
+
         let mut part = commands.spawn((
             SpawnedMachinePart,
             LevelObject,
@@ -272,13 +272,17 @@ impl MachinePartConfig {
             }
         }
         part.observe(handle_erase_click);
-        if self.subassemblies.iter().any(|s| matches!(s, SubAssembly::RedBall)) {
+        if self
+            .subassemblies
+            .iter()
+            .any(|s| matches!(s, SubAssembly::RedBall))
+        {
             part.insert(RedBall);
         }
         part.with_children(|parent| {
             for subassembly in &self.subassemblies {
                 match subassembly {
-                    SubAssembly::RedBall => {},
+                    SubAssembly::RedBall => {}
                     SubAssembly::Sprite {
                         offset,
                         layer,
