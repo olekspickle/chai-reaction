@@ -103,7 +103,9 @@ fn change_preview_sprite(
     if let PickingState::Placing(ty) = &*picking_state {
         if let Some(part_config) = machine_part_config_by_type.0.get(&ty.name) {
             commands.entity(*preview).despawn_related::<Children>();
-            part_config.spawn_sprites(ty.context.rotation_index, commands.entity(*preview));
+            let index = part_config.texture_info.frames.frames() * ty.context.rotation_index;
+
+            part_config.spawn_sprites(index, commands.entity(*preview));
         }
     }
 }

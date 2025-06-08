@@ -2,6 +2,9 @@
     "Pipe": (
         cost: 42,
         is_dynamic: false,
+        icon: (
+            path: "textures/pipe_icon.png"
+        ),
         texture_info: (
             rotations: 8,
             flippable: true,
@@ -18,6 +21,7 @@
                 mesh_image_path: "textures/pipe_collider.png",
             ),
             FlowField(
+                flow_type: Particles,
                 flow_texture_path: "textures/pipe_flow.png"
 
             )
@@ -154,6 +158,9 @@
     "Funnel": (
         cost: 42,
         is_dynamic: false,
+        icon: (
+            path: "textures/funnel_icon.png"
+        ),
         subassemblies: [
             Sprite(
                 sprite_asset_path: "textures/funnel_fore.png",
@@ -170,6 +177,9 @@
     "PipeTurn": (
         cost: 42,
         is_dynamic: false,
+        icon: (
+            path: "textures/pipe_turn_icon.png"
+        ),
         texture_info: (
             rotations: 8,
             flippable: true,
@@ -186,6 +196,7 @@
                 mesh_image_path: "textures/pipe_turn_collider.png",
             ),
             FlowField(
+                flow_type: Particles,
                 flow_texture_path: "textures/pipe_turn_flow.png"
 
             )
@@ -293,22 +304,29 @@
     "Red Ball": (
         cost: 42,
         is_dynamic: true,
+        icon: (
+            path: "textures/red_ball_icon.png"
+        ),
         texture_info: (
             rotations: 1,
             flippable: false,
         ),
         subassemblies: [
+            RedBall,
             Sprite(
                 sprite_asset_path: "textures/red_ball.png",
             ),
             CircleCollider(
-                radius: 8.0,
+                radius: 7.5,
             ),
         ],
     ),
     "Conveyor": (
         cost: 100,
         is_dynamic: false,
+        icon: (
+            path: "textures/conveyor_icon.png"
+        ),
         texture_info: (
             frames: Basic(8,0.1),
             rotations: 1,
@@ -327,22 +345,28 @@
     "Wood Ramp": (
         cost: 42,
         is_dynamic: false,
+        icon: (
+            path: "textures/wood_ramp_icon.png"
+        ),
         texture_info: (
-            rotations: 2,
-            flippable: true,
+            rotations: 4,
+            flippable: false,
         ),
         subassemblies: [
             Sprite(
                 sprite_asset_path: "textures/wood_ramp_fore.png",
             ),
             Collider(
-                mesh_image_path: "textures/wood_ramp_collider.png",
+                mesh_image_path: "textures/wood_ramp_fore.png",
             ),
         ],
     ),
     "Wood Block": (
         cost: 42,
         is_dynamic: false,
+        icon: (
+            path: "textures/wood_block_icon.png"
+        ),
         texture_info: (
             rotations: 2,
             flippable: false,
@@ -402,6 +426,30 @@
             Collider(
                 mesh_image_path: "textures/shelf.png",
             ),
+        ],
+    ),
+    "Fan": (
+        cost: 42,
+        is_dynamic: false,
+        icon: (
+            path: "textures/fan_icon.png"
+        ),
+        texture_info: (
+            frames: Basic(4,0.05),
+            rotations: 4,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/fan.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/fan_collider.png",
+            ),
+            FlowField(
+                flow_type: RedBall,
+                flow_texture_path: "textures/fan_flow.png"
+            )
         ],
     ),
 })

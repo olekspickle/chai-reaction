@@ -13,6 +13,7 @@
         "Conveyor",
         "Wood Ramp",
         "Wood Block",
+        "Fan",
     ],
     initial_machine_parts: [
         (

@@ -4,9 +4,10 @@
 
 */
 
-use crate::prelude::{MachineSpriteInfo, Particle};
-use avian2d::prelude::*;
+use crate::prelude::{MachineSpriteInfo, Particle, RedBall};
+use avian2d::{collision::collider, prelude::*};
 use bevy::prelude::*;
+use serde::{Deserialize, Serialize};
 
 pub struct FlowFieldPlugin;
 impl Plugin for FlowFieldPlugin {
@@ -20,6 +21,12 @@ impl Plugin for FlowFieldPlugin {
 pub struct FlowField {
     pub sprite_info: MachineSpriteInfo,
     pub rotation_index: u32,
+    pub flow_type: FlowType,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize, Reflect, Default)]
+pub enum FlowType {
+    #[default] Particles, RedBall, Both
 }
 
 /*
@@ -29,7 +36,8 @@ while colliding sensor,
 
 fn do_flow_fields(
     mut flow_fields: Query<(Entity, &FlowField, &GlobalTransform)>,
-    mut bodies: Query<(&mut ExternalImpulse, &GlobalTransform), With<Particle>>,
+    mut colliders: Query<&ColliderOf>,
+    mut bodies: Query<(&mut ExternalImpulse, &GlobalTransform, Option<&Particle>, Option<&RedBall>)>,
     collisions: Collisions,
     images: Res<Assets<Image>>,
     atlases: Res<Assets<TextureAtlasLayout>>,
@@ -61,7 +69,21 @@ fn do_flow_fields(
             } else {
                 contact_pair.collider1
             };
-            if let Ok((mut force, other_transform)) = bodies.get_mut(other_ent) {
+            if let Ok(collider_of) = colliders.get_mut(other_ent) {
+            if let Ok((mut force, other_transform, maybe_particle, maybe_redball)) = bodies.get_mut(collider_of.body) {
+                // Filter based on FlowType
+                let is_particle = maybe_particle.is_some();
+                let is_red_ball = maybe_redball.is_some();
+                let allowed = match flowfield.flow_type {
+                    FlowType::Particles => is_particle,
+                    FlowType::RedBall => is_red_ball,
+                    FlowType::Both => is_particle || is_red_ball,
+                };
+                if !allowed {
+                    continue;
+                }
+
+                
                 // Get relative position in flowfield local space
                 let flow_pos = flow_transform
                     .compute_matrix()
@@ -90,10 +112,18 @@ fn do_flow_fields(
                     new_force.y *= if new_force.y > 0.0 { 2.0 } else { 0.5 };
                     // new_force.x *= 2.0;
 
-                    force.set_impulse(new_force);
+                    if is_red_ball {
+                        new_force *= 5000.;
+                    }
+
+                    force.apply_impulse(new_force);
+
+
 
                     // force.apply_impulse(new_force);
                 }
+            }
+                
             }
         }
     }

@@ -138,14 +138,10 @@ fn try_fetch_button_image(
     part_type: MachinePartType,
     machine_part_configs: &Res<MachinePartConfigByType>,
 ) -> Option<Handle<Image>> {
-    if let Some(config) = machine_part_configs.0.get(&part_type.name) {
-        for subassembly in &config.subassemblies {
-            if let SubAssembly::Sprite { sprite, .. } = subassembly {
-                return Some(sprite.image.clone());
-            }
-        }
-    }
-    None
+    machine_part_configs
+        .0
+        .get(&part_type.name)
+        .and_then(|config| config.icon.handle.clone())
 }
 
 fn set_picked_machine_part(

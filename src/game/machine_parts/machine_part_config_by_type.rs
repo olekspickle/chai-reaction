@@ -54,10 +54,27 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
         let mut library = ron::de::from_bytes::<MachinePartConfigByType>(&bytes)?;
         for MachinePartConfig {
             subassemblies,
+            icon,
             texture_info,
             ..
         } in library.0.values_mut()
         {
+            //load icon:
+            if !icon.path.is_empty() {
+                let loaded_icon = load_context
+                    .loader()
+                    .immediate()
+                    .with_static_type()
+                    .load::<Image>(icon.path.clone())
+                    .await;
+
+                icon.handle = match loaded_icon {
+                    Ok(icon_asset) => Some(load_context.add_loaded_labeled_asset(icon.path.clone(), icon_asset)),
+                    Err(_) => None,
+                };
+            }
+
+            //load subassembly:
             for subassembly in subassemblies {
                 match subassembly {
                     SubAssembly::FluidFilter {
@@ -157,6 +174,7 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                         flow_texture_path,
                         flow_texture,
                         collider,
+                        flow_type,
                     } => {
                         let loaded_flow_texture = load_context
                             .loader()

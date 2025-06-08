@@ -21,6 +21,8 @@ pub struct MachinePartConfig {
     pub cost: u32,
     pub is_dynamic: bool,
     #[serde(default)]
+    pub icon: PartIcon,
+    #[serde(default)]
     pub texture_info: TextureInfo,
     #[serde(default)]
     pub subassemblies: Vec<SubAssembly>,
@@ -44,6 +46,7 @@ impl MachinePartLayer {
 
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
 pub enum SubAssembly {
+    RedBall,
     Collider {
         #[serde(default)]
         offset: Vec2,
@@ -146,7 +149,15 @@ pub enum SubAssembly {
         #[serde(skip)]
         #[reflect(ignore)]
         collider: Collider,
+        flow_type: FlowType,
     },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Reflect, Default)]
+pub struct PartIcon {
+    pub path: String,
+    #[serde(skip)]
+    pub handle: Option<Handle<Image>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
@@ -188,8 +199,11 @@ pub struct PlacementContext {
 #[derive(Component)]
 pub struct SpawnedMachinePart;
 
+#[derive(Component)]
+pub struct RedBall;
+
 impl MachinePartConfig {
-    pub fn spawn_sprites(&self, rotation_index: u32, mut commands: EntityCommands) {
+    pub fn spawn_sprites(&self, sprite_index: u32, mut commands: EntityCommands) {
         commands.with_children(|parent| {
             for subassembly in &self.subassemblies {
                 if let SubAssembly::Sprite {
@@ -207,7 +221,7 @@ impl MachinePartConfig {
                             image: sprite.image.clone(),
                             texture_atlas: Some(TextureAtlas {
                                 layout: layout.clone(),
-                                index: rotation_index as usize,
+                                index: sprite_index as usize,
                             }),
                             ..default()
                         });
@@ -232,6 +246,8 @@ impl MachinePartConfig {
         #[cfg(debug_assertions)] materials: &mut ResMut<Assets<ColorMaterial>>,
     ) -> Entity {
         let context = part_type.context.clone();
+        let sprite_index = self.texture_info.frames.frames() * context.rotation_index;
+        
         let mut part = commands.spawn((
             SpawnedMachinePart,
             LevelObject,
@@ -256,9 +272,13 @@ impl MachinePartConfig {
             }
         }
         part.observe(handle_erase_click);
+        if self.subassemblies.iter().any(|s| matches!(s, SubAssembly::RedBall)) {
+            part.insert(RedBall);
+        }
         part.with_children(|parent| {
             for subassembly in &self.subassemblies {
                 match subassembly {
+                    SubAssembly::RedBall => {},
                     SubAssembly::Sprite {
                         offset,
                         layer,
@@ -275,7 +295,7 @@ impl MachinePartConfig {
                                 image: sprite.image.clone(),
                                 texture_atlas: Some(TextureAtlas {
                                     layout: layout.clone(),
-                                    index: context.rotation_index as usize,
+                                    index: sprite_index as usize,
                                 }),
                                 ..default()
                             });
@@ -442,12 +462,14 @@ impl MachinePartConfig {
                     SubAssembly::FlowField {
                         flow_texture,
                         collider,
+                        flow_type,
                         ..
                     } => {
                         parent.spawn((
                             FlowField {
                                 sprite_info: flow_texture.clone(),
                                 rotation_index: context.rotation_index,
+                                flow_type: *flow_type,
                             },
                             collider.clone(),
                             // match &flow_texture.layout {

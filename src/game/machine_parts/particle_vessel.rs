@@ -151,7 +151,7 @@ pub fn scan_image_for_circles(image: &Image, radius: i32) -> Vec<IVec2> {
                     pixel_data[idx] = false;
                 }
                 // Subtract half the width and height to center the spawn positions
-                valid_spawns.push(IVec2::new(x - width / 2, y - height / 2));
+                valid_spawns.push(IVec2::new(x - width / 2, height / 2 - y));
             }
         }
     }
