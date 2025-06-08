@@ -55,7 +55,7 @@ pub fn do_particle_vessels(
         for position in relative_positions {
             let spawn_position = global_transform.translation().truncate() + position.as_vec2();
 
-            let contents = vessel.kind.clone();
+            let contents = vessel.kind;
             let material = materials.add(WATER);
 
             commands.spawn((
@@ -119,8 +119,8 @@ pub fn scan_image_for_circles(image: &Image, radius: i32) -> Vec<IVec2> {
     // }
 
     //check pixels are all true
-    for y in radius..(height as i32) {
-        for x in radius..(width as i32) {
+    for y in radius..height {
+        for x in radius..width {
             let mut all_valid = true;
 
             let mut valid_positions = Vec::new();

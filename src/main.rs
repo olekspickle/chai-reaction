@@ -34,7 +34,7 @@ pub(crate) mod prelude {
         },
         particles::*,
         settings::{Action, Modal, Settings},
-        tea::*,
+        // tea::*,
     };
     pub use loading::{AudioSources, ResourceHandles, Textures, textures::TexturesLoaderPlugin};
     pub use pre_load::Config;
