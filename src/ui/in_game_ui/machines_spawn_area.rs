@@ -57,6 +57,9 @@ fn on_machine_spawn_area_click(
     mut machine_part_request_writer: EventWriter<MachinePartRequest>,
     machine_spawn_areas: Query<(), With<MachinesSpawnArea>>,
     picking_state: Res<PickingState>,
+    sounds: Res<AudioSources>,
+    settings: Res<Settings>,
+    mut commands: Commands,
 ) {
     if let PickingState::Placing(ty) = &*picking_state {
         if machine_spawn_areas.contains(trigger.target()) {
@@ -66,6 +69,8 @@ fn on_machine_spawn_area_click(
                     * MACHINE_PARTS_GRID_SCALE)
                     .with_z(MACHINE_PARTS_BASIC_Z_LAYER);
 
+                let source = sounds.place_piece.clone();
+                commands.spawn(sfx(source, settings.sfx()));
                 machine_part_request_writer.write(MachinePartRequest::SpawnMachinePart(
                     MachinePartSpawnRequest {
                         location: ((hit_position / MACHINE_PARTS_GRID_SCALE).round()

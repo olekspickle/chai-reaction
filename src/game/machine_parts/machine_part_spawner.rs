@@ -62,9 +62,6 @@ fn listen_to_spawn_requests(
                     &mut materials,
                 );
 
-                let source = sounds.place_piece.clone();
-                commands.spawn(sfx(source, settings.sfx()));
-
                 if spawn_request.initial_part {
                     commands.entity(spawned).insert(IsInitialPart);
                 }
