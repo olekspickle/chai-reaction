@@ -266,6 +266,30 @@
             )
         ],
     ),
+    "Milk Glass": (
+        cost: 42,
+        is_dynamic: true,
+        texture_info: (
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/glass.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/glass_collider.png",
+            ),
+            ParticleVessel(
+                texture_path: "textures/glass_vessel.png",
+                particle_lifetime_s: 10.0,
+                particle_gravity_scale: 0.5,
+                kind: (
+                    milk: 1.0,
+                )
+            )
+        ],
+    ),
     "Red Ball": (
         cost: 42,
         is_dynamic: true,
