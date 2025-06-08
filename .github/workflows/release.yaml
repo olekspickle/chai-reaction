@@ -110,6 +110,7 @@ jobs:
             targets: wasm32-unknown-unknown
             package_ext: .zip
             runner: ubuntu-latest
+            features: dev,wasm-audio
 
           - platform: linux
             targets: x86_64-unknown-linux-gnu
@@ -191,9 +192,13 @@ jobs:
         if: ${{ env.is_platform_enabled == 'true' }}
         run: rm -rf tmp; mkdir -p tmp/binary '${{ env.app }}'
 
+      - name: Install cargo-binstall
+        if: ${{ env.is_platform_enabled == 'true' }}
+        uses: cargo-bins/cargo-binstall@main
+
       - name: Install Bevy CLI
         if: ${{ env.is_platform_enabled == 'true' }}
-        run: cargo binstall --locaked --no-confirm --force --git=https://github.com/TheBevyFlock/bevy_cli bevy_cli
+        run: cargo binstall --locked --no-confirm --force --git=https://github.com/TheBevyFlock/bevy_cli bevy_cli
 
       - name: Build web bundle and add it to app (Web)
         if: ${{ env.is_platform_enabled == 'true' && matrix.platform == 'web' }}

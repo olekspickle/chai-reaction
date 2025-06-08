@@ -14,6 +14,7 @@ dev = [
     "bevy/dynamic_linking",         # Improve compile times for dev builds by linking Bevy as a dynamic library.
     "bevy/track_location",          # Improve error messages coming from Bevy
 ]
+wasm_audio = [ "firewheel-web-audio" ]
 dev_native = [
     "dev",
     "bevy/embedded_watcher",        # Enable embedded asset hot reloading for native dev builds.
@@ -23,6 +24,8 @@ dev_native = [
 
 [dependencies]
 bevy_seedling = "0.4"
+# experimelntal web audio fix
+firewheel-web-audio = { git = "https://github.com/CorvusPrudens/firewheel-web-audio", optional = true }
 # everything except bevy_audio
 bevy = { version = "^0.16", default-features = false, features = [
     "std",
