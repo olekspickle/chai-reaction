@@ -24,7 +24,6 @@ pub(crate) mod prelude {
 
     pub use audio::*;
     pub(crate) use game::{
-        Score,
         currency::*,
         input_dispatch::*,
         levels::*,
@@ -35,6 +34,7 @@ pub(crate) mod prelude {
         },
         particles::*,
         settings::{Action, Modal, Settings},
+        tea::*,
     };
     pub use loading::{AudioSources, ResourceHandles, Textures, textures::TexturesLoaderPlugin};
     pub use pre_load::Config;

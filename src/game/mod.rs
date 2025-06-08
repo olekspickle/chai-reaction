@@ -17,7 +17,6 @@ pub mod tea;
 pub mod victory;
 
 pub fn plugin(app: &mut App) {
-    app.insert_resource(Score(0));
     app.add_plugins((
         settings::plugin,
         physics::plugin,
@@ -31,15 +30,7 @@ pub fn plugin(app: &mut App) {
         victory::plugin,
         conveyor_belts::plugin,
     ))
-    .add_systems(OnEnter(Screen::Gameplay), clear_score)
     .add_plugins((MachinePartsPlugin, CurrencyPlugin));
-}
-
-#[derive(Default, Resource)]
-pub struct Score(pub i32);
-
-fn clear_score(mut score: ResMut<Score>) {
-    score.0 = 0;
 }
 
 #[derive(PhysicsLayer, Default)]

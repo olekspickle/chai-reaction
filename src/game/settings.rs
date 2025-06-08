@@ -45,7 +45,7 @@ impl Default for Settings {
 #[derive(Debug, Clone)]
 pub enum Modal {
     Main,
-    Gameover,
+    LevelFinished,
     Settings,
 }
 
@@ -61,6 +61,7 @@ pub enum Action {
     One,
     Two,
 
+    DebugNextLevel,
     Restart,
     TogglePause,
     ToggleUiDebug,
@@ -75,6 +76,7 @@ fn spawn_player_input_map(mut commands: Commands) {
     let mut input_map = InputMap::default();
 
     input_map.insert(Action::Restart, KeyCode::KeyR);
+    input_map.insert(Action::DebugNextLevel, KeyCode::KeyN);
 
     input_map.insert(Action::ToggleUiDebug, KeyCode::Backquote);
     input_map.insert(Action::TogglePause, KeyCode::KeyP);

@@ -1,6 +1,7 @@
 use crate::{
     game::tea::{Satisfied, TeaSensor},
     prelude::*,
+    screens::gameplay::NextLevel,
 };
 use bevy::prelude::*;
 
@@ -13,7 +14,7 @@ pub fn plugin(app: &mut App) {
 
 fn check_tea_counters(
     sensors: Query<Has<Satisfied>, With<TeaSensor>>,
-    mut loaded_level: ResMut<LoadedLevel>,
+    loaded_level: ResMut<LoadedLevel>,
     level_list: Res<LevelList>,
     mut commands: Commands,
 ) {
@@ -21,9 +22,9 @@ fn check_tea_counters(
         if let Some(idx) = level_list.0.iter().position(|l| l == &loaded_level.0) {
             let new_idx = idx + 1;
             if new_idx < level_list.0.len() {
-                loaded_level.0 = level_list.0[new_idx].clone();
-            } else {
-                commands.trigger(OnNewModal(Modal::Gameover));
+                // save next level id and spawn a modal in gameplay screen
+                commands.insert_resource(NextLevel(new_idx));
+                commands.trigger(OnNewModal(Modal::LevelFinished));
             }
         }
     }

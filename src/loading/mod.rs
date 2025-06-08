@@ -43,6 +43,8 @@ pub struct Textures {
     pub pause: Handle<Image>,
     #[dependency]
     pub play: Handle<Image>,
+    #[dependency]
+    pub reset: Handle<Image>,
 }
 
 impl FromWorld for Textures {
@@ -56,6 +58,7 @@ impl FromWorld for Textures {
             exit: assets.load("textures/Icons/exit.png"),
             pause: assets.load("textures/Icons/exit.png"),
             play: assets.load("textures/Icons/play.png"),
+            reset: assets.load("textures/Icons/reset.png"),
         }
     }
 }
@@ -86,6 +89,8 @@ pub struct AudioSources {
     // music
     #[dependency]
     pub bg_music: Handle<Sample>,
+    #[dependency]
+    pub menu: Handle<Sample>,
 }
 
 impl AudioSources {
@@ -105,16 +110,18 @@ impl AudioSources {
         &["audio/sfx/intoTheCup1.ogg", "audio/sfx/intoTheCup2.ogg"];
     pub const STOVE_LOOPING: &'static str = "audio/sfx/stoveLoopingBitcrushed.ogg";
 
-    pub const BG_MUSIC: &'static str = "audio/music/smnbl-time-for-fun.ogg";
+    pub const BG_MUSIC: &'static str = "audio/music/lofi-tea.ogg";
+    pub const MENU: &'static str = "audio/music/how-to-make-tea.ogg";
 }
 
 impl FromWorld for AudioSources {
     fn from_world(world: &mut World) -> Self {
         let assets = world.resource::<AssetServer>();
         Self {
+            menu: assets.load(Self::MENU),
+            bg_music: assets.load(Self::BG_MUSIC),
             btn_hover: assets.load(Self::BTN_HOVER),
             btn_press: assets.load(Self::BTN_PRESS),
-            bg_music: assets.load(Self::BG_MUSIC),
             cup_drop: assets.load(Self::CUP_DROP),
             cup_drop_brewed: assets.load(Self::CUP_DROP_BREWED),
             cancel_piece: assets.load(Self::CANCEL_PIECE),
