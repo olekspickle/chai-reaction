@@ -23,14 +23,14 @@ permissions:
 env:
   pkg_name: chai-reaction
 
-  build_web: true,
-  build_linux: false,
-  build_windows: false,
-  build_macos: false,
+  build_web: true
+  build_linux: false
+  build_windows: false
+  build_macos: false
 
   # The itch.io project to upload to in the format `user-name/project-name`.
   # There will be no upload to itch.io if this is commented out.
-  itch: olekspickle/chai-reaction,
+  itch: olekspickle/chai-reaction
   github: false
 
   # The path to the assets directory.
@@ -156,16 +156,6 @@ jobs:
             echo 'MACOSX_DEPLOYMENT_TARGET=11.0' >> "${GITHUB_ENV}" # macOS 11.0 Big Sur is the first version to support universal binaries.
             echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> "${GITHUB_ENV}"
           fi
-
-          echo 'platform: ${{matrix.platform}}, build_web: ${{ env.build_web }}'
-
-          # Check if building for this platform is enabled.
-          echo 'is_platform_enabled=${{
-          (matrix.platform == 'web' && env.build_web == 'true') ||
-          (matrix.platform == 'linux' && env.build_linux == 'true') ||
-          (matrix.platform == 'windows' && env.build_windows == 'true') ||
-          (matrix.platform == 'macos' && env.build_macos == 'true')
-          }}' >> "${GITHUB_ENV}"
 
       - name: Set is_platform_enabled flag
         if: |
