@@ -1,6 +1,11 @@
 use crate::{
     game::{
-        heat::HeatSource, machine_parts::{animator::{BasicSpriteAnimationController, SpriteFrames}, particle_vessel::ParticleVessel}, tea::{Recipe, Tea, TeaSensor}
+        heat::HeatSource,
+        machine_parts::{
+            animator::{BasicSpriteAnimationController, SpriteFrames},
+            particle_vessel::ParticleVessel,
+        },
+        tea::{Recipe, Tea, TeaSensor},
     },
     prelude::*,
 };
@@ -137,7 +142,7 @@ pub enum SubAssembly {
         #[serde(skip)]
         #[reflect(ignore)]
         collider: Collider,
-    }
+    },
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, Reflect)]
@@ -153,7 +158,7 @@ pub struct TextureInfo {
 impl Default for TextureInfo {
     fn default() -> Self {
         Self {
-            frames: SpriteFrames::ONE,
+            frames: SpriteFrames::One,
             rotations: 1,
             flippable: false,
         }
@@ -236,7 +241,7 @@ impl MachinePartConfig {
         ));
 
         match self.texture_info.frames {
-            SpriteFrames::ONE => {}
+            SpriteFrames::One => {}
             SpriteFrames::Basic(count, time) => {
                 part.insert(BasicSpriteAnimationController {
                     frame_count: count,
@@ -289,10 +294,7 @@ impl MachinePartConfig {
                             }
                         }
                     }
-                    SubAssembly::CircleCollider {
-                        offset,
-                        radius,
-                    } => {
+                    SubAssembly::CircleCollider { offset, radius } => {
                         parent.spawn((
                             Transform::from_xyz(offset.x, offset.y, 0.0),
                             Collider::circle(*radius),
@@ -368,26 +370,26 @@ impl MachinePartConfig {
                                 *particle_gravity_scale,
                             ),
                         ));
-                    },
-                    SubAssembly::ParticleVessel { 
+                    }
+                    SubAssembly::ParticleVessel {
                         offset,
-                        image, 
+                        image,
                         particle_lifetime_s,
                         particle_gravity_scale,
                         kind,
-                        .. 
+                        ..
                     } => {
                         parent.spawn((
                             Transform::from_xyz(offset.x, offset.y, 0.0),
                             ParticleVessel {
                                 image: image.clone(),
                                 completed: false,
-                                kind: kind.clone(),
+                                kind: *kind,
                                 particle_gravity_scale: *particle_gravity_scale,
                                 particle_lifetime_s: *particle_lifetime_s,
-                            }
+                            },
                         ));
-                    },
+                    }
                     SubAssembly::HeatSource { offset, radius } => {
                         parent.spawn((
                             sfx_looping(sounds.stove_looping.clone(), settings.sfx()),

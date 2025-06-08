@@ -1,28 +1,27 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
-
-use bevy::prelude::*;
 use crate::prelude::*;
+use bevy::prelude::*;
 
 pub struct AnimatorPlugin;
 
 impl Plugin for AnimatorPlugin {
     fn build(&self, app: &mut App) {
-        app.add_systems(Update,animate_basic_sprite);
+        app.add_systems(Update, animate_basic_sprite);
     }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Default, Serialize, Deserialize, Reflect)]
 pub enum SpriteFrames {
     #[default]
-    ONE,
+    One,
     Basic(u32, f32),
 }
 
 impl SpriteFrames {
     pub fn frames(&self) -> u32 {
         match self {
-            SpriteFrames::ONE => 1,
+            SpriteFrames::One => 1,
             SpriteFrames::Basic(count, _) => *count,
         }
     }
@@ -35,9 +34,13 @@ pub struct BasicSpriteAnimationController {
     pub timer: Timer,
 }
 
-pub fn animate_basic_sprite (
-    mut controller_query: Query<(&mut BasicSpriteAnimationController, &MachinePartType, &Children)>,
-    mut sprite_query: Query<&mut Sprite,With<MachineSprite>>,
+pub fn animate_basic_sprite(
+    mut controller_query: Query<(
+        &mut BasicSpriteAnimationController,
+        &MachinePartType,
+        &Children,
+    )>,
+    mut sprite_query: Query<&mut Sprite, With<MachineSprite>>,
     time: Res<Time>,
 ) {
     for (mut controller, part, children) in controller_query.iter_mut() {
@@ -45,7 +48,8 @@ pub fn animate_basic_sprite (
         if controller.timer.just_finished() {
             controller.current_frame = (controller.current_frame + 1) % controller.frame_count;
 
-            let frame = controller.current_frame + controller.frame_count * part.context.rotation_index;
+            let frame =
+                controller.current_frame + controller.frame_count * part.context.rotation_index;
 
             for child in children.iter() {
                 if let Ok(mut sprite) = sprite_query.get_mut(child) {
@@ -54,7 +58,7 @@ pub fn animate_basic_sprite (
                     }
                 }
             }
-            
         }
     }
 }
+
