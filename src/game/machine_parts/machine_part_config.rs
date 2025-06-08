@@ -421,12 +421,14 @@ impl MachinePartConfig {
                         offset,
                         colliders,
                         recipe,
+                        name,
                         ..
                     } => {
                         if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
-                            assert!(collider_set.iter().nth(1).is_none());
+                            assert!(collider_set.len() == 1);
                             for collider in collider_set {
                                 parent.spawn((
+                                    Name::new(name.clone()),
                                     Transform::from_xyz(offset.x, offset.y, 0.0),
                                     Collider::from(SharedShape::new(collider.clone())),
                                     Sensor,
