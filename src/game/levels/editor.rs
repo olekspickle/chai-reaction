@@ -1,5 +1,6 @@
 use crate::prelude::*;
 use bevy::prelude::*;
+use avian2d::prelude::Gravity;
 
 pub struct LevelEditor(pub String);
 
@@ -22,6 +23,7 @@ fn load(
     mut commands: Commands,
     level_path: Res<LevelPath>,
     mut level_configs: ResMut<Assets<LevelConfig>>,
+    cfg: Res<Config>,
 ) {
     let handle = if let Some(config) = std::fs::read_to_string(&level_path.0)
         .ok()
@@ -33,6 +35,7 @@ fn load(
     };
     commands.insert_resource(LoadedLevel(handle.clone()));
     commands.insert_resource(EditorLevel(handle));
+    commands.insert_resource(Gravity(Vec2::NEG_Y * 9.81 * cfg.physics.gravity));
 }
 
 fn save(
