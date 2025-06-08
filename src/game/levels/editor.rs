@@ -1,6 +1,6 @@
 use crate::prelude::*;
-use bevy::prelude::*;
 use avian2d::prelude::Gravity;
+use bevy::prelude::*;
 
 pub struct LevelEditor(pub String);
 

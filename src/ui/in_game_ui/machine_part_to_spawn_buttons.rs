@@ -74,7 +74,7 @@ fn spawn_part_picking_buttons(
         ))
         .add_children(&buttons)
         .with_children(|parent| {
-            parent.spawn(btn_sq("Remove", set_delete_mode));
+            parent.spawn((btn_sq("Remove", set_delete_mode), MachinePartButton));
         });
 }
 
@@ -83,9 +83,7 @@ fn disable_machine_part_type_buttons(
     buttons: Query<Entity, With<MachinePartButton>>,
     children: Query<&Children>,
 ) {
-    println!("DISABLING");
     for entity in &buttons {
-        println!("DISABLED");
         for entity in [entity]
             .into_iter()
             .chain(children.iter_descendants(entity))
