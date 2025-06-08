@@ -8,6 +8,7 @@ pub fn plugin(app: &mut App) {
         .add_event::<OnRotate>()
         .add_event::<OnNewModal>()
         .add_event::<OnPopModal>()
+        .add_event::<OnPhysicsToggle>()
         .add_event::<OnPauseToggle>()
         .add_event::<OnClearModals>()
         .add_event::<OnDebugUiToggle>()
@@ -26,6 +27,8 @@ pub struct OnPopModal;
 pub struct OnClearModals;
 #[derive(Event)]
 pub struct OnPauseToggle;
+#[derive(Event)]
+pub struct OnPhysicsToggle;
 #[derive(Event)]
 pub struct OnDebugUiToggle;
 #[derive(Event)]

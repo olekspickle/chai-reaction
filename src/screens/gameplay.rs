@@ -11,7 +11,7 @@ pub(super) fn plugin(app: &mut App) {
         .add_systems(
             Update,
             (
-                change_score.run_if(in_state(Screen::Gameplay)),
+                (toggle_physics_on_space, change_score).run_if(in_state(Screen::Gameplay)),
                 instant_victory
                     .run_if(resource_exists::<LoadedLevel>.and(resource_exists::<LevelList>)),
             ),
@@ -19,6 +19,7 @@ pub(super) fn plugin(app: &mut App) {
         .init_resource::<ModifiedLevel>()
         .add_observer(trigger_menu_toggle_on_esc)
         .add_observer(add_new_modal)
+        .add_observer(toggle_physics)
         .add_observer(pop_modal)
         .add_observer(clear_modals);
 }
@@ -75,7 +76,7 @@ fn spawn_gameplay_ui(mut commands: Commands, textures: Res<Textures>) {
                 BackgroundColor(TRANSLUCENT),
                 children![
                     btn(nav_opts.clone(), to::title),
-                    btn(nav_opts.clone().image(play), toggle_physics),
+                    btn(nav_opts.clone().image(play), click_toggle_physics),
                     btn(nav_opts.image(reset), init_level),
                 ]
             ),
@@ -126,7 +127,7 @@ fn restart(
 pub struct ModifiedLevel(pub Option<Vec<(MachinePartType, bool)>>);
 
 fn toggle_physics(
-    _: Trigger<Pointer<Click>>,
+    _: Trigger<OnPhysicsToggle>,
     mut commands: Commands,
     physics_state: ResMut<State<PhysicsState>>,
     mut next: ResMut<NextState<PhysicsState>>,
@@ -158,6 +159,15 @@ fn toggle_physics(
                 }
             }
             next.set(PhysicsState::Paused)
+        }
+    }
+}
+
+fn toggle_physics_on_space(action: Query<&ActionState<Action>>, mut commands: Commands) {
+    if let Ok(state) = action.single() {
+        if state.just_pressed(&Action::TogglePhysics) {
+            info!("toggle physics");
+            commands.trigger(OnPhysicsToggle);
         }
     }
 }
@@ -208,6 +218,9 @@ fn click_to_next_level(
 
 fn click_to_menu(_: Trigger<Pointer<Click>>, mut commands: Commands) {
     commands.trigger(OnGoTo(Screen::Title));
+}
+fn click_toggle_physics(_: Trigger<Pointer<Click>>, mut commands: Commands) {
+    commands.trigger(OnPhysicsToggle);
 }
 fn click_pop_modal(_: Trigger<Pointer<Click>>, mut commands: Commands) {
     commands.trigger(OnPopModal);

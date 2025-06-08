@@ -70,6 +70,8 @@ pub enum Action {
     RotateCcw,
     RotateCw,
     Flip,
+
+    TogglePhysics,
 }
 
 fn spawn_player_input_map(mut commands: Commands) {
@@ -85,6 +87,7 @@ fn spawn_player_input_map(mut commands: Commands) {
     input_map.insert(Action::RotateCcw, KeyCode::KeyQ);
     input_map.insert(Action::RotateCw, KeyCode::KeyE);
     input_map.insert(Action::Flip, KeyCode::KeyF);
+    input_map.insert(Action::TogglePhysics, KeyCode::Space);
 
     commands.spawn(input_map);
 }
