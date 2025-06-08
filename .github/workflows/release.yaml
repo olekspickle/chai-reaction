@@ -158,13 +158,13 @@ jobs:
             echo "SDKROOT=$(xcrun --sdk macosx --show-sdk-path)" >> "${GITHUB_ENV}"
           fi
 
-          # Check if building for this platform is enabled.
-          echo 'is_platform_enabled=${{
-            (matrix.platform == 'web' && env.build_web == 'true') ||
-            (matrix.platform == 'linux' && env.build_linux == 'true') ||
-            (matrix.platform == 'windows' && env.build_windows == 'true') ||
-            (matrix.platform == 'macos' && env.build_macos == 'true')
-          }}' >> "${GITHUB_ENV}"
+      - name: Should continue
+        if: |
+          (matrix.platform == 'web' && env.build_web == 'true') ||
+          (matrix.platform == 'linux' && env.build_linux == 'true') ||
+          (matrix.platform == 'windows' && env.build_windows == 'true') ||
+          (matrix.platform == 'macos' && env.build_macos == 'true')
+        run: echo 'is_platform_enabled=true' >> "${GITHUB_ENV}"
 
       - name: Checkout repository
         if: ${{ env.is_platform_enabled == 'true' }}

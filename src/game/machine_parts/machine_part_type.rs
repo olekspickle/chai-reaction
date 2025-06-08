@@ -1,7 +1,5 @@
 use bevy::prelude::*;
-use enum_iterator::Sequence;
 use serde::{Deserialize, Serialize};
-use strum_macros::EnumIter;
 
 use crate::prelude::PlacementContext;
 

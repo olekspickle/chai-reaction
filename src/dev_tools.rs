@@ -1,8 +1,6 @@
 //! Development tools for the game. This plugin is only enabled in dev builds.
 
-use crate::{
-    game::input_dispatch::*, loading::textures, prelude::*, screens::gameplay::PauseLabel,
-};
+use crate::{game::input_dispatch::*, prelude::*, screens::gameplay::PauseLabel};
 use avian2d::prelude::*;
 #[cfg(feature = "dev_native")]
 use bevy::{dev_tools::states::log_transitions, prelude::*, ui::UiDebugOptions};

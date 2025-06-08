@@ -19,7 +19,7 @@ impl Plugin for PickedMachinePartTypePlugin {
 }
 
 fn flip_preview(
-    on_flip: Trigger<OnFlip>,
+    _on_flip: Trigger<OnFlip>,
     mut picking_state: ResMut<PickingState>,
     machine_part_config_by_type: Res<MachinePartConfigByType>,
 ) {
@@ -56,7 +56,7 @@ fn rotate_preview(
     machine_part_config_by_type: Res<MachinePartConfigByType>,
 ) {
     if let PickingState::Placing(ref mut part_type) = *picking_state {
-        let mut context = &mut part_type.context;
+        let context = &mut part_type.context;
         if let Some(config) = machine_part_config_by_type.0.get(&part_type.name) {
             let mut max = config.texture_info.rotations as i32;
             if config.texture_info.flippable {

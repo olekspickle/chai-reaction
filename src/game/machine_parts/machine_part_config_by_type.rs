@@ -1,21 +1,15 @@
-use crate::prelude::*;
-use bevy::prelude::*;
-use bevy::render::render_resource::{TextureDimension, TextureFormat};
-use bevy::{platform::collections::HashMap, render::render_resource::Extent3d};
-use std::collections::VecDeque;
-
+use crate::{loading::LoadResource, prelude::*};
 use avian2d::{parry::shape::Compound, prelude::*};
 use bevy::{
     asset::{AssetLoader, LoadContext, io::Reader},
+    platform::collections::HashMap,
     prelude::*,
 };
 use geo::{BooleanOps, Coord, CoordsIter, LineString, MultiPolygon, Vector2DOps};
 use itertools::Itertools as _;
 use serde::{Deserialize, Serialize};
-
+use std::collections::VecDeque;
 use thiserror::Error;
-
-use crate::loading::LoadResource;
 
 #[derive(Resource, Asset, Clone, Debug, Reflect, Serialize, Deserialize)]
 pub struct MachinePartConfigByType(pub HashMap<String, MachinePartConfig>);
@@ -70,18 +64,18 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                         mesh_image_path,
                         colliders,
                         ..
-                    } |
-                    SubAssembly::ConveyorBelt{
+                    }
+                    | SubAssembly::ConveyorBelt {
                         mesh_image_path,
                         colliders,
                         ..
-                    } |
-                    SubAssembly::FluidFilterButton {
+                    }
+                    | SubAssembly::FluidFilterButton {
                         mesh_image_path,
                         colliders,
                         ..
-                    } |
-                    SubAssembly::Collider {
+                    }
+                    | SubAssembly::Collider {
                         mesh_image_path,
                         colliders,
                         ..
@@ -103,7 +97,7 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             let offset = UVec2::new(0, row_height * rot);
                             let region_size = UVec2::new(size.x, row_height);
                             let new_colliders =
-                                colliders_from_image_region(&image, offset, region_size);
+                                colliders_from_image_region(image, offset, region_size);
                             rotation_colliders.push(new_colliders);
                         }
 
@@ -144,9 +138,9 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             sprite.layout = Some(layout_handle);
                         }
                     }
-                    SubAssembly::ParticleVessel { 
-                        texture_path, 
-                        image, 
+                    SubAssembly::ParticleVessel {
+                        texture_path,
+                        image,
                         ..
                     } => {
                         let loaded_image = load_context
@@ -156,10 +150,8 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
                             .load::<Image>(texture_path.clone())
                             .await?;
 
-                        *image = load_context.add_loaded_labeled_asset(
-                            texture_path.clone(),
-                            loaded_image,
-                        );
+                        *image = load_context
+                            .add_loaded_labeled_asset(texture_path.clone(), loaded_image);
                     }
                     SubAssembly::FlowField {
                         flow_texture_path,
@@ -266,7 +258,7 @@ fn colliders_from_image_region(mesh_image: &Image, offset: UVec2, size: UVec2) -
         .collect()
 }
 
-fn colliders_from_image(mesh_image: &Image) -> Vec<Compound> {
+fn _colliders_from_image(mesh_image: &Image) -> Vec<Compound> {
     let size = UVec2::new(mesh_image.width(), mesh_image.height());
     colliders_from_image_region(mesh_image, UVec2::ZERO, size)
 }

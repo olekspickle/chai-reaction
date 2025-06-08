@@ -1755,6 +1755,7 @@ dependencies = [
  "contour",
  "embed-resource",
  "enum-iterator",
+ "firewheel-web-audio",
  "geo",
  "image",
  "itertools 0.14.0",
@@ -2507,6 +2508,19 @@ dependencies = [
  "firewheel-core",
  "fixed-resample",
  "smallvec",
+]
+
+[[package]]
+name = "firewheel-web-audio"
+version = "0.1.0"
+source = "git+https://github.com/CorvusPrudens/firewheel-web-audio#b3912bce322d537e5f9ad766c6336a85b392d6d6"
+dependencies = [
+ "firewheel",
+ "js-sys",
+ "log",
+ "wasm-bindgen",
+ "wasm-bindgen-futures",
+ "web-sys",
 ]
 
 [[package]]

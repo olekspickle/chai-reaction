@@ -1,6 +1,5 @@
 use crate::prelude::*;
 use crate::read_single_field_variant;
-use avian2d::{parry::shape::SharedShape, prelude::*};
 use bevy::prelude::*;
 
 pub struct MachinePartSpawnerPlugin;
@@ -47,7 +46,12 @@ fn listen_to_spawn_requests(
                 info!("Approved spawn request {:?}", spawn_request);
 
                 #[cfg(not(debug_assertions))]
-                let spawned = part_config.spawn(spawn_request.part_type.clone(), &mut commands);
+                let spawned = part_config.spawn(
+                    spawn_request.part_type.clone(),
+                    &mut commands,
+                    &sounds,
+                    &settings,
+                );
                 #[cfg(debug_assertions)]
                 let spawned = part_config.spawn(
                     spawn_request.part_type.clone(),

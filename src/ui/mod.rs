@@ -1,9 +1,5 @@
 use crate::prelude::InGameUiPlugin;
 use bevy::{prelude::*, ui::Val::*};
-pub use interaction::*;
-pub use opts::*;
-pub use palette::*;
-pub use widget::*;
 
 pub mod in_game_ui;
 mod interaction;
@@ -12,7 +8,10 @@ mod palette;
 pub mod tags;
 mod widget;
 
+pub use interaction::*;
 pub use opts::*;
+pub use palette::*;
+pub use widget::*;
 
 pub fn plugin(app: &mut App) {
     app.add_plugins((

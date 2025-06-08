@@ -4,8 +4,8 @@ use bevy_seedling::{pool::Sampler, prelude::*};
 use rand::prelude::*;
 
 pub fn plugin(app: &mut App) {
-    // app.add_systems(OnExit(Screen::Gameplay), stop_soundtrack)
-    //     .add_systems(OnEnter(Screen::Gameplay), start_or_resume_soundtrack);
+    app.add_systems(OnExit(Screen::Gameplay), stop_soundtrack)
+        .add_systems(OnEnter(Screen::Gameplay), start_or_resume_soundtrack);
 }
 
 fn start_or_resume_soundtrack(

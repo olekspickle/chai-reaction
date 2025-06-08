@@ -1,10 +1,7 @@
 //! The screen state for the main gameplay.
 
 use super::*;
-use crate::{
-    game::{input_dispatch::*, tea::TeaSensor},
-    screens::settings,
-};
+use crate::{game::input_dispatch::*, screens::settings};
 use bevy::ui::Val::*;
 use leafwing_input_manager::prelude::*;
 

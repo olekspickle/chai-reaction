@@ -1,12 +1,10 @@
+use avian2d::{math::*, prelude::*};
 use bevy::{
-    ecs::system::{lifetimeless::Read, SystemParam},
+    ecs::system::{SystemParam, lifetimeless::Read},
     prelude::*,
 };
-use avian2d::{math::*, prelude::*};
-use crate::prelude::*;
 
-pub fn plugin(app: &mut App) {
-}
+pub fn plugin(_app: &mut App) {}
 
 #[derive(Component)]
 #[require(ActiveCollisionHooks::MODIFY_CONTACTS)]
@@ -27,7 +25,7 @@ impl CollisionHooks for ConveyorHooks<'_, '_> {
         // Get the conveyor belt and its global transform.
         // We don't know which entity is the conveyor belt, if any, so we need to check both.
         // This also affects the sign used for the conveyor belt's speed to apply it in the correct direction.
-        let (Ok((conveyor_belt, global_transform)), sign) = self
+        let (Ok((conveyor_belt, _global_transform)), sign) = self
             .conveyor_query
             .get(contacts.collider1)
             .map_or((self.conveyor_query.get(contacts.collider2), 1.0), |q| {
@@ -50,4 +48,3 @@ impl CollisionHooks for ConveyorHooks<'_, '_> {
         true
     }
 }
-

@@ -56,7 +56,7 @@ fn do_flow_fields(
         let v_offset = size.y * flowfield.rotation_index;
 
         for contact_pair in collisions.collisions_with(flow_ent) {
-            let other_ent = if (contact_pair.collider1 == flow_ent) {
+            let other_ent = if contact_pair.collider1 == flow_ent {
                 contact_pair.collider2
             } else {
                 contact_pair.collider1
