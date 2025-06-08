@@ -11,7 +11,8 @@ pub(super) fn plugin(app: &mut App) {
         .add_systems(
             Update,
             (
-                (toggle_physics_on_space, change_score).run_if(in_state(Screen::Gameplay)),
+                (toggle_physics_on_space, change_score, restart_on_r)
+                    .run_if(in_state(Screen::Gameplay)),
                 instant_victory
                     .run_if(resource_exists::<LoadedLevel>.and(resource_exists::<LevelList>)),
             ),
@@ -108,17 +109,15 @@ fn change_score(// all_sensors: Query<&TeaSensor>,
     // }
 }
 
-fn restart(
-    level: ResMut<State<GameLevel>>,
-    mut next: ResMut<NextState<GameLevel>>,
+fn restart_on_r(
     action: Query<&ActionState<Action>>,
+    mut commands: Commands,
+    mut physics_state: ResMut<NextState<PhysicsState>>,
 ) {
     if let Ok(state) = action.single() {
         if state.just_pressed(&Action::Restart) {
-            let current = level.get();
-            info!("pressed R: {current:?}");
-            next.set(GameLevel::Start);
-            next.set(current.clone());
+            commands.queue(InitLevel);
+            physics_state.set(PhysicsState::Paused);
         }
     }
 }
@@ -166,7 +165,6 @@ fn toggle_physics(
 fn toggle_physics_on_space(action: Query<&ActionState<Action>>, mut commands: Commands) {
     if let Ok(state) = action.single() {
         if state.just_pressed(&Action::TogglePhysics) {
-            info!("toggle physics");
             commands.trigger(OnPhysicsToggle);
         }
     }
