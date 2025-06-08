@@ -92,52 +92,63 @@
             )
         ],
     ),
-    "Tea Sensor": (
+    "Black Tea Mug": (
         cost: 1,
-        is_dynamic: false,
+        is_dynamic: true,
         subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/mug.png",
+                layer: Background,
+            ),
             TeaSensor(
-                radius: 32.0,
-            )
+                mesh_image_path: "textures/mug_interior.png",
+                name: "Black Tea",
+            ),
+            Collider(
+                mesh_image_path: "textures/mug_collider.png",
+            ),
         ],
     ),
-    "Milky Tea Sensor": (
+    "Milky Tea Mug": (
         cost: 1,
-        is_dynamic: false,
+        is_dynamic: true,
         subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/mug.png",
+                layer: Background,
+            ),
             TeaSensor(
-                radius: 32.0,
+                mesh_image_path: "textures/mug_interior.png",
                 recipe: (
                     milky: true,
                     sweet: false,
                 ),
-            )
+                name: "Milky Tea",
+            ),
+            Collider(
+                mesh_image_path: "textures/mug_collider.png",
+            ),
         ],
     ),
-    "Sweet Tea Sensor": (
+    "Sweet Tea Mug": (
         cost: 1,
-        is_dynamic: false,
+        is_dynamic: true,
         subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/mug.png",
+                layer: Background,
+            ),
             TeaSensor(
-                radius: 32.0,
+                mesh_image_path: "textures/mug_interior.png",
                 recipe: (
                     milky: false,
                     sweet: true,
                 ),
-            )
-        ],
-    ),
-    "Milky Sweet Tea Sensor": (
-        cost: 1,
-        is_dynamic: false,
-        subassemblies: [
-            TeaSensor(
-                radius: 32.0,
-                recipe: (
-                    milky: true,
-                    sweet: true,
-                ),
-            )
+                name: "Sweet Black Tea",
+            ),
+            Collider(
+                mesh_image_path: "textures/mug_collider.png",
+            ),
         ],
     ),
     "Funnel": (

@@ -130,9 +130,13 @@ pub enum SubAssembly {
     TeaSensor {
         #[serde(default)]
         offset: Vec2,
-        radius: f32,
+        mesh_image_path: String,
+        #[serde(skip)]
+        #[reflect(ignore)]
+        colliders: Vec<Vec<Compound>>,
         #[serde(default)]
         recipe: Recipe,
+        name: String,
     },
     FlowField {
         #[serde(default)]
@@ -415,20 +419,23 @@ impl MachinePartConfig {
                     }
                     SubAssembly::TeaSensor {
                         offset,
-                        radius,
+                        colliders,
                         recipe,
+                        ..
                     } => {
-                        parent.spawn((
-                            Transform::from_xyz(offset.x, offset.y, 0.0),
-                            TeaSensor(*recipe),
-                            Collider::circle(*radius),
-                            Sensor,
-                            #[cfg(debug_assertions)]
-                            Mesh2d(meshes.add(Circle::new(*radius))),
-                            #[cfg(debug_assertions)]
-                            MeshMaterial2d(materials.add(Color::srgba(0.3, 0.7, 0.3, 0.01))),
-                            Pickable::IGNORE,
-                        ));
+                        if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
+                            assert!(collider_set.iter().nth(1).is_none());
+                            for collider in collider_set {
+                                parent.spawn((
+                                    Transform::from_xyz(offset.x, offset.y, 0.0),
+                                    Collider::from(SharedShape::new(collider.clone())),
+                                    Sensor,
+                                    Pickable::IGNORE,
+                                    Transform::from_xyz(offset.x, offset.y, 0.0),
+                                    TeaSensor(*recipe),
+                                ));
+                            }
+                        }
                     }
                     SubAssembly::FlowField {
                         flow_texture,
