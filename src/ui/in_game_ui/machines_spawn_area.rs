@@ -37,6 +37,7 @@ fn spawn_machines_area(
         ));
         let no_color = materials.add(Color::NONE);
         commands.spawn((
+            Transform::from_xyz(0.0, 0.0, -140.0),
             StateScoped(Screen::Gameplay),
             MachinesSpawnArea,
             Mesh2d(square),
