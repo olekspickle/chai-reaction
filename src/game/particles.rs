@@ -255,6 +255,11 @@ fn recolor_particles(
         let color = WATER
             .mix(&BREWED_TEA, particle.contents.tea.min(1.0))
             .lighter(particle.contents.milk.min(1.0));
+
+        if commands.get_entity(entity).is_err() {
+            continue; // Entity no longer exists
+        }
+
         /*
         let water = WATER.to_linear();
         let brewed_tea = BREWED_TEA.to_linear();
@@ -267,9 +272,9 @@ fn recolor_particles(
             / total_stuff;
         let color = Color::linear_rgba(r, g, b, 1.0);
         */
-        commands
-            .entity(entity)
-            .insert(MeshMaterial2d(materials.add(color)));
+        if let Ok(mut e) = commands.get_entity(entity) {
+            e.insert(MeshMaterial2d(materials.add(color)));
+        }
     }
 }
 

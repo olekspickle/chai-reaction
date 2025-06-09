@@ -66,7 +66,6 @@ pub enum GameLevel {
 }
 
 fn reset_level(mut game_level: ResMut<NextState<GameLevel>>) {
-    info!("resetting GameLevel to Start");
     game_level.set(GameLevel::Start);
 }
 

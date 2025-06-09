@@ -17,7 +17,7 @@ pub(super) fn plugin(app: &mut App) {
         .load_resource_from_path::<Tutorial>("tutorial.ron");
 
     app.add_systems(OnEnter(Screen::Gameplay), render_step)
-        .add_systems(OnEnter(Screen::Title), reset_tutorial)
+        // .add_systems(OnEnter(Screen::Title), reset_tutorial)
         .add_systems(
             Update,
             (next_step, render_step.run_if(state_changed::<Step>))
@@ -34,18 +34,19 @@ struct Step(usize);
 #[derive(Component)]
 pub struct TutorialModal;
 
-fn reset_tutorial(mut settings: ResMut<Settings>, mut step: ResMut<NextState<Step>>) {
-    settings.tutorial = true;
-    step.set(Step(0));
-}
+// fn reset_tutorial(mut settings: ResMut<Settings>, mut step: ResMut<NextState<Step>>) {
+//     settings.tutorial = true;
+//     step.set(Step(0));
+// }
 
 fn render_step(
     step: Res<State<Step>>,
     mut commands: Commands,
     text: Res<Tutorial>,
     textures: Res<Textures>,
+    in_editor: Res<EditorMode>,
 ) {
-    if step.0 > 6 {
+    if step.0 > 6 || in_editor.0 {
         return;
     }
 
@@ -97,6 +98,7 @@ fn tutorial_modal(s: String) -> impl Bundle {
             },
             BackgroundColor(Color::srgba_u8(58, 68, 103, 240)),
             BorderColor(WHITEISH),
+            BorderRadius::all(Px(BORDER_RADIUS)),
             children![label(s), label("\n[SPACE] to continue")]
         )],
     )
@@ -110,16 +112,17 @@ fn next_step(
     mut next: ResMut<NextState<Step>>,
 ) {
     if let Ok(state) = action.single() {
-        if state.just_pressed(&Action::TogglePhysics) && settings.tutorial {
-            info!("current: {}", current.0);
-            if current.0 > 6 {
-                settings.tutorial = false;
-                if !settings.modals.is_empty() {
-                    commands.trigger(OnPopModal);
+        if state.just_pressed(&Action::TogglePhysics) {
+            if settings.tutorial {
+                if current.0 >= 6 {
+                    settings.tutorial = false;
+                    if !settings.modals.is_empty() {
+                        commands.trigger(OnPopModal);
+                    }
                 }
-            }
 
-            next.set(Step(current.0 + 1));
+                next.set(Step(current.0 + 1));
+            }
         }
     }
 }

@@ -47,13 +47,11 @@ fn toggle_pause(
                 next.set(PhysicsState::Running);
                 *color = TextColor(WHITEISH);
                 *bg = BackgroundColor(TRANSPARENT);
-                info!("paused: false");
             }
             PhysicsState::Running => {
                 next.set(PhysicsState::Paused);
                 *color = TextColor(GRAY);
                 *bg = BackgroundColor(WHITEISH);
-                info!("paused: true");
             }
         }
     }

@@ -17,6 +17,30 @@
     ],
     initial_machine_parts: [
         (
+            name: "Black Tea Mug",
+            context: (
+                position: (-32.0, -64.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Black Tea Mug",
+            context: (
+                position: (96.0, 80.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Black Tea Mug",
+            context: (
+                position: (32.0, -64.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
             name: "Big Table",
             context: (
                 position: (-0.0, -160.0, 10.0),
@@ -36,14 +60,6 @@
             name: "Shelf",
             context: (
                 position: (128.0, 48.0, 10.0),
-                rotation_index: 0,
-                flipped: false,
-            ),
-        ),
-        (
-            name: "Milky Tea Sensor",
-            context: (
-                position: (16.0, -64.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),

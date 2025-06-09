@@ -43,15 +43,26 @@ pub struct SettingsModal;
 #[derive(Component)]
 pub struct LevelFinishedModal;
 
-fn spawn_gameplay_ui(mut commands: Commands, textures: Res<Textures>) {
+fn spawn_gameplay_ui(
+    mut commands: Commands,
+    textures: Res<Textures>,
+    sensors: Query<(&Name, Has<Satisfied>), With<TeaSensor>>,
+) {
+    let mut goal = String::new();
+    for (n, s) in sensors.iter() {
+        if s {
+            goal.push('✓');
+        }
+        goal.push_str(n.as_str());
+        goal.push('\n');
+    }
+
     let (play, exit, reset) = (
         textures.play.clone(),
         textures.exit.clone(),
         textures.reset.clone(),
     );
-    let score = Opts::new("TODO: cup goals")
-        .border_radius(Px(0.0))
-        .color(Color::BLACK);
+    let score = Opts::new(goal).border_radius(Px(0.0)).color(Color::BLACK);
     let nav_opts = Opts::default()
         .image(exit)
         .width(Vw(5.0))
@@ -99,14 +110,21 @@ fn spawn_gameplay_ui(mut commands: Commands, textures: Res<Textures>) {
 
 // TODO: Gameplay UI and systems
 
-fn change_score(// all_sensors: Query<&TeaSensor>,
-    // satisfied: Query<Has<Satisfied>, With<TeaSensor>>,
-    // mut score_label: Query<&mut Text, With<ScoreLabel>>,
+fn change_score(
+    sensors: Query<(&Name, Has<Satisfied>), With<TeaSensor>>,
+    mut score_label: Query<&mut Text, With<ScoreLabel>>,
 ) {
-    // let (all, satisfied) = (all_sensors.iter().len(), satisfied.iter().len());
-    // if let Ok(mut label) = score_label.single_mut() {
-    // label.0 = format!("teas {satisfied}/{all}");
-    // }
+    let mut score = String::new();
+    for (n, s) in sensors.iter() {
+        if s {
+            score.push('✓');
+        }
+        score.push_str(n.as_str());
+        score.push('\n');
+    }
+    if let Ok(mut label) = score_label.single_mut() {
+        label.0 = score;
+    }
 }
 
 fn restart_on_r(
