@@ -6,11 +6,12 @@ pub fn plugin(app: &mut App) {
     app.add_systems(OnEnter(Screen::Title), setup_menu);
 }
 
-fn setup_menu(mut commands: Commands, sources: Res<AudioSources>, settings: Res<Settings>, level_list: Res<LevelList>, level_configs: Res<Assets<LevelConfig>>, editor_mode: Res<EditorMode>, mut next_screen: ResMut<NextState<Screen>>) {
+fn setup_menu(mut commands: Commands, sources: Res<AudioSources>, settings: Res<Settings>, level_list: Res<LevelList>, level_configs: Res<Assets<LevelConfig>>, editor_mode: Res<EditorMode>, mut next_screen: ResMut<NextState<Screen>>, cfg: Res<Config>) {
     if editor_mode.0 {
         next_screen.set(Screen::Gameplay);
         return
     }
+    commands.insert_resource(avian2d::prelude::Gravity(Vec2::NEG_Y * 9.81 * cfg.physics.gravity));
 
     let levels: Vec<_> = level_list.0.iter().enumerate().map(|(i, h)| {
         let name = level_configs.get(h).unwrap().name.clone();
