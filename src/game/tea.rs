@@ -38,7 +38,7 @@ fn apply_tea(
                 continue;
             }
             if collisions.contains(tea_entity, particle_entity) {
-                particle.contents.tea += time.delta().as_secs_f32();
+                particle.contents.tea = (particle.contents.tea + time.delta().as_secs_f32() * 50.0).min(1.0);
             }
         }
     }

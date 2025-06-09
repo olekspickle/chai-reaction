@@ -42,6 +42,13 @@ impl ParticleContents {
     pub fn is_sweet(&self) -> bool {
         self.sugar > 0.5
     }
+
+    pub fn clamp(&mut self) {
+        self.heat = self.heat.clamp(0.0, 1.0);
+        self.tea = self.tea.clamp(0.0, 1.0);
+        self.sugar = self.sugar.clamp(0.0, 1.0);
+        self.milk = self.milk.clamp(0.0, 1.0);
+    }
 }
 
 #[derive(Default, Debug, Copy, Clone, Reflect, Serialize, Deserialize)]
@@ -213,7 +220,7 @@ fn spawn_particles(
                             ParticleLayer::TeaLeaves,
                         ],
                     ),
-                    SleepingDisabled,
+                    //SleepingDisabled,
                     Particle {
                         lifetime: Timer::from_seconds(emitter.particle_lifetime_s, TimerMode::Once),
                         contents,
@@ -245,6 +252,8 @@ fn recolor_particles(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     for (entity, particle) in &particles {
+        let color = WATER.mix(&BREWED_TEA, particle.contents.tea.min(1.0)).lighter(particle.contents.milk.min(1.0));
+        /*
         let water = WATER.to_linear();
         let brewed_tea = BREWED_TEA.to_linear();
         let total_stuff = 1.0 + particle.contents.tea + particle.contents.milk;
@@ -255,6 +264,7 @@ fn recolor_particles(
         let b = (water.blue + brewed_tea.blue * particle.contents.tea + particle.contents.milk)
             / total_stuff;
         let color = Color::linear_rgba(r, g, b, 1.0);
+        */
         commands
             .entity(entity)
             .insert(MeshMaterial2d(materials.add(color)));
@@ -266,7 +276,7 @@ fn mix_particles(
     collisions: Collisions,
     time: Res<Time>,
 ) {
-    let d = time.delta().as_secs_f32() * 10.0;
+    let d = (time.delta().as_secs_f32() * 40.0).min(1.0);
     let entities: Vec<_> = particles.iter().map(|(e, _)| e).collect();
     for entity in entities {
         for other in collisions.entities_colliding_with(entity) {
@@ -275,6 +285,7 @@ fn mix_particles(
             {
                 let avg = (src_particle.contents + dst_particle.contents) / 2.0;
                 src_particle.contents = src_particle.contents * (1.0 - d) + avg * d;
+                src_particle.contents.clamp();
             }
         }
     }
