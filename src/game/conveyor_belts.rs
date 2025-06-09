@@ -24,8 +24,6 @@ impl CollisionHooks for ConveyorHooks<'_, '_> {
     fn modify_contacts(&self, contacts: &mut ContactPair, _commands: &mut Commands) -> bool {
         let (entity1, entity2) = (contacts.collider1, contacts.collider2);
 
-        println!("Number of manifolds: {}", contacts.manifolds.len());
-
         for (entity, direction) in [(entity1, -1.), (entity2, -1.)] {
             if let Ok((conveyor, transform)) = self.conveyor_query.get(entity) {
                 

@@ -274,6 +274,7 @@
                 texture_path: "textures/glass_vessel.png",
                 particle_texture_path: "textures/tea_particle.png",
                 particle_gravity_scale: 0.05,
+                particle_radius: 3.0,
             )
         ],
     ),
@@ -299,6 +300,7 @@
                 texture_path: "textures/hot_cup_vessel.png",
                 particle_lifetime_s: 10.0,
                 particle_gravity_scale: 0.5,
+                particle_radius: 2.0,
                 kind: (
                     heat: 1.0,
                 )
@@ -327,8 +329,8 @@
                 texture_path: "textures/milk_jug_vessel.png",
                 particle_lifetime_s: 10.0,
                 particle_gravity_scale: 0.5,
+                particle_radius: 2.0,
                 kind: (
-                    heat: 1.0,
                     milk: 1.0,
                 )
             )

@@ -26,6 +26,7 @@ pub struct ParticleVessel {
     pub kind: ParticleContents,
     pub particle_gravity_scale: f32, // How much Avian's gravity affects the particle
     pub particle_lifetime_s: f32,
+    pub particle_radius: f32,
 }
 
 pub fn do_particle_vessels(
@@ -47,10 +48,10 @@ pub fn do_particle_vessels(
             continue;
         };
 
-        let relative_positions = scan_image_for_circles(img, cfg.droplet_radius as i32);
+        let relative_positions = scan_image_for_circles(img, vessel.particle_radius as i32);
         // let relative_positions = vec![IVec2::new(0.0,m, y)]
 
-        let mesh = meshes.add(Circle::new(cfg.droplet_radius));
+        let mesh = meshes.add(Circle::new(vessel.particle_radius));
 
         for position in relative_positions {
             let spawn_position = global_transform.translation().truncate() + position.as_vec2();
@@ -65,7 +66,7 @@ pub fn do_particle_vessels(
                 Transform::from_translation(spawn_position.extend(0.0)),
                 // --- Avian2D Physics Components ---
                 RigidBody::Dynamic,
-                Collider::circle(cfg.droplet_radius),
+                Collider::circle(vessel.particle_radius),
                 GravityScale(vessel.particle_gravity_scale),
                 Friction::new(cfg.physics.water.friction)
                     .with_combine_rule(CoefficientCombine::Multiply),

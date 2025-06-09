@@ -118,6 +118,7 @@ pub enum SubAssembly {
         offset: Vec2,
         particle_lifetime_s: f32,
         particle_gravity_scale: f32,
+        particle_radius: f32,
         #[serde(default)]
         kind: ParticleContents,
     },
@@ -133,6 +134,7 @@ pub enum SubAssembly {
         #[serde(default)]
         offset: Vec2,
         particle_gravity_scale: f32,
+        particle_radius: f32,
     },
     HeatSource {
         #[serde(default)]
@@ -421,6 +423,7 @@ impl MachinePartConfig {
                         particle_lifetime_s,
                         particle_gravity_scale,
                         kind,
+                        particle_radius,
                         ..
                     } => {
                         parent.spawn((
@@ -431,6 +434,7 @@ impl MachinePartConfig {
                                 kind: *kind,
                                 particle_gravity_scale: *particle_gravity_scale,
                                 particle_lifetime_s: *particle_lifetime_s,
+                                particle_radius: *particle_radius,
                             },
                         ));
                     }
@@ -439,6 +443,7 @@ impl MachinePartConfig {
                         image,
                         particle_gravity_scale,
                         particle_image,
+                        particle_radius,
                         ..
                     } => {
                         parent.spawn((
@@ -448,6 +453,7 @@ impl MachinePartConfig {
                                 particle_image: particle_image.clone(),
                                 completed: false,
                                 particle_gravity_scale: *particle_gravity_scale,
+                                particle_radius: *particle_radius,
                             },
                         ));
                     }
