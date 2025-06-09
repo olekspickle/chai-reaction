@@ -50,7 +50,7 @@ fn spawn_machines_area(
 struct MachinePartPreview;
 
 fn spawn_preview(mut commands: Commands) {
-    commands.spawn((MachinePartPreview, Transform::default(), Visibility::Hidden));
+    commands.spawn((StateScoped(Screen::Gameplay), MachinePartPreview, Transform::default(), Visibility::Hidden));
 }
 
 fn on_machine_spawn_area_click(

@@ -30,7 +30,7 @@ fn apply_tea(
     tea: Query<Entity, With<Tea>>,
     mut particles: Query<(Entity, &mut Particle)>,
     config: Res<Config>,
-    time: Res<Time>,
+    time: Res<Time<Physics>>,
 ) {
     for tea_entity in &tea {
         for (particle_entity, mut particle) in &mut particles {

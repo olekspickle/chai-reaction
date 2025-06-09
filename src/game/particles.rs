@@ -281,7 +281,7 @@ fn recolor_particles(
 fn mix_particles(
     mut particles: Query<(Entity, &mut Particle)>,
     collisions: Collisions,
-    time: Res<Time>,
+    time: Res<Time<Physics>>,
 ) {
     let d = (time.delta().as_secs_f32() * 40.0).min(1.0);
     let entities: Vec<_> = particles.iter().map(|(e, _)| e).collect();

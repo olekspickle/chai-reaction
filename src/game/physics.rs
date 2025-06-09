@@ -23,11 +23,11 @@ fn start_paused(mut next: ResMut<NextState<PhysicsState>>) {
 }
 
 fn pause(mut time: ResMut<Time<Virtual>>, mut physics_time: ResMut<Time<Physics>>) {
-    time.pause();
+    //time.pause();
     physics_time.pause();
 }
 
 fn run(mut time: ResMut<Time<Virtual>>, mut physics_time: ResMut<Time<Physics>>) {
-    time.unpause();
+    //time.unpause();
     physics_time.unpause();
 }

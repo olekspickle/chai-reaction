@@ -83,7 +83,7 @@ impl Command for ClearLevel {
         let (mut commands, objects) = system_state.get_mut(world);
 
         for entity in &objects {
-            commands.entity(entity).despawn();
+            commands.entity(entity).try_despawn();
         }
 
         system_state.apply(world);

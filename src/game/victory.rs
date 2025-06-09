@@ -1,5 +1,6 @@
 use crate::{
     game::tea::{Satisfied, TeaSensor},
+    game::physics::PhysicsState,
     prelude::*,
     screens::gameplay::NextLevel,
 };
@@ -16,6 +17,7 @@ fn check_tea_counters(
     sensors: Query<Has<Satisfied>, With<TeaSensor>>,
     loaded_level: ResMut<LoadedLevel>,
     level_list: Res<LevelList>,
+    mut physics_state: ResMut<NextState<PhysicsState>>,
     mut commands: Commands,
 ) {
     if !sensors.is_empty() && sensors.iter().all(|s| s) {
@@ -25,6 +27,7 @@ fn check_tea_counters(
                 // save next level id and spawn a modal in gameplay screen
                 commands.insert_resource(NextLevel(new_idx));
                 commands.trigger(OnNewModal(Modal::LevelFinished));
+                physics_state.set(PhysicsState::Paused);
             }
         }
     }
