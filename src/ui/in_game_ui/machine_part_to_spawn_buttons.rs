@@ -60,7 +60,7 @@ fn spawn_part_picking_buttons(
 
     commands
         .spawn((
-            StateScoped(level),
+            StateScoped(Screen::Gameplay),
             Node {
                 flex_direction: FlexDirection::Row,
                 justify_content: JustifyContent::SpaceEvenly,

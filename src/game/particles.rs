@@ -11,7 +11,15 @@ pub fn plugin(app: &mut App) {
         (
             despawn_particles,
             // trigger_fluid_filter_buttons,
-            (spawn_particles, recolor_particles, mix_particles)
+            (spawn_particles)
+                .before(crate::game::levels::prepare_levels),
+        )
+            .run_if(in_state(Screen::Gameplay)),
+    );
+    app.add_systems(
+        PostUpdate,
+        (
+            (recolor_particles, mix_particles)
                 .before(crate::game::levels::prepare_levels),
         )
             .run_if(in_state(Screen::Gameplay)),

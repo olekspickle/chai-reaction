@@ -48,6 +48,7 @@ impl Default for Settings {
 pub enum Modal {
     Main,
     LevelFinished,
+    GameFinished,
     Settings,
 }
 
@@ -76,7 +77,7 @@ pub enum Action {
 fn spawn_player_input_map(mut commands: Commands) {
     let mut input_map = InputMap::default();
 
-    input_map.insert(Action::Restart, KeyCode::KeyR);
+    //input_map.insert(Action::Restart, KeyCode::KeyR);
     input_map.insert(Action::DebugNextLevel, KeyCode::KeyN);
 
     input_map.insert(Action::ToggleUiDebug, KeyCode::Backquote);

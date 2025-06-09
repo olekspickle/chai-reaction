@@ -18,6 +18,7 @@ pub(super) fn plugin(app: &mut App) {
                     .run_if(resource_exists::<LoadedLevel>.and(resource_exists::<LevelList>)),
             ),
         )
+        .add_systems(OnExit(Screen::Gameplay), clear_level)
         .init_resource::<ModifiedLevel>()
         .add_observer(trigger_menu_toggle_on_esc)
         .add_observer(add_new_modal)
@@ -26,6 +27,11 @@ pub(super) fn plugin(app: &mut App) {
         .add_observer(clear_modals);
 }
 
+fn clear_level(
+    mut commands:Commands
+) {
+    commands.queue(ClearLevel);
+}
 
 fn load_checks(
     mut commands: Commands,
@@ -62,6 +68,8 @@ pub struct MenuModal;
 pub struct SettingsModal;
 #[derive(Component)]
 pub struct LevelFinishedModal;
+#[derive(Component)]
+pub struct GameFinishedModal;
 
 fn update_conditions(
     mut commands: Commands,
@@ -327,9 +335,14 @@ fn add_new_modal(
     commands.trigger(OnClearModals);
     let OnNewModal(modal) = trig.event();
     match modal {
-        Modal::Main => commands.spawn(menu_modal()),
-        Modal::Settings => commands.spawn(settings_modal()),
-        Modal::LevelFinished => commands.spawn(level_finished_modal()),
+        Modal::Main => { commands.spawn(menu_modal()); },
+        Modal::Settings => { commands.spawn(settings_modal()); },
+        Modal::LevelFinished => {
+            commands.spawn(level_finished_modal());
+        }
+        Modal::GameFinished => {
+            commands.spawn(game_over_modal());
+        }
     };
 
     settings.modals.push(modal.clone());
@@ -343,6 +356,7 @@ fn pop_modal(
     menu_marker: Query<Entity, With<MenuModal>>,
     settings_marker: Query<Entity, With<SettingsModal>>,
     level_finished_marker: Query<Entity, With<LevelFinishedModal>>,
+    game_finished_marker: Query<Entity, With<GameFinishedModal>>,
 ) {
     if Screen::Gameplay != *screen.get() {
         return;
@@ -367,6 +381,11 @@ fn pop_modal(
             if let Ok(gameover) = level_finished_marker.single() {
                 commands.entity(gameover).despawn();
                 commands.remove_resource::<NextLevel>();
+            }
+        }
+        Modal::GameFinished => {
+            if let Ok(gameover) = game_finished_marker.single() {
+                commands.entity(gameover).despawn();
             }
         }
     }
@@ -396,22 +415,28 @@ fn clear_modals(
     menu_marker: Query<Entity, With<MenuModal>>,
     settings_marker: Query<Entity, With<SettingsModal>>,
     gameover_marker: Query<Entity, With<LevelFinishedModal>>,
+    game_finished_marker: Query<Entity, With<GameFinishedModal>>,
 ) {
     for m in &settings.modals {
         match m {
             Modal::Main => {
                 if let Ok(menu) = menu_marker.single() {
-                    commands.entity(menu).despawn();
+                    commands.entity(menu).try_despawn();
                 }
             }
             Modal::Settings => {
                 if let Ok(settings) = settings_marker.single() {
-                    commands.entity(settings).despawn();
+                    commands.entity(settings).try_despawn();
                 }
             }
             Modal::LevelFinished => {
                 if let Ok(gameover) = gameover_marker.single() {
-                    commands.entity(gameover).despawn();
+                    commands.entity(gameover).try_despawn();
+                }
+            }
+            Modal::GameFinished => {
+                if let Ok(gameover) = game_finished_marker.single() {
+                    commands.entity(gameover).try_despawn();
                 }
             }
         }
@@ -481,6 +506,19 @@ fn level_finished_modal() -> impl Bundle {
             label("Level finished!"),
             btn_big("Main Menu", to::title),
             btn_big("Next Level", click_to_next_level),
+        ],
+    )
+}
+
+fn game_over_modal() -> impl Bundle {
+    (
+        StateScoped(Screen::Gameplay),
+        GameFinishedModal,
+        ui_root("game over modal"),
+        BackgroundColor(TRANSLUCENT),
+        children![
+            label("You have found peace through tea"),
+            btn_big("Main Menu", to::title),
         ],
     )
 }

@@ -13,20 +13,32 @@ pub fn plugin(app: &mut App) {
     );
 }
 
+#[derive(Component)]
+struct VictoryLock;
+
 fn check_tea_counters(
     sensors: Query<Has<Satisfied>, With<TeaSensor>>,
     loaded_level: ResMut<LoadedLevel>,
     level_list: Res<LevelList>,
     mut physics_state: ResMut<NextState<PhysicsState>>,
     mut commands: Commands,
+    locks: Query<&VictoryLock>,
 ) {
+    if locks.iter().next().is_some() {
+        return
+    }
     if !sensors.is_empty() && sensors.iter().all(|s| s) {
         if let Some(idx) = level_list.0.iter().position(|l| l == &loaded_level.0) {
             let new_idx = idx + 1;
             if new_idx < level_list.0.len() {
+                commands.spawn((VictoryLock, LevelObject));
                 // save next level id and spawn a modal in gameplay screen
                 commands.insert_resource(NextLevel(new_idx));
                 commands.trigger(OnNewModal(Modal::LevelFinished));
+                physics_state.set(PhysicsState::Paused);
+            } else {
+                commands.spawn((VictoryLock, LevelObject));
+                commands.trigger(OnNewModal(Modal::GameFinished));
                 physics_state.set(PhysicsState::Paused);
             }
         }
