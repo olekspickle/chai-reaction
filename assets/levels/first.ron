@@ -1,5 +1,5 @@
 (
-    name: "Level 1: The First",
+    name: "Level 1: The First cup",
     zen_points: 4000,
     available_machine_parts: [
         "Wood Block",

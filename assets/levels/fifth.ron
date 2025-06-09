@@ -1,7 +1,15 @@
 (
-    name: "",
-    zen_points: 0,
-    available_machine_parts: [],
+    name: "Level 5: Seeing both sides",
+    zen_points: 10000,
+    available_machine_parts: [
+        "Wood Block",
+        "Wood Ramp",
+        "Pipe",
+        "PipeTurn",
+        "Funnel",
+        "Red Ball",
+        "Fan",
+    ],
     initial_machine_parts: [
         (
             name: "Milk Glass",

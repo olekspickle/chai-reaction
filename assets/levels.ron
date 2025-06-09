@@ -1,5 +1,7 @@
 [
     "levels/first.ron",
-    //"levels/second.ron",
-    //"levels/third.ron",
+    "levels/second.ron",
+    "levels/third.ron",
+    "levels/fourth.ron",
+    "levels/fifth.ron",
 ]

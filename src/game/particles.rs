@@ -44,7 +44,7 @@ impl ParticleContents {
     }
 
     pub fn is_milky(&self) -> bool {
-        self.milk > 0.5
+        self.milk > 0.15
     }
 
     pub fn is_sweet(&self) -> bool {
