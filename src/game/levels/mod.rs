@@ -50,7 +50,7 @@ pub fn plugin(app: &mut App) {
     if in_editor {
         app.insert_resource(EditorMode(true));
     } else {
-        app.add_systems(OnEnter(Screen::Gameplay), prepare_levels);
+        //app.add_systems(OnEnter(Screen::Gameplay), prepare_levels);
         app.insert_resource(EditorMode(false));
     }
 }

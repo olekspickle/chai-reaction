@@ -1,5 +1,5 @@
 (
-    name: "",
+    name: "Level 1: The first",
     zen_points: 4000,
     available_machine_parts: [
         "WaterEmitter",
