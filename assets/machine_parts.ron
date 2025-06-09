@@ -235,9 +235,6 @@
             FluidFilter(
                 mesh_image_path: "textures/filter_base_collider.png",
             ),
-            FluidFilterButton(
-                mesh_image_path: "textures/filter_trigger_sprite.png",
-            ),
         ],
     ),
     "Big Table": (
@@ -265,13 +262,13 @@
         ),
         subassemblies: [
             Sprite(
-                sprite_asset_path: "textures/glass.png",
+                sprite_asset_path: "textures/tea_container.png",
             ),
             Collider(
-                mesh_image_path: "textures/glass_collider.png",
+                mesh_image_path: "textures/tea_container_collider.png",
             ),
             TeaParticleVessel(
-                texture_path: "textures/glass_vessel.png",
+                texture_path: "textures/tea_container_vessel.png",
                 particle_texture_path: "textures/tea_particle.png",
                 particle_gravity_scale: 0.05,
                 particle_radius: 3.0,

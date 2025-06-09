@@ -10,14 +10,14 @@ pub fn plugin(app: &mut App) {
         Update,
         (
             despawn_particles,
-            trigger_fluid_filter_buttons,
+            // trigger_fluid_filter_buttons,
             (spawn_particles, recolor_particles, mix_particles)
                 .before(crate::game::levels::prepare_levels),
         )
             .run_if(in_state(Screen::Gameplay)),
-    )
-    .add_observer(activate_fluid_filter)
-    .add_observer(deactivate_fluid_filter);
+    );
+    // .add_observer(activate_fluid_filter)
+    // .add_observer(deactivate_fluid_filter)
 }
 
 #[derive(Component)]
@@ -303,68 +303,68 @@ pub struct FluidFilter;
 #[derive(Default, Component)]
 pub struct FluidFilterButton(pub bool);
 
-fn activate_fluid_filter(
-    trigger: Trigger<ActivateFluidFilter>,
-    mut commands: Commands,
-    filters: Query<&FluidFilter>,
-) {
-    if filters.contains(trigger.target()) {
-        commands
-            .entity(trigger.target())
-            .insert(CollisionLayers::new(
-                ParticleLayer::Default,
-                [ParticleLayer::Default, ParticleLayer::TeaLeaves],
-            ));
-    }
-}
+// fn activate_fluid_filter(
+//     trigger: Trigger<ActivateFluidFilter>,
+//     mut commands: Commands,
+//     filters: Query<&FluidFilter>,
+// ) {
+//     if filters.contains(trigger.target()) {
+//         commands
+//             .entity(trigger.target())
+//             .insert(CollisionLayers::new(
+//                 ParticleLayer::Default,
+//                 [ParticleLayer::Default, ParticleLayer::TeaLeaves],
+//             ));
+//     }
+// }
 
-fn deactivate_fluid_filter(
-    trigger: Trigger<DeactivateFluidFilter>,
-    mut commands: Commands,
-    filters: Query<&FluidFilter>,
-) {
-    if filters.contains(trigger.target()) {
-        commands
-            .entity(trigger.target())
-            .insert(CollisionLayers::new(
-                ParticleLayer::Default,
-                [
-                    ParticleLayer::Default,
-                    ParticleLayer::TeaLeaves,
-                    ParticleLayer::Fluid,
-                ],
-            ));
-    }
-}
+// fn deactivate_fluid_filter(
+//     trigger: Trigger<DeactivateFluidFilter>,
+//     mut commands: Commands,
+//     filters: Query<&FluidFilter>,
+// ) {
+//     if filters.contains(trigger.target()) {
+//         commands
+//             .entity(trigger.target())
+//             .insert(CollisionLayers::new(
+//                 ParticleLayer::Default,
+//                 [
+//                     ParticleLayer::Default,
+//                     ParticleLayer::TeaLeaves,
+//                     ParticleLayer::Fluid,
+//                 ],
+//             ));
+//     }
+// }
 
-fn trigger_fluid_filter_buttons(
-    mut commands: Commands,
-    collisions: Collisions,
-    mut buttons: Query<(Entity, &ChildOf, &mut FluidFilterButton)>,
-    children: Query<&Children>,
-    filters: Query<Entity, With<FluidFilter>>,
-) {
-    for (button_entity, parent, mut button) in &mut buttons {
-        let mut triggered = false;
-        let cs: Vec<_> = collisions.entities_colliding_with(button_entity).collect();
-        if !cs.is_empty() {
-            if !button.0 {
-                for entity in children.iter_descendants(parent.0) {
-                    if filters.contains(entity) {
-                        commands.entity(entity).trigger(ActivateFluidFilter);
-                    }
-                }
-                button.0 = true;
-            }
-            triggered = true;
-        }
-        if !triggered && button.0 {
-            for entity in children.iter_descendants(parent.0) {
-                if filters.contains(entity) {
-                    commands.entity(entity).trigger(DeactivateFluidFilter);
-                }
-            }
-            button.0 = false;
-        }
-    }
-}
+// fn trigger_fluid_filter_buttons(
+//     mut commands: Commands,
+//     collisions: Collisions,
+//     mut buttons: Query<(Entity, &ChildOf, &mut FluidFilterButton)>,
+//     children: Query<&Children>,
+//     filters: Query<Entity, With<FluidFilter>>,
+// ) {
+//     for (button_entity, parent, mut button) in &mut buttons {
+//         let mut triggered = false;
+//         let cs: Vec<_> = collisions.entities_colliding_with(button_entity).collect();
+//         if !cs.is_empty() {
+//             if !button.0 {
+//                 for entity in children.iter_descendants(parent.0) {
+//                     if filters.contains(entity) {
+//                         commands.entity(entity).trigger(ActivateFluidFilter);
+//                     }
+//                 }
+//                 button.0 = true;
+//             }
+//             triggered = true;
+//         }
+//         if !triggered && button.0 {
+//             for entity in children.iter_descendants(parent.0) {
+//                 if filters.contains(entity) {
+//                     commands.entity(entity).trigger(DeactivateFluidFilter);
+//                 }
+//             }
+//             button.0 = false;
+//         }
+//     }
+// }

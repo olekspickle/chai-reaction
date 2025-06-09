@@ -6,7 +6,7 @@ use crate::{
             particle_vessel::ParticleVessel,
         },
         tea::{Recipe, Tea, TeaSensor},
-        tea_particles::TeaParticleVessel,
+        tea_particles::TeaParticleVessel, ParticleLayer,
     },
     prelude::*,
 };
@@ -373,6 +373,10 @@ impl MachinePartConfig {
                                     Transform::from_xyz(offset.x, offset.y, 0.0),
                                     Collider::from(SharedShape::new(collider.clone())),
                                     FluidFilter,
+                                    CollisionLayers::new(
+                                        ParticleLayer::Default,
+                                        [ParticleLayer::Default, ParticleLayer::TeaLeaves],
+                                    )
                                 ));
                             }
                         }
