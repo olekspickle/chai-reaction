@@ -1,0 +1,71 @@
+(
+    name: "",
+    zen_points: 0,
+    available_machine_parts: [],
+    initial_machine_parts: [
+        (
+            name: "Cabinet Small",
+            context: (
+                position: (0.0, -176.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Tea Container",
+            context: (
+                position: (112.0, 16.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Shelf",
+            context: (
+                position: (80.0, -32.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Shelf",
+            context: (
+                position: (-80.0, 32.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Shelf",
+            context: (
+                position: (80.0, 96.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Milk Glass",
+            context: (
+                position: (112.0, 144.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Water Glass",
+            context: (
+                position: (-112.0, 80.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Milky Tea Mug",
+            context: (
+                position: (-0.0, -112.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+    ],
+)
