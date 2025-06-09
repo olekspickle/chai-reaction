@@ -286,13 +286,17 @@
         ),
         subassemblies: [
             Sprite(
-                sprite_asset_path: "textures/glass.png",
+                sprite_asset_path: "textures/hot_cup_fore.png",
+            ),
+            Sprite(
+                layer: Background,
+                sprite_asset_path: "textures/hot_cup_back.png",
             ),
             Collider(
-                mesh_image_path: "textures/glass_collider.png",
+                mesh_image_path: "textures/hot_cup_collider.png",
             ),
             ParticleVessel(
-                texture_path: "textures/glass_vessel.png",
+                texture_path: "textures/hot_cup_vessel.png",
                 particle_lifetime_s: 10.0,
                 particle_gravity_scale: 0.5,
                 kind: (
@@ -310,13 +314,17 @@
         ),
         subassemblies: [
             Sprite(
-                sprite_asset_path: "textures/glass.png",
+                sprite_asset_path: "textures/milk_jug_fore.png",
+            ),
+            Sprite(
+                layer: Background,
+                sprite_asset_path: "textures/milk_jug_back.png",
             ),
             Collider(
-                mesh_image_path: "textures/glass_collider.png",
+                mesh_image_path: "textures/milk_jug_collider.png",
             ),
             ParticleVessel(
-                texture_path: "textures/glass_vessel.png",
+                texture_path: "textures/milk_jug_vessel.png",
                 particle_lifetime_s: 10.0,
                 particle_gravity_scale: 0.5,
                 kind: (
@@ -354,8 +362,8 @@
         ),
         texture_info: (
             frames: Basic(8,0.1),
-            rotations: 1,
-            flippable: false,
+            rotations: 2,
+            flippable: true,
         ),
         subassemblies: [
             Sprite(

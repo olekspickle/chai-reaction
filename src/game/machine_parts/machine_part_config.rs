@@ -351,11 +351,12 @@ impl MachinePartConfig {
                     } => {
                         // Select the set of colliders based on the current rotation index
                         if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
+                            let actual_speed = if context.flipped { -*speed } else { *speed };
                             for collider in collider_set {
                                 parent.spawn((
                                     Transform::from_xyz(offset.x, offset.y, 0.0),
                                     Collider::from(SharedShape::new(collider.clone())),
-                                    crate::game::conveyor_belts::ConveyorBelt { speed: *speed },
+                                    crate::game::conveyor_belts::ConveyorBelt { speed: actual_speed },
                                 ));
                             }
                         }

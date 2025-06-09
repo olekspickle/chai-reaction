@@ -44,6 +44,8 @@ pub struct Textures {
     #[dependency]
     pub play: Handle<Image>,
     #[dependency]
+    pub redo: Handle<Image>,
+    #[dependency]
     pub reset: Handle<Image>,
 }
 
@@ -58,6 +60,7 @@ impl FromWorld for Textures {
             exit: assets.load("textures/Icons/exit.png"),
             pause: assets.load("textures/Icons/exit.png"),
             play: assets.load("textures/Icons/play.png"),
+            redo: assets.load("textures/Icons/redo.png"),
             reset: assets.load("textures/Icons/reset.png"),
         }
     }

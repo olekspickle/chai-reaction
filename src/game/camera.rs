@@ -13,9 +13,10 @@ pub fn spawn_camera(
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
     config: Res<Config>,
+    mut ui_scale: ResMut<UiScale>,
 ) {
-    let screen_width = 16.0 * config.screen_size_in_tiles.x as f32;
-    let screen_height = 16.0 * config.screen_size_in_tiles.y as f32 + 64.0;
+    let screen_width = 16.0 * config.screen_size_in_tiles.x as f32 + 16.;
+    let screen_height = 16.0 * config.screen_size_in_tiles.y as f32 + 48. ;
     commands.spawn((
         Camera2d,
         Projection::Orthographic(OrthographicProjection {
@@ -43,11 +44,11 @@ pub fn spawn_camera(
     commands.spawn((
         Mesh2d(meshes.add(Rectangle::new(10000.0, 10000.0))),
         MeshMaterial2d(materials.add(Color::BLACK)),
-        Transform::from_xyz(0.0, 5000.0 + screen_height * 0.5, 100.0),
+        Transform::from_xyz(0.0, 5000.0 + (screen_height - 64.) * 0.5, 100.0),
     ));
     commands.spawn((
         Mesh2d(meshes.add(Rectangle::new(10000.0, 10000.0))),
         MeshMaterial2d(materials.add(Color::BLACK)),
-        Transform::from_xyz(0.0, -5000.0 - screen_height * 0.5, 100.0),
+        Transform::from_xyz(0.0, -5000.0 - (screen_height - 64.)* 0.5, 100.0),
     ));
 }

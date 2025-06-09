@@ -1,7 +1,7 @@
 (
     droplet_radius: 2.0,
     tea_particles_for_victory: 10,
-    screen_size_in_tiles: (32, 16),
+    screen_size_in_tiles: (24, 16),
     physics: (
         water: (
             max_particles: 100,
