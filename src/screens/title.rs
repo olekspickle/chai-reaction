@@ -27,7 +27,6 @@ fn setup_menu(mut commands: Commands, sources: Res<AudioSources>, settings: Res<
         // https://github.com/bevyengine/bevy/issues/18953
     )).with_children(|parent| {
         parent.spawn(BackgroundColor(TRANSLUCENT));
-        parent.spawn(btn_big("Play", to::gameplay_or_loading));
         for level in levels {
             parent.spawn(level);
         }

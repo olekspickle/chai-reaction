@@ -8,10 +8,11 @@ use leafwing_input_manager::prelude::*;
 pub(super) fn plugin(app: &mut App) {
     app.add_plugins(crate::game::plugin)
         .add_systems(OnEnter(Screen::Gameplay), spawn_gameplay_ui)
+        .add_systems(Startup, load_checks)
         .add_systems(
             Update,
             (
-                (toggle_physics_on_space, change_score, restart_on_r)
+                (toggle_physics_on_space, change_score, restart_on_r, update_conditions)
                     .run_if(in_state(Screen::Gameplay)),
                 instant_victory
                     .run_if(resource_exists::<LoadedLevel>.and(resource_exists::<LevelList>)),
@@ -23,6 +24,25 @@ pub(super) fn plugin(app: &mut App) {
         .add_observer(toggle_physics)
         .add_observer(pop_modal)
         .add_observer(clear_modals);
+}
+
+
+fn load_checks(
+    mut commands: Commands,
+    assets: Res<AssetServer>,
+) {
+    let checked = assets.load("textures/icons/check_tick.png");
+    let empty = assets.load("textures/icons/check_empty.png");
+    commands.insert_resource(CheckboxImages {
+        checked,
+        empty,
+    });
+}
+
+#[derive(Resource)]
+pub struct CheckboxImages {
+    empty: Handle<Image>,
+    checked: Handle<Image>,
 }
 
 #[derive(Resource)]
@@ -43,26 +63,46 @@ pub struct SettingsModal;
 #[derive(Component)]
 pub struct LevelFinishedModal;
 
+fn update_conditions(
+    mut commands: Commands,
+    sensors: Query<(&Name, Has<Satisfied>, &TeaSensor)>,
+    images: Res<CheckboxImages>,
+    score_area: Single<Entity, With<ScoreLabel>>,
+) {
+    commands.entity(*score_area).despawn_related::<Children>();
+    for (name, is_satisfied, sensor) in &sensors {
+        commands.entity(*score_area).with_children(|parent| {
+            parent.spawn((
+                Node {
+                    flex_direction: FlexDirection::Row,
+                    width: Percent(100.0),
+                    ..default()
+                },
+                children![
+                    ImageNode::new(if is_satisfied {
+                        images.checked.clone()
+                    } else {
+                        images.empty.clone()
+                    }),
+                    ImageNode::new(sensor.1.clone()),
+                    label(name.to_string()),
+                ],
+            ));
+        });
+    }
+
+}
+
 fn spawn_gameplay_ui(
     mut commands: Commands,
     textures: Res<Textures>,
-    sensors: Query<(&Name, Has<Satisfied>), With<TeaSensor>>,
 ) {
-    let mut goal = String::new();
-    for (n, s) in sensors.iter() {
-        if s {
-            goal.push('✓');
-        }
-        goal.push_str(n.as_str());
-        goal.push('\n');
-    }
 
     let (play, exit, reset) = (
         textures.play.clone(),
         textures.exit.clone(),
         textures.reset.clone(),
     );
-    let score = Opts::new(goal).border_radius(Px(0.0)).color(Color::BLACK);
     let nav_opts = Opts::default()
         .image(exit)
         .width(Vw(5.0))
@@ -98,11 +138,12 @@ fn spawn_gameplay_ui(
                     top: Px(0.0),
                     right: Px(0.0),
                     padding: UiRect::axes(Vw(2.0), Vw(1.0)),
+                    flex_direction: FlexDirection::Column,
                     ..default()
                 },
+                BorderRadius::all(Px(BORDER_RADIUS)),
                 ScoreLabel,
-                BackgroundColor(YELLOW),
-                children![label(score)]
+                BackgroundColor(DIM_GREEN),
             )
         ],
     ));

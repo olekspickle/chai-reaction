@@ -14,8 +14,8 @@ pub fn plugin(app: &mut App) {
 
 #[derive(Component, Copy, Clone, PartialEq)]
 pub struct Tea;
-#[derive(Default, Component, Copy, Clone, PartialEq)]
-pub struct TeaSensor(pub Recipe);
+#[derive(Default, Component, Clone, PartialEq)]
+pub struct TeaSensor(pub Recipe, pub Handle<Image>);
 #[derive(Component)]
 pub struct Satisfied;
 

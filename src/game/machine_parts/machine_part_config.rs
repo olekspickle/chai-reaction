@@ -156,6 +156,10 @@ pub enum SubAssembly {
         #[serde(default)]
         recipe: Recipe,
         name: String,
+        #[serde(skip)]
+        icon: Handle<Image>,
+        #[serde(default)]
+        icon_asset_path: String,
     },
     FlowField {
         #[serde(default)]
@@ -488,6 +492,7 @@ impl MachinePartConfig {
                         colliders,
                         recipe,
                         name,
+                        icon,
                         ..
                     } => {
                         if let Some(collider_set) = colliders.get(context.rotation_index as usize) {
@@ -499,8 +504,7 @@ impl MachinePartConfig {
                                     Collider::from(SharedShape::new(collider.clone())),
                                     Sensor,
                                     Pickable::IGNORE,
-                                    Transform::from_xyz(offset.x, offset.y, 0.0),
-                                    TeaSensor(*recipe),
+                                    TeaSensor(*recipe, icon.clone()),
                                 ));
                             }
                         }

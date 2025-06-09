@@ -122,6 +122,38 @@ impl AssetLoader for MachinePartConfigByTypeLoader {
 
                         *colliders = rotation_colliders;
                     }
+                    SubAssembly::TeaSensor {
+                        mesh_image_path,
+                        colliders,
+                        icon,
+                        icon_asset_path,
+                        ..
+                    } => {
+                        let loaded_image = load_context
+                            .loader()
+                            .immediate()
+                            .with_static_type()
+                            .load::<Image>(mesh_image_path.clone())
+                            .await?;
+                        let image = loaded_image.get();
+                        let size = image.size();
+                        let rotations = texture_info.rotations;
+
+                        let row_height = size.y / rotations;
+                        let mut rotation_colliders = Vec::new();
+
+                        for rot in 0..rotations {
+                            let offset = UVec2::new(0, row_height * rot);
+                            let region_size = UVec2::new(size.x, row_height);
+                            let new_colliders =
+                                colliders_from_image_region(image, offset, region_size);
+                            rotation_colliders.push(new_colliders);
+                        }
+
+                        *colliders = rotation_colliders;
+
+                        *icon = load_context.loader().with_static_type().load::<Image>(icon_asset_path.clone());
+                    }
                     SubAssembly::Sprite {
                         sprite,
                         sprite_asset_path,

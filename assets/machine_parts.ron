@@ -30,6 +30,10 @@
     "Black Tea Mug": (
         cost: 1,
         is_dynamic: true,
+        texture_info: (
+            rotations: 1,
+            flippable: false,
+        ),
         subassemblies: [
             Sprite(
                 sprite_asset_path: "textures/mug.png",
@@ -38,6 +42,7 @@
             TeaSensor(
                 mesh_image_path: "textures/mug_interior.png",
                 name: "Black Tea",
+                icon_asset_path: "textures/mug.png",
             ),
             Collider(
                 mesh_image_path: "textures/mug_collider.png",
@@ -47,6 +52,10 @@
     "Milky Tea Mug": (
         cost: 1,
         is_dynamic: true,
+        texture_info: (
+            rotations: 1,
+            flippable: false,
+        ),
         subassemblies: [
             Sprite(
                 sprite_asset_path: "textures/pink_mug.png",
@@ -59,6 +68,7 @@
                     sweet: false,
                 ),
                 name: "Milky Tea",
+                icon_asset_path: "textures/pink_mug.png",
             ),
             Collider(
                 mesh_image_path: "textures/mug_collider.png",
@@ -68,6 +78,10 @@
     "Sweet Tea Mug": (
         cost: 1,
         is_dynamic: true,
+        texture_info: (
+            rotations: 1,
+            flippable: false,
+        ),
         subassemblies: [
             Sprite(
                 sprite_asset_path: "textures/green_mug.png",
@@ -80,6 +94,7 @@
                     sweet: true,
                 ),
                 name: "Sweet Black Tea",
+                icon_asset_path: "textures/green_mug.png",
             ),
             Collider(
                 mesh_image_path: "textures/mug_collider.png",
