@@ -21,6 +21,7 @@ pub struct Settings {
     /// Only relevant in [`Screen::Gameplay`]
     pub modals: Vec<Modal>,
     pub last_screen: Screen,
+    pub tutorial: bool,
 }
 
 impl Settings {
@@ -38,6 +39,7 @@ impl Default for Settings {
             last_screen: Screen::Title,
             sound: Sound::default(),
             modals: vec![],
+            tutorial: true,
         }
     }
 }
@@ -58,9 +60,6 @@ fn inject_settings_from_cfg(mut commands: Commands, cfg: Res<Config>) {
 
 #[derive(Actionlike, PartialEq, Eq, Clone, Copy, Hash, Debug, Reflect)]
 pub enum Action {
-    One,
-    Two,
-
     DebugNextLevel,
     Restart,
     TogglePause,

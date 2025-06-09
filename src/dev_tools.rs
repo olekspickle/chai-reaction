@@ -37,23 +37,20 @@ fn toggle_debug_ui(
 
 fn toggle_pause(
     _: Trigger<OnPauseToggle>,
-    mut label: Query<(&mut BackgroundColor, &mut ImageNode, &mut TextColor), With<PauseLabel>>,
-    textures: Res<Textures>,
+    mut label: Query<(&mut BackgroundColor, &mut TextColor), With<PauseLabel>>,
     physics_state: ResMut<State<PhysicsState>>,
     mut next: ResMut<NextState<PhysicsState>>,
 ) {
-    if let Ok((mut bg, mut img, mut color)) = label.single_mut() {
+    if let Ok((mut bg, mut color)) = label.single_mut() {
         match physics_state.get() {
             PhysicsState::Paused => {
                 next.set(PhysicsState::Running);
-                *img = ImageNode::new(textures.play.clone());
                 *color = TextColor(WHITEISH);
                 *bg = BackgroundColor(TRANSPARENT);
                 info!("paused: false");
             }
             PhysicsState::Running => {
                 next.set(PhysicsState::Paused);
-                *img = ImageNode::new(textures.pause.clone());
                 *color = TextColor(GRAY);
                 *bg = BackgroundColor(WHITEISH);
                 info!("paused: true");

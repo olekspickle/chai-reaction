@@ -162,9 +162,13 @@ fn toggle_physics(
     }
 }
 
-fn toggle_physics_on_space(action: Query<&ActionState<Action>>, mut commands: Commands) {
+fn toggle_physics_on_space(
+    action: Query<&ActionState<Action>>,
+    mut commands: Commands,
+    settings: Res<Settings>,
+) {
     if let Ok(state) = action.single() {
-        if state.just_pressed(&Action::TogglePhysics) {
+        if state.just_pressed(&Action::TogglePhysics) && !settings.tutorial {
             commands.trigger(OnPhysicsToggle);
         }
     }
@@ -231,10 +235,13 @@ fn trigger_menu_toggle_on_esc(
     _: Trigger<OnBack>,
     mut commands: Commands,
     screen: Res<State<Screen>>,
-    settings: ResMut<Settings>,
+    mut settings: ResMut<Settings>,
 ) {
     if *screen.get() != Screen::Gameplay {
         return;
+    }
+    if settings.tutorial {
+        settings.tutorial = false;
     }
     if settings.modals.is_empty() {
         commands.trigger(OnNewModal(Modal::Main));
@@ -413,17 +420,10 @@ fn level_finished_modal() -> impl Bundle {
         BackgroundColor(TRANSLUCENT),
         children![
             label("Level finished!"),
-            btn_big("Main Menu", enter_gameplay_screen),
+            btn_big("Main Menu", to::title),
             btn_big("Next Level", click_to_next_level),
         ],
     )
-}
-
-fn enter_gameplay_screen(
-    _trigger: Trigger<Pointer<Click>>,
-    mut next_screen: ResMut<NextState<Screen>>,
-) {
-    next_screen.set(Screen::Gameplay);
 }
 
 #[cfg(not(target_family = "wasm"))]

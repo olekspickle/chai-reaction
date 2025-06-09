@@ -40,13 +40,15 @@ pub struct Textures {
     #[dependency]
     pub exit: Handle<Image>,
     #[dependency]
-    pub pause: Handle<Image>,
-    #[dependency]
     pub play: Handle<Image>,
     #[dependency]
     pub redo: Handle<Image>,
     #[dependency]
     pub reset: Handle<Image>,
+    #[dependency]
+    pub kidnap: Handle<Image>,
+    #[dependency]
+    pub chill: Handle<Image>,
 }
 
 impl FromWorld for Textures {
@@ -58,10 +60,11 @@ impl FromWorld for Textures {
             cup: assets.load("textures/glass.png"),
             tealeaf: assets.load("textures/glass.png"),
             exit: assets.load("textures/Icons/exit.png"),
-            pause: assets.load("textures/Icons/exit.png"),
             play: assets.load("textures/Icons/play.png"),
             redo: assets.load("textures/Icons/redo.png"),
             reset: assets.load("textures/Icons/reset.png"),
+            kidnap: assets.load("textures/tutorial1.jpg"),
+            chill: assets.load("textures/chai-reaction-embedded-thumbnail.jpg"),
         }
     }
 }

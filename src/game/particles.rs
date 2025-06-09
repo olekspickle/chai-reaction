@@ -53,7 +53,7 @@ impl ParticleContents {
 
 #[derive(Default, Debug, Copy, Clone, Reflect, Serialize, Deserialize)]
 pub struct ParticleContents {
-    #[serde(default="default_heat")]
+    #[serde(default = "default_heat")]
     pub heat: f32,
     #[serde(default)]
     pub tea: f32,
@@ -252,7 +252,9 @@ fn recolor_particles(
     mut materials: ResMut<Assets<ColorMaterial>>,
 ) {
     for (entity, particle) in &particles {
-        let color = WATER.mix(&BREWED_TEA, particle.contents.tea.min(1.0)).lighter(particle.contents.milk.min(1.0));
+        let color = WATER
+            .mix(&BREWED_TEA, particle.contents.tea.min(1.0))
+            .lighter(particle.contents.milk.min(1.0));
         /*
         let water = WATER.to_linear();
         let brewed_tea = BREWED_TEA.to_linear();
