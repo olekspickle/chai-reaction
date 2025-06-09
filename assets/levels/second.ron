@@ -2,24 +2,17 @@
     name: "Level 2: The second",
     zen_points: 4000,
     available_machine_parts: [
-        "WaterEmitter",
-        "HeatSource",
+        "Wood Block",
+        "Wood Ramp",
         "Pipe",
-        "Tea bag",
+        "PipeTurn",
+        "Funnel",
     ],
     initial_machine_parts: [
         (
-            name: "Big Table",
+            name: "Shelf",
             context: (
-                position: (400.0, -288.0, 10.0),
-                rotation_index: 0,
-                flipped: false,
-            ),
-        ),
-        (
-            name: "Victory Sensor",
-            context: (
-                position: (304.0, -176.0, 10.0),
+                position: (16.0, -16.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
@@ -27,7 +20,23 @@
         (
             name: "Shelf",
             context: (
-                position: (-304.0, 112.0, 10.0),
+                position: (-160.0, -96.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Black Tea Mug",
+            context: (
+                position: (16.0, 16.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Tea Container",
+            context: (
+                position: (208.0, 112.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
@@ -35,15 +44,7 @@
         (
             name: "Shelf",
             context: (
-                position: (-128.0, 48.0, 10.0),
-                rotation_index: 0,
-                flipped: false,
-            ),
-        ),
-        (
-            name: "Shelf",
-            context: (
-                position: (48.0, -32.0, 10.0),
+                position: (176.0, 64.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
             ),
@@ -51,9 +52,25 @@
         (
             name: "Water Glass",
             context: (
-                position: (304.0, -176.0, 10.0),
+                position: (-192.0, -48.0, 10.0),
                 rotation_index: 0,
                 flipped: false,
+            ),
+        ),
+        (
+            name: "Conveyor",
+            context: (
+                position: (-192.0, -80.0, 10.0),
+                rotation_index: 0,
+                flipped: false,
+            ),
+        ),
+        (
+            name: "Conveyor",
+            context: (
+                position: (208.0, 80.0, 10.0),
+                rotation_index: 1,
+                flipped: true,
             ),
         ),
     ],

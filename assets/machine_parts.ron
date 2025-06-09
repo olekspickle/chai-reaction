@@ -201,9 +201,25 @@
             TeaParticleVessel(
                 texture_path: "textures/tea_container_vessel.png",
                 particle_texture_path: "textures/tea_particle.png",
-                particle_gravity_scale: 0.05,
+                particle_gravity_scale: 0.2,
                 particle_radius: 3.0,
             )
+        ],
+    ),
+    "Glass": (
+        cost: 42,
+        is_dynamic: true,
+        texture_info: (
+            rotations: 1,
+            flippable: false,
+        ),
+        subassemblies: [
+            Sprite(
+                sprite_asset_path: "textures/glass.png",
+            ),
+            Collider(
+                mesh_image_path: "textures/glass_collider.png",
+            ),
         ],
     ),
     "Water Glass": (
